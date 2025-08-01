@@ -280,49 +280,209 @@
     }
   </script>
 
-  <!-- BEGIN: Oakline Bank Full Footer -->
-<footer style="background-color: #0d1b2a; color: #fff; font-family: Arial, sans-<!-- FOOTER SECTION -->
-<!-- Light Mode Footer -->
-<div class="footer-light">
-  <footer>
-    <p>© 2025 Oakline Bank. All rights reserved.</p>
-    <p>Designed and powered by Oakline Web Systems.</p>
-    <div>
-      <a href="#">Facebook</a> |
-      <a href="#">Twitter</a> |
-      <a href="#">Privacy Policy</a> |
-      <a href="#">Security</a>
+<!-- Footer Start -->
+<footer class="footer" id="site-footer">
+  <div class="footer-container">
+    <div class="footer-section about">
+      <h3>Oakline Bank</h3>
+      <p>Your trusted financial partner — secure, fast, and always accessible.</p>
     </div>
-  </footer>
-</div>
 
-<!-- Dark Mode Footer -->
-<div class="footer-dark">
-  <footer style="background-color: #111; color: #fff;">
-    <div class="quick-links">
-      <h3>Quick Links</h3>
-      <a href="#">Home</a>
-      <a href="#">Services</a>
-      <a href="#">Loans</a>
-      <a href="#">Careers</a>
-      <a href="#">Support</a>
+    <div class="footer-section links">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="loans.html">Loans</a></li>
+        <li><a href="savings.html">Savings</a></li>
+        <li><a href="crypto.html">Crypto Wallet</a></li>
+        <li><a href="investments.html">Investments</a></li>
+      </ul>
     </div>
-    <div class="contact-info">
-      <h3>Contact Us</h3>
-      <p>Email: <a href="mailto:support@oaklinebank.com">support@oaklinebank.com</a></p>
-      <p>Phone: <a href="tel:+18001234567">+1 800 123 4567</a></p>
-      <p>Address: 100 Oakline Ave, Financial City, NY 10001</p>
+
+    <div class="footer-section links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+      </ul>
     </div>
-    <div>
-      <a href="#">Facebook</a> |
-      <a href="#">Twitter</a> |
-      <a href="#">Privacy Policy</a> |
-      <a href="#">Security</a>
+
+    <div class="footer-section newsletter">
+      <h4>Subscribe</h4>
+      <form action="#">
+        <input type="email" placeholder="Your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
     </div>
-    <p>© 2025 Oakline Bank. All rights reserved.</p>
-    <p>Designed and powered by Oakline Web Systems.</p>
-  </footer>
-</div>
-<!-- END: Oakline Bank Full Footer -->
+
+    <div class="footer-section social">
+      <h4>Connect with us</h4>
+      <div class="social-icons">
+        <a href="#"><img src="icons/facebook.svg" alt="Facebook"></a>
+        <a href="#"><img src="icons/twitter.svg" alt="Twitter"></a>
+        <a href="#"><img src="icons/instagram.svg" alt="Instagram"></a>
+        <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 Oakline Bank. All rights reserved |
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms</a>
+    </p>
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" title="Toggle dark mode">
+      🌙 <span id="modeLabel">Dark Mode</span>
+    </button>
+  </div>
+</footer>
+<!-- Footer End -->
+
+<!-- Footer Style -->
+<style>
+.footer {
+  background-color: #1a1a1a;
+  color: #ddd;
+  padding: 40px 20px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background 0.4s, color 0.4s;
+}
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+.footer-section {
+  flex: 1 1 200px;
+}
+.footer-section h3, .footer-section h4 {
+  color: #fff;
+}
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-section ul li {
+  margin-bottom: 10px;
+}
+.footer-section ul li a {
+  color: #ccc;
+  text-decoration: none;
+}
+.footer-section ul li a:hover {
+  color: #00bcd4;
+}
+.footer-section input[type="email"] {
+  padding: 8px;
+  width: 80%;
+  border: none;
+  border-radius: 4px;
+}
+.footer-section button {
+  padding: 8px 16px;
+  margin-top: 8px;
+  background-color: #00bcd4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.footer-section button:hover {
+  background-color: #0097a7;
+}
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+}
+.social-icons img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  font-size: 14px;
+}
+.footer-bottom a {
+  color: #ccc;
+  text-decoration: none;
+}
+.footer-bottom a:hover {
+  color: #00bcd4;
+}
+#darkModeToggle {
+  margin-top: 15px;
+  background: none;
+  color: #00bcd4;
+  border: 1px solid #00bcd4;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+#darkModeToggle:hover {
+  background-color: #00bcd4;
+  color: #fff;
+}
+
+/* Light Mode Styles */
+body.light-mode .footer {
+  background-color: #f9f9f9;
+  color: #333;
+}
+body.light-mode .footer-section h3,
+body.light-mode .footer-section h4 {
+  color: #000;
+}
+body.light-mode .footer-section ul li a,
+body.light-mode .footer-bottom a {
+  color: #444;
+}
+body.light-mode #darkModeToggle {
+  color: #00796b;
+  border-color: #00796b;
+}
+body.light-mode #darkModeToggle:hover {
+  background-color: #00796b;
+  color: #fff;
+}
+</style>
+
+<!-- Footer Script -->
+<script>
+function setDarkMode(enabled) {
+  if (enabled) {
+    document.body.classList.remove('light-mode');
+    localStorage.setItem('theme', 'dark');
+    document.getElementById("modeLabel").innerText = "Dark Mode";
+  } else {
+    document.body.classList.add('light-mode');
+    localStorage.setItem('theme', 'light');
+    document.getElementById("modeLabel").innerText = "Light Mode";
+  }
+}
+
+document.getElementById("darkModeToggle").addEventListener("click", function () {
+  const isLight = document.body.classList.contains('light-mode');
+  setDarkMode(isLight);
+});
+
+// Auto-apply theme from localStorage or system preference
+(function () {
+  const stored = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const useDark = stored === 'dark' || (stored === null && prefersDark);
+  setDarkMode(useDark);
+})();
+</script>
 </body>
 </html>
