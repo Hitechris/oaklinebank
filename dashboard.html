@@ -1,200 +1,653 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Oakline Bank Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg, #f4f4f4);
-      color: var(--text, #111);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Oakline Bank Dashboard</title>
+<!-- Chart.js CDN for charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Basic Reset & Fonts */
+  body, html {
+    margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9; color: #222;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+  }
+  body.dark {
+    background: #121212; color: #eee;
+  }
+  a {
+    color: #0066cc; text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 
-    .navbar {
-      position: sticky;
-      top: 0;
-      background-color: var(--nav-bg, #004d66);
-      color: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 999;
-    }
+  /* Navbar */
+  nav {
+    background: #004080;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0; z-index: 100;
+  }
+  nav h1 {
+    margin: 0; font-size: 1.5rem;
+  }
+  nav .nav-links {
+    display: flex; gap: 1.2rem; align-items: center;
+  }
+  nav .nav-links button, nav .nav-links a {
+    background: transparent; border: none; color: white; cursor: pointer; font-weight: 600;
+    font-size: 1rem;
+  }
+  nav .nav-links button:hover,
+  nav .nav-links a:hover {
+    text-decoration: underline;
+  }
 
-    .navbar h1 { margin: 0; }
-    .navbar .nav-links a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-    }
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
 
-    .dashboard {
-      padding: 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      grid-gap: 30px;
-    }
+  /* Greeting */
+  .greeting {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
 
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+  /* Accounts Overview */
+  .accounts-overview {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .account-card {
+    background: white;
+    padding: 1.5rem;
+    flex: 1 1 250px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    transition: background 0.3s;
+  }
+  body.dark .account-card {
+    background: #1f1f1f;
+  }
+  .account-card h3 {
+    margin: 0 0 0.8rem 0;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .account-balance {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #004080;
+  }
+  body.dark .account-balance {
+    color: #69a1ff;
+  }
 
-    .card h3 { margin-top: 0; }
-    .transactions, .notifications {
-      max-height: 300px;
-      overflow-y: auto;
-    }
+  /* Charts Section */
+  .charts-section {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .chart-card {
+    background: white;
+    padding: 1rem;
+    flex: 1 1 500px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    transition: background 0.3s;
+  }
+  body.dark .chart-card {
+    background: #1f1f1f;
+  }
+  .chart-card h3 {
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+  }
 
-    .btn-toggle {
-      cursor: pointer;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 16px;
-    }
+  /* Download Statements */
+  .statements {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+  }
+  body.dark .statements {
+    background: #1f1f1f;
+  }
+  .statements h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .statements ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .statements ul li {
+    margin: 0.5rem 0;
+  }
+  .statements button {
+    background: #004080;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .statements button:hover {
+    background: #003060;
+  }
 
-    .dark {
-      --bg: #121212;
-      --text: #f4f4f4;
-      --nav-bg: #222;
-    }
+  /* Bill Reminders */
+  .bills {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+  }
+  body.dark .bills {
+    background: #1f1f1f;
+  }
+  .bills h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .bills ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .bills ul li {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .due-soon {
+    color: #d9534f;
+    font-weight: 700;
+  }
 
-    .transfer-form input, .transfer-form button {
-      margin: 5px 0;
-      padding: 8px;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+  /* Personalized Offers */
+  .offers {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+  }
+  body.dark .offers {
+    background: #1f1f1f;
+  }
+  .offers h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .offer-item {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #e6f0ff;
+    border-radius: 6px;
+  }
+  body.dark .offer-item {
+    background: #2a3a55;
+  }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: var(--nav-bg, #004d66);
-      color: white;
-    }
+  /* Security Alerts */
+  .security-alerts {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+  }
+  body.dark .security-alerts {
+    background: #1f1f1f;
+  }
+  .security-alerts h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .security-alerts ul {
+    list-style: none;
+    padding-left: 0;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  .security-alerts ul li {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
 
-    a.button-link {
-      display: inline-block;
-      margin: 10px 10px 0 0;
-      padding: 8px 15px;
-      background: #004d66;
-      color: white;
-      border-radius: 5px;
-      text-decoration: none;
+  /* Recent Payees */
+  .recent-payees {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+  }
+  body.dark .recent-payees {
+    background: #1f1f1f;
+  }
+  .recent-payees h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .payee-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .payee-item {
+    background: #f0f5ff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  .payee-item:hover {
+    background: #d0e1ff;
+  }
+  body.dark .payee-item {
+    background: #2a3a55;
+  }
+  body.dark .payee-item:hover {
+    background: #4264aa;
+  }
+
+  /* Quick Transfer */
+  .quick-transfer {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    transition: background 0.3s;
+    max-width: 600px;
+  }
+  body.dark .quick-transfer {
+    background: #1f1f1f;
+  }
+  .quick-transfer h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .quick-transfer form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .quick-transfer select,
+  .quick-transfer input {
+    flex: 1 1 45%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .quick-transfer select:focus,
+  .quick-transfer input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .quick-transfer button {
+    flex: 1 1 100%;
+    padding: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .quick-transfer button:hover {
+    background: #003060;
+  }
+
+  /* Currency Converter */
+  .currency-converter {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 2rem;
+    max-width: 350px;
+    transition: background 0.3s;
+  }
+  body.dark .currency-converter {
+    background: #1f1f1f;
+  }
+  .currency-converter h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .currency-converter select,
+  .currency-converter input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .currency-converter select:focus,
+  .currency-converter input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .currency-converter button {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .currency-converter button:hover {
+    background: #003060;
+  }
+
+  /* Profile Settings */
+  .profile-settings {
+    background: white;
+    padding: 1rem 1.5rem 2rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 4rem;
+    max-width: 600px;
+    transition: background 0.3s;
+  }
+  body.dark .profile-settings {
+    background: #1f1f1f;
+  }
+  .profile-settings h3 {
+    margin-top: 0; font-weight: 700;
+  }
+  .profile-settings label {
+    display: block;
+    margin: 1rem 0 0.3rem 0;
+  }
+  .profile-settings input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .profile-settings input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .profile-settings button {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    width: 100%;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .profile-settings button:hover {
+    background: #003060;
+  }
+
+  /* Floating Support Chat Button */
+  #supportChatBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #004080;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: background 0.3s;
+    z-index: 200;
+  }
+  #supportChatBtn:hover {
+    background: #003060;
+  }
+
+  /* Support Chat Window */
+  #supportChatWindow {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 320px;
+    max-height: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 201;
+  }
+  body.dark #supportChatWindow {
+    background: #222;
+    color: #eee;
+  }
+  #supportChatWindow header {
+    background: #004080;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #supportChatWindow header button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  #supportChatMessages {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    overflow-y: auto;
+    font-size: 0.9rem;
+  }
+  #supportChatInputWrapper {
+    display: flex;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #ccc;
+  }
+  #supportChatInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #supportChatSendBtn {
+    background: #004080;
+    border: none;
+    color: white;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #supportChatSendBtn:hover {
+    background: #003060;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .accounts-overview {
+      flex-direction: column;
     }
-  </style>
+    .charts-section {
+      flex-direction: column;
+    }
+    .quick-transfer, .currency-converter, .profile-settings {
+      max-width: 100%;
+    }
+  }
+</style>
 </head>
 <body>
-
-  <div class="navbar">
-    <h1>Oakline Bank</h1>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="signup.html">Sign Up</a>
-      <a href="login.html">Login</a>
-      <button class="btn-toggle" onclick="toggleDarkMode()">🌙</button>
-    </div>
+<nav>
+  <h1>Oakline Bank</h1>
+  <div class="nav-links">
+    <button id="darkModeToggle" aria-label="Toggle dark mode">🌙</button>
+    <button id="logoutBtn">Logout</button>
   </div>
+</nav>
 
-  <div class="dashboard">
-    <div class="card">
-      <h2>Welcome, <span id="userName">Customer</span>!</h2>
-      <p>Here's an overview of your Oakline Bank account.</p>
-    </div>
+<main class="container" role="main" aria-label="User Dashboard">
+  <section class="greeting" id="greeting"></section>
 
-    <div class="card">
-      <h3>Account Summary</h3>
-      <p>Checking: $2,500.00</p>
-      <p>Savings: $7,800.00</p>
-      <p>Business: $12,000.00</p>
-    </div>
+  <section class="accounts-overview" aria-label="Accounts overview">
+    <!-- Accounts will be inserted here -->
+  </section>
 
-    <div class="card transactions">
-      <h3>Recent Transactions</h3>
-      <ul>
-        <li>Deposit - $1,000.00</li>
-        <li>Electric Bill - $120.50</li>
-        <li>Transfer to Savings - $500.00</li>
-        <li>ATM Withdrawal - $60.00</li>
-      </ul>
+  <section class="charts-section" aria-label="Financial charts">
+    <div class="chart-card" aria-label="Spending trends">
+      <h3>Spending Trends</h3>
+      <canvas id="spendingChart" aria-describedby="spendingChartDesc"></canvas>
+      <p id="spendingChartDesc" class="sr-only">Line chart showing user's spending trends over last 6 months</p>
     </div>
+    <div class="chart-card" aria-label="Savings growth">
+      <h3>Savings Growth</h3>
+      <canvas id="savingsChart" aria-describedby="savingsChartDesc"></canvas>
+      <p id="savingsChartDesc" class="sr-only">Bar chart showing user's savings growth over last 6 months</p>
+    </div>
+  </section>
 
-    <div class="card notifications">
-      <h3>Notifications</h3>
-      <ul>
-        <li>⚠️ New login from a different device</li>
-        <li>✅ Your statement is ready</li>
-        <li>🎉 Congrats on hitting your savings goal!</li>
-      </ul>
-    </div>
+  <section class="statements" aria-label="Monthly bank statements">
+  <h3>Download Statements</h3>
+  <ul id="statementsList">
+    <li>August 2025 <button onclick="downloadStatement('August 2025')">Download PDF</button></li>
+    <li>July 2025 <button onclick="downloadStatement('July 2025')">Download PDF</button></li>
+    <li>June 2025 <button onclick="downloadStatement('June 2025')">Download PDF</button></li>
+    <li>May 2025 <button onclick="downloadStatement('May 2025')">Download PDF</button></li>
+    <li>April 2025 <button onclick="downloadStatement('April 2025')">Download PDF</button></li>
+    <li>March 2025 <button onclick="downloadStatement('March 2025')">Download PDF</button></li>
+  </ul>
+</section>
 
-    <div class="card transfer-form">
-      <h3>Quick Transfer</h3>
-      <input type="text" id="toAccount" placeholder="To Account (e.g., Savings)">
-      <input type="number" id="transferAmount" placeholder="Amount ($)">
-      <button onclick="transfer()">Transfer</button>
-    </div>
+  <section class="bills">
+    <h3>Upcoming Bills</h3>
+    <ul>
+      <li>Electric Bill – Aug 5 <span class="due-soon">$120.34</span></li>
+      <li>Credit Card – Aug 10 <span class="due-soon">$450.00</span></li>
+      <li>Internet – Aug 12 <span>$89.99</span></li>
+    </ul>
+  </section>
 
-    <div class="card">
-      <h3>Savings Trends</h3>
-      <canvas id="savingsChart" height="200"></canvas>
+  <section class="offers">
+    <h3>Personalized Offers</h3>
+    <div class="offer-item">💳 Get 3% Cashback on Business Purchases</div>
+    <div class="offer-item">🏠 Refinance your mortgage at 4.2% APR</div>
+    <div class="offer-item">🚗 Auto Loan Pre-approval up to $35,000</div>
+  </section>
+
+  <section class="security-alerts">
+    <h3>Recent Security Alerts</h3>
+    <ul>
+      <li>🔐 Password changed – Aug 1, 2025</li>
+      <li>📍 Login from new device – Jul 29, 2025</li>
+      <li>📧 Email updated – Jul 20, 2025</li>
+    </ul>
+  </section>
+
+  <section class="recent-payees">
+    <h3>Recent Payees</h3>
+    <div class="payee-list">
+      <div class="payee-item">Jane Doe</div>
+      <div class="payee-item">Electric Co.</div>
+      <div class="payee-item">ABC Marketing</div>
     </div>
+  </section>
+
+  <section class="quick-transfer">
+    <h3>Quick Transfer</h3>
+    <form id="transferForm">
+      <select required>
+        <option value="">From Account</option>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+      <input type="text" placeholder="To (Name or Account)" required>
+      <input type="number" placeholder="Amount $" min="1" required>
+      <button type="submit">Transfer</button>
+    </form>
+  </section>
+
+  <section class="currency-converter">
+    <h3>Currency Converter</h3>
+    <input type="number" placeholder="Amount in USD" id="usdAmount">
+    <select id="currencySelect">
+      <option value="eur">Euro (EUR)</option>
+      <option value="gbp">British Pound (GBP)</option>
+      <option value="jpy">Japanese Yen (JPY)</option>
+    </select>
+    <button onclick="convertCurrency()">Convert</button>
+    <p id="conversionResult"></p>
+  </section>
+
+  <section class="profile-settings">
+    <h3>Profile Settings</h3>
+    <label for="updateEmail">Email:</label>
+    <input type="email" id="updateEmail">
+    <label for="updatePhone">Phone:</label>
+    <input type="tel" id="updatePhone">
+    <label for="updatePassword">New Password:</label>
+    <input type="password" id="updatePassword">
+    <button onclick="updateProfile()">Update Info</button>
+  </section>
+</main>
+
+<!-- Floating Support Chat Button -->
+<button id="supportChatBtn" onclick="toggleChat()">💬</button>
+
+<!-- Support Chat Window -->
+<div id="supportChatWindow">
+  <header>
+    Support
+    <button onclick="toggleChat()">×</button>
+  </header>
+  <div id="supportChatMessages">
+    <p><strong>Support:</strong> Hello! How can we assist you today?</p>
   </div>
+  <div id="supportChatInputWrapper">
+    <input type="text" id="supportChatInput" placeholder="Type your message...">
+    <button id="supportChatSendBtn" onclick="sendSupportMessage()">Send</button>
+  </div>
+</div>
 
-  <footer>
-    &copy; 2025 Oakline Bank. All rights reserved.
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-    }
-
-    function transfer() {
-      const to = document.getElementById('toAccount').value;
-      const amount = document.getElementById('transferAmount').value;
-      if (!to || !amount || amount <= 0) {
-        alert("Please enter valid transfer details.");
-      } else {
-        alert(`Transferred $${amount} to ${to}.`);
-      }
-    }
-
-    // Fake user data (could be from login session in real app)
-    document.getElementById('userName').innerText = "John Doe";
-
-    // Sample savings chart
-    const ctx = document.getElementById('savingsChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-          label: 'Savings Balance',
-          data: [1500, 1800, 2100, 2400, 3100, 3900],
-          backgroundColor: 'rgba(0,77,102,0.2)',
-          borderColor: '#004d66',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: false }
-        }
-      }
-    });
-  </script>
+<script>
+  // Your JavaScript will go here
+</script>
 </body>
 </html>
