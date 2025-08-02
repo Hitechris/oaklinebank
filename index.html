@@ -515,6 +515,69 @@ html {
     margin: 10px 10px 0 10px;
   }
 }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-button {
+  background-color: #0052cc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.modal-button:hover {
+  background-color: #003d99;
+}
+
+.modal-content a {
+  color: #0052cc;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.modal-content a:hover {
+  text-decoration: underline;
+}
+
+.close {
+  float: right;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+    
     
   </style>
 </head>
@@ -534,7 +597,8 @@ html {
     <a href="#get-started">Calculator</a>
     <a href="#testimonials">Testimonials</a>
     <a href="#footer">Contact</a>
-    <a href="/login.html">Login</a>
+   <a href="#" onclick="openModal('loginModal')">Login</a>
+  <a href="#" onclick="openModal('signupModal')">Sign Up</a>
 
     <!-- 🌙 Mode Toggle -->
     <div class="toggle-container">
@@ -760,7 +824,69 @@ html {
       document.getElementById('navbar-links').classList.remove('active');
     });
   });
+
 });
+
+ function openModal(id) {
+  document.getElementById(id).style.display = "block";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function switchModal(currentId, targetId) {
+  closeModal(currentId);
+  openModal(targetId);
+}
+
+// Close modals if clicked outside content
+window.onclick = function(event) {
+  const modals = ['loginModal', 'signupModal', 'forgotModal'];
+  modals.forEach(id => {
+    const modal = document.getElementById(id);
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+}; 
 </script>
+
+  <!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+    <h2>Login to Your Account</h2>
+    <input type="email" placeholder="Email" required>
+    <input type="password" placeholder="Password" required>
+    <button class="modal-button">Login</button>
+    <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot password?</a></p>
+    <p>Don’t have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign up</a></p>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('signupModal')">&times;</span>
+    <h2>Create an Account</h2>
+    <input type="text" placeholder="Full Name" required>
+    <input type="email" placeholder="Email" required>
+    <input type="password" placeholder="Password" required>
+    <button class="modal-button">Sign Up</button>
+    <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('forgotModal')">&times;</span>
+    <h2>Reset Your Password</h2>
+    <input type="email" placeholder="Enter your email" required>
+    <button class="modal-button">Send Reset Link</button>
+    <p>Remembered it? <a href="#" onclick="switchModal('forgotModal','loginModal')">Back to login</a></p>
+  </div>
+</div>
 </body>
 </html>
