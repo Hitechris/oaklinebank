@@ -167,8 +167,8 @@ body.dark-mode .footer-column a {
   <main>
     <div class="balance-card">
       <h2>Account Balances</h2>
-      <p>Checking: <span class="account-balance" id="checkingBalance">$0.00</span></p>
-      <p>Savings: <span class="account-balance" id="savingsBalance">$0.00</span></p>
+      <p>Checking: <span class="account-balance" id="checkingBalance">$8503643.00</span></p>
+      <p>Savings: <span class="account-balance" id="savingsBalance">$9859320.00</span></p>
     </div>
 
     <div class="quick-transfer">
@@ -223,8 +223,8 @@ body.dark-mode .footer-column a {
       user.checkingBalance = user.checkingBalance || 8696680.45;
       user.savingsBalance = user.savingsBalance || 6304589.00;
 
-      document.getElementById('checkingBalance').textContent = `$${user.checkingBalance.toFixed(9390472)}`;
-      document.getElementById('savingsBalance').textContent = `$${user.savingsBalance.toFixed(8750370)}`;
+      document.getElementById('checkingBalance').textContent = `$${user.checkingBalance.toFixed()}`;
+      document.getElementById('savingsBalance').textContent = `$${user.savingsBalance.toFixed()}`;
     };
 
     // Logout
