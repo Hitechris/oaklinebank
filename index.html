@@ -380,7 +380,7 @@ html {
   </nav>
 </header>
 
-  <section class="hero">
+  <section class="hero" id="hero1">
     <div class="hero-text">
       <h1>Welcome to Oakline Bank</h1>
       <p>Secure. Simple. Seamless.<br>Your financial future starts here with Oakline Bank — trusted by millions.</p>
@@ -391,7 +391,7 @@ html {
     </div>
   </section>
 
-  <section class="calculator">
+ <section class="calculator" id="get-started">
     <h2>Savings Growth Calculator</h2>
     <p>Estimate your future savings with Oakline Bank.</p>
     <div class="calculator-form">
@@ -569,6 +569,12 @@ html {
     document.getElementById('navbar').classList.toggle('dark-mode');
     localStorage.setItem('theme', toggle.checked ? 'dark' : 'light');
   });
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navbar-links').classList.remove('active');
+  });
+});
 </script>
 </body>
 </html>
