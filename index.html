@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Oakline Bank - Full Menu & Mode Toggle</title>
+<style>
+  /* ===== Variables & Colors ===== */
+  :root {
+    --color-bg-light: #ffffff;
+    --color-text-light: #222222;
+    --color-bg-dark: #121212;
+    --color-text-dark: #f0f0f0;
+    --primary-color: #0077ff;
+    --transition-speed: 0.3s;
+  }
+
+  /* ===== Base Styles ===== */
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+  }
+  body.dark-mode {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ===== Navbar ===== */
+  header.navbar {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-light);
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    z-index: 10000;
+    transition: background-color var(--transition-speed);
+  }
+  body.dark-mode header.navbar {
+    background-color: var(--color-bg-dark);
+    border-color: #333;
+  }
+
+  .logo {
+    font-weight: 700;
+    font-size: 1.4rem;
+    user-select: none;
+  }
+
+  /* ===== Desktop Nav ===== */
+  nav.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  nav.nav-links a {
+    font-weight: 600;
+    position: relative;
+  }
+  nav.nav-links a:hover,
+  nav.nav-links a:focus {
+    color: var(--primary-color);
+  }
+
+  /* ===== Dropdown Menu ===== */
+  .dropdown {
+    position: relative;
+  }
+  .dropdown > button {
+    background: none;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 1rem;
+  }
+  .dropdown > button:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background-color: var(--color-bg-light);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-width: 160px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity var(--transition-speed), transform var(--transition-speed);
+    z-index: 1000;
+  }
+  body.dark-mode .dropdown-content {
+    background-color: var(--color-bg-dark);
+    border-color: #444;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+  }
+  .dropdown-content a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+  }
+  .dropdown-content a:hover,
+  .dropdown-content a:focus {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  .dropdown.open > .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* ===== Menu Toggle Button (Hamburger) ===== */
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  /* ===== Mode Toggle Switch ===== */
+  .toggle-container {
+    margin-left: 1.5rem;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+  }
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.3s;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+  input:checked + .slider {
+    background-color: var(--primary-color);
+  }
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  /* ===== Responsive Styles ===== */
+  @media (max-width: 900px) {
+    nav.nav-links {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      height: 100vh;
+      width: 250px;
+      background-color: var(--color-bg-light);
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+      gap: 1rem;
+      transition: left 0.3s ease-in-out;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+      z-index: 9999;
+      overflow-y: auto;
+    }
+    body.dark-mode nav.nav-links {
+      background-color: var(--color-bg-dark);
+    }
+    nav.nav-links.open {
+      left: 0;
+    }
+
+    .menu-toggle {
+      display: block;
+    }
+
+    /* Dropdown content inside mobile menu */
+    .dropdown-content {
+      position: static;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      box-shadow: none;
+      border: none;
+      background: none;
+      padding-left: 1rem;
+    }
+    .dropdown > button {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+<header class="navbar" role="banner">
+  <div class="logo" tabindex="0">Oakline Bank</div>
+
+  <button
+    class="menu-toggle"
+    aria-label="Toggle menu"
+    aria-expanded="false"
+    aria-controls="navbar-links"
+    id="menuToggleBtn"
+  >
+    ☰
+  </button>
+
+  <nav class="nav-links" id="navbar-links" role="navigation">
+    <a href="#home" tabindex="0">Home</a>
+    <a href="#services" tabindex="0">Services</a>
+
+    <div class="dropdown" tabindex="0">
+      <button aria-haspopup="true" aria-expanded="false" aria-controls="submenu1" id="dropdownBtn">
+        More ▼
+      </button>
+      <div class="dropdown-content" id="submenu1" role="menu" aria-labelledby="dropdownBtn">
+        <a href="#calculator" role="menuitem" tabindex="0">Calculator</a>
+        <a href="#testimonials" role="menuitem" tabindex="0">Testimonials</a>
+      </div>
+    </div>
+
+    <a href="#contact" tabindex="0">Contact</a>
+    <a href="/login.html" tabindex="0">Login</a>
+
+    <div class="toggle-container" tabindex="0" aria-label="Toggle dark mode">
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" aria-checked="false" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section id="home" style="padding: 3rem;">Home content</section>
+  <section id="services" style="padding: 3rem;">Services content</section>
+  <section id="calculator" style="padding: 3rem;">Calculator content</section>
+  <section id="testimonials" style="padding: 3rem;">Testimonials content</section>
+  <section id="contact" style="padding: 3rem;">Contact info</section>
+</main>
+
+<script>
+  // Menu toggle for mobile
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  const navLinks = document.getElementById('navbar-links');
+
+  menuToggleBtn.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    menuToggleBtn.setAttribute('aria-expanded', isOpen);
+  });
+
+  // Dropdown submenu toggle
+  const dropdown = document.querySelector('.dropdown');
+  const dropdownBtn = document.getElementById('dropdownBtn');
+
+  dropdownBtn.addEventListener('click', () => {
+    const isOpen = dropdown.classList.toggle('open');
+    dropdownBtn.setAttribute('aria-expanded', isOpen);
+  });
+
+  // Close dropdown if clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+      dropdownBtn.setAttribute('aria-expanded', false);
+    }
+  });
+
+  // Dark mode toggle with persistence
+  const modeToggle = document.getElementById('modeToggle');
+  const body = document.body;
+
+  // Load saved theme preference
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      body.classList.add('dark-mode');
+      modeToggle.checked = true;
+      modeToggle.setAttribute('aria-checked', 'true');
+    }
+  });
+
+  modeToggle.addEventListener('change', () => {
+    if (modeToggle.checked) {
+      body.classList.add('dark-mode');
+      modeToggle.setAttribute('aria-checked', 'true');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.remove('dark-mode');
+      modeToggle.setAttribute('aria-checked', 'false');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+</script>
+</body>
+</html>
