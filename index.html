@@ -977,47 +977,53 @@ input:focus {
 
 });
 </script> 
- 
-<!-- LOGIN MODAL -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('loginModal')">&times;</span>
-    <h2>Login to Your Account</h2>
-    <input type="email" placeholder="Email" autocomplete="off" required>
-    <input type="password" placeholder="Password" autocomplete="off" required>
-    <button class="modal-button">Login</button>
-    <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot password?</a></p>
-    <p>Don’t have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign up</a></p>
-  </div>
-</div>
-
+  
 <!-- SIGN UP MODAL -->
 <div id="signupModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
     <h2>Create an Account</h2>
-    <input type="text" placeholder="Full Name" autocomplete="off" required>
-    <input type="email" placeholder="Email" autocomplete="off" required>
-    <input type="tel" placeholder="Phone Number" autocomplete="off" required>
-    <input type="date" placeholder="Date of Birth" autocomplete="off" required>
-    <input type="text" placeholder="Home Address" autocomplete="off" required>
-    <input type="password" placeholder="Create Password" autocomplete="off" required>
-    <input type="password" placeholder="Confirm Password" autocomplete="off" required>
-    <select required>
+
+    <input id="signupFullName" type="text" placeholder="Full Name" autocomplete="off" required>
+    <input id="signupEmail" type="email" placeholder="Email" autocomplete="off" required>
+    <input id="signupPhone" type="tel" placeholder="Phone Number" autocomplete="off" required>
+
+    <input id="signupDOB" type="date" placeholder="Date of Birth" autocomplete="off" required>
+
+    <select id="signupAccountType" required>
+      <option value="">Select Account Type</option>
+      <option value="checking">Checking</option>
+      <option value="savings">Savings</option>
+      <option value="business">Business</option>
+    </select>
+
+    <input id="signupSSN" type="text" placeholder="Social Security Number (SSN)" autocomplete="off" required>
+    <input id="signupCity" type="text" placeholder="City" autocomplete="off" required>
+    <input id="signupState" type="text" placeholder="State" autocomplete="off" required>
+    <input id="signupCountry" type="text" placeholder="Country" autocomplete="off" required>
+
+    <input id="signupAddress" type="text" placeholder="Home Address" autocomplete="off" required>
+    <input id="signupPassword" type="password" placeholder="Create Password" autocomplete="off" required>
+    <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" autocomplete="off" required>
+
+    <select id="signupSecurityQuestion" required>
       <option value="">Select a security question</option>
       <option value="pet">What is your pet’s name?</option>
       <option value="school">What was the name of your first school?</option>
       <option value="city">In what city were you born?</option>
     </select>
-    <input type="text" placeholder="Security Answer" autocomplete="off" required>
-    
-    <!-- Error Message Display -->
+
+    <input id="signupSecurityAnswer" type="text" placeholder="Security Answer" autocomplete="off" required>
+
     <p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
-    
+
     <button class="modal-button" onclick="validateSignup()">Sign Up</button>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
+    <!-- Error Message Display -->
+    <p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
+    
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotModal" class="modal">
   <div class="modal-content">
@@ -1043,91 +1049,87 @@ input:focus {
     openModal(targetId);
   }
 
+function validateSignup() {
+  const fullName = document.getElementById('signupFullName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const phone = document.getElementById('signupPhone').value.trim();
+  const dob = document.getElementById('signupDOB').value.trim();
+  const accountType = document.getElementById('signupAccountType').value;
+  const ssn = document.getElementById('signupSSN').value.trim();
+  const city = document.getElementById('signupCity').value.trim();
+  const state = document.getElementById('signupState').value.trim();
+  const country = document.getElementById('signupCountry').value.trim();
+  const address = document.getElementById('signupAddress').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+  const securityQuestion = document.getElementById('signupSecurityQuestion').value;
+  const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
 
-  function validateSignup() {
-    const fullName = document.querySelector('#signupModal input[placeholder="Full Name"]').value.trim();
-    const email = document.querySelector('#signupModal input[placeholder="Email"]').value.trim();
-    const phone = document.querySelector('#signupModal input[placeholder="Phone Number"]').value.trim();
-    const dob = document.querySelector('#signupModal input[placeholder="Date of Birth"]').value.trim();
-    const address = document.querySelector('#signupModal input[placeholder="Home Address"]').value.trim();
-    const password = document.querySelector('#signupModal input[placeholder="Create Password"]').value;
-    const confirmPassword = document.querySelector('#signupModal input[placeholder="Confirm Password"]').value;
-    const securityAnswer = document.querySelector('#signupModal input[placeholder="Security Answer"]').value.trim();
-    const securityQuestion = document.querySelector('#signupModal select').value;
+  const error = document.getElementById('passwordError');
 
-    const error = document.getElementById("passwordError");
-
-    if (
-      !fullName || !email || !phone || !dob || !address ||
-      !password || !confirmPassword || !securityAnswer || !securityQuestion
-    ) {
-      error.innerText = "Please fill out all fields.";
-      error.style.display = "block";
-      return;
-    }
-    // ✅ Email format check
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      error.innerText = "Please enter a valid email address.";
-      error.style.display = "block";
-      return;
-    }
-
-    // ✅ Phone number format check (10+ digits)
-    const phoneRegex = /^\d{10,}$/;
-    if (!phoneRegex.test(phone)) {
-      error.innerText = "Please enter a valid phone number (at least 10 digits).";
-      error.style.display = "block";
-      return;
-    }
-
-    // ✅ Password length check
-    if (password.length < 6) {
-      error.innerText = "Password must be at least 6 characters long.";
-      error.style.display = "block";
-      return;
-    }
-
-    // ✅ Password strength check
-    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
-    if (!strongPassword.test(password)) {
-      error.innerText = "Password must include upper, lower case letters and a number.";
-      error.style.display = "block";
-      return;
-    }
-
-    // ✅ Password match check
-    if (password !== confirmPassword) {
-      error.innerText = "Passwords do not match.";
-      error.style.display = "block";
-      return;
-    }
-
-    // ✅ Success
-    error.style.display = "none";
-    alert("Sign-up successful!");
-    closeModal('signupModal');
+  // Check all fields filled
+  if (
+    !fullName || !email || !phone || !dob || !accountType || !ssn || !city ||
+    !state || !country || !address || !password || !confirmPassword ||
+    !securityQuestion || !securityAnswer
+  ) {
+    error.innerText = "Please fill out all fields.";
+    error.style.display = "block";
+    return;
   }
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const inputs = document.querySelectorAll('#signupModal input, #signupModal select');
-    const error = document.getElementById('passwordError');
 
-    inputs.forEach(input => {
-      input.addEventListener('input', () => {
-        if (error.style.display === 'block') {
-          // Animate fade out
-          error.classList.add('hide');
-          setTimeout(() => {
-            error.style.display = 'none';
-            error.classList.remove('hide');
-            error.style.color = '#cc0000'; // Reset to red for future errors
-          }, 300);
-        }
-      });
-    });
-  });
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    error.innerText = "Please enter a valid email address.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Phone number validation (at least 10 digits)
+  const phoneRegex = /^\d{10,}$/;
+  if (!phoneRegex.test(phone)) {
+    error.innerText = "Please enter a valid phone number (at least 10 digits).";
+    error.style.display = "block";
+    return;
+  }
+
+  // SSN validation (simple US SSN format: 9 digits, optionally with dashes)
+  const ssnRegex = /^\d{3}-?\d{2}-?\d{4}$/;
+  if (!ssnRegex.test(ssn)) {
+    error.innerText = "Please enter a valid Social Security Number (SSN).";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password length check
+  if (password.length < 6) {
+    error.innerText = "Password must be at least 6 characters long.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password strength check: at least one uppercase, one lowercase, one digit
+  const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+  if (!strongPassword.test(password)) {
+    error.innerText = "Password must include upper and lower case letters and a number.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password and confirm password match check
+  if (password !== confirmPassword) {
+    error.innerText = "Passwords do not match.";
+    error.style.display = "block";
+    return;
+  }
+
+  // All checks passed — clear error and proceed
+  error.style.display = "none";
+  alert("Sign-up successful!");
+  closeModal('signupModal');
+}
 </script>
 </body>
 </html>
+  
