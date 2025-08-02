@@ -898,33 +898,38 @@ input:focus {
     openModal(targetId);
   }
 
+<script>
 function validateSignup() {
-  const password = document.querySelector('#signupModal input[placeholder="Create Password"]').value;
-  const confirmPassword = document.querySelector('#signupModal input[placeholder="Confirm Password"]').value;
+  const modal = document.getElementById('signupModal');
+  const inputs = modal.querySelectorAll('input, select');
   const error = document.getElementById("passwordError");
+
+  let allFilled = true;
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      allFilled = false;
+    }
+  });
+
+  const password = modal.querySelector('input[placeholder="Create Password"]').value;
+  const confirmPassword = modal.querySelector('input[placeholder="Confirm Password"]').value;
+
+  if (!allFilled) {
+    error.innerText = "Please fill out all fields.";
+    error.style.display = "block";
+    return false;
+  }
 
   if (password !== confirmPassword) {
     error.innerText = "Passwords do not match.";
     error.style.display = "block";
     return false;
-  } else {
-    error.style.display = "none";
-    // Submit logic can go here if needed
-    alert("Sign-up successful!");
-    closeModal('signupModal'); // Optional: close modal after success
   }
+
+  error.style.display = "none";
+  alert("Sign-up successful!");
+  closeModal('signupModal');
 }
-  
-  // ✅ Use addEventListener to prevent conflicts
-  window.addEventListener('click', function(event) {
-    const modals = ['loginModal', 'signupModal', 'forgotModal'];
-    modals.forEach(id => {
-      const modal = document.getElementById(id);
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    });
-  });
 </script>
 </body>
 </html>
