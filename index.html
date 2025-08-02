@@ -703,67 +703,72 @@ input:focus {
 }
 
 .footer {
-  background-color: #1a1a1a;
-  color: #eee;
-  padding: 40px 0 10px;
-  font-size: 14px;
+  background: #003366;
+  color: #fff;
+  padding: 40px 20px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
 }
-.footer-container {
+
+.footer-container.stacked {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  max-width: 1200px;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 1000px;
   margin: auto;
-  padding: 0 20px;
 }
-.footer-logo h3 {
-  margin: 0;
-  font-size: 24px;
-  color: #00c894;
+
+.footer-container h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
 }
-.footer-logo p {
-  font-size: 14px;
-  color: #aaa;
-}
-.footer-links,
+
+.footer-links ul,
 .footer-contact,
 .footer-social {
-  flex: 1 1 200px;
-  margin-top: 20px;
-}
-.footer-links ul {
-  list-style: none;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
+
 .footer-links ul li {
-  margin: 8px 0;
+  margin-bottom: 8px;
 }
-.footer-links ul li a {
-  color: #eee;
+
+.footer-links a {
+  color: #fff;
   text-decoration: none;
 }
-.footer-links ul li a:hover {
-  color: #00c894;
+
+.footer-links a:hover {
+  color: #00ccff;
 }
+
 .footer-contact p {
   margin: 6px 0;
+  font-size: 14px;
 }
-.footer-social a {
-  display: inline-block;
-  margin-right: 10px;
-}
+
 .footer-social img {
   width: 24px;
+  height: 24px;
+  margin: 0 6px;
   filter: brightness(0) invert(1);
+  transition: filter 0.3s;
 }
+
+.footer-social img:hover {
+  filter: brightness(0.8) invert(1);
+}
+
 .footer-bottom {
-  text-align: center;
   margin-top: 30px;
-  font-size: 12px;
-  color: #666;
-  border-top: 1px solid #333;
+  font-size: 14px;
+  color: #ccc;
+  border-top: 1px solid #666;
   padding-top: 10px;
-}  </style>
+}}  </style>
 </head>
 <body>
 
@@ -1266,7 +1271,7 @@ function validateLogin() {
 </script>
 
 <footer class="footer">
-  <div class="footer-container">
+  <div class="footer-container stacked">
     <div class="footer-logo">
       <h3>Oakline Bank</h3>
       <p>Modern Banking for Everyday Life</p>
@@ -1291,10 +1296,12 @@ function validateLogin() {
 
     <div class="footer-social">
       <h4>Connect</h4>
-      <a href="#"><img src="icons/facebook.svg" alt="Facebook" /></a>
-      <a href="#"><img src="icons/twitter.svg" alt="Twitter" /></a>
-      <a href="#"><img src="icons/instagram.svg" alt="Instagram" /></a>
-      <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn" /></a>
+      <div class="social-icons">
+        <a href="#"><img src="icons/facebook.svg" alt="Facebook" /></a>
+        <a href="#"><img src="icons/twitter.svg" alt="Twitter" /></a>
+        <a href="#"><img src="icons/instagram.svg" alt="Instagram" /></a>
+        <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn" /></a>
+      </div>
     </div>
   </div>
 
