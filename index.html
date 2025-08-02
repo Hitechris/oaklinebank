@@ -767,8 +767,51 @@ input:focus {
   font-size: 14px;
   color: #ccc;
   border-top: 1px solid #666;
-  padding-top: 10px;
-}}  </style>
+  padding-top: 10px;  
+}}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #003366;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px solid #444;
+  z-index: 1000;
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 12px;
+  width: 25%;
+}
+
+.bottom-nav img {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 2px;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s;
+}
+
+.bottom-nav a:hover img {
+  filter: brightness(0.8) invert(1);
+}
+
+.bottom-nav span {
+  font-size: 11px;
+}
+   
+ </style>
+  
 </head>
 <body>
 
@@ -1309,6 +1352,25 @@ function validateLogin() {
     <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
   </div>
 </footer>
+
+  <nav class="bottom-nav">
+  <a href="index.html">
+    <img src="icons/home.svg" alt="Home" />
+    <span>Main</span>
+  </a>
+  <a href="signup.html">
+    <img src="icons/signup.svg" alt="Sign Up" />
+    <span>Sign Up</span>
+  </a>
+  <a href="login.html">
+    <img src="icons/login.svg" alt="Login" />
+    <span>Login</span>
+  </a>
+  <a href="contact.html">
+    <img src="icons/contact.svg" alt="Contact" />
+    <span>Contact</span>
+  </a>
+</nav>
 </body>
 </html>
   
