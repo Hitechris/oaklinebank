@@ -71,7 +71,7 @@
     .receipt p span {
       font-weight: 600;
     }
-    button.back-btn {
+    button {
       margin-top: 2rem;
       background-color: var(--primary-color);
       color: white;
@@ -82,8 +82,26 @@
       cursor: pointer;
       transition: background-color var(--transition);
     }
-    button.back-btn:hover {
+    button:hover {
       background-color: #0f3629;
+    }
+    #printBtn {
+      margin-left: 1rem;
+    }
+    /* Print styles to only print receipt content */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #confirmationContainer, #confirmationContainer * {
+        visibility: visible;
+      }
+      #confirmationContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -108,12 +126,19 @@
       <p><span>Amount Transferred:</span> $<span id="txnAmount">Loading...</span></p>
     </div>
 
-    <button class="back-btn" onclick="goToDashboard()">Back to Dashboard</button>
+    <div>
+      <button class="back-btn" onclick="goToDashboard()">Back to Dashboard</button>
+      <button id="printBtn" onclick="printReceipt()">Print Receipt</button>
+    </div>
   </main>
 
   <script>
     function goToDashboard() {
       window.location.href = 'dashboard.html';
+    }
+
+    function printReceipt() {
+      window.print();
     }
 
     const txnDataRaw = sessionStorage.getItem('lastTransaction');
