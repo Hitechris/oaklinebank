@@ -816,6 +816,7 @@ input:focus {
     document.body.classList.add('dark-mode');
     navbar.classList.add('dark-mode');
     toggle.checked = true;
+  
   }
 
   toggle.addEventListener('change', () => {
@@ -832,7 +833,7 @@ input:focus {
   });
 
 });
-
+</script>
  
 <!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
@@ -882,7 +883,7 @@ input:focus {
   </div>
 </div>
 
- <script>
+<script>
   function openModal(id) {
     document.getElementById(id).style.display = "block";
   }
@@ -896,8 +897,8 @@ input:focus {
     openModal(targetId);
   }
 
-  // Close modals if clicked outside the modal content
-  window.onclick = function(event) {
+  // ✅ Use addEventListener to prevent conflicts
+  window.addEventListener('click', function(event) {
     const modals = ['loginModal', 'signupModal', 'forgotModal'];
     modals.forEach(id => {
       const modal = document.getElementById(id);
@@ -905,7 +906,7 @@ input:focus {
         modal.style.display = "none";
       }
     });
-  };
-</script> 
+  });
+</script>
 </body>
 </html>
