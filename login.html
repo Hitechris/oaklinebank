@@ -2,37 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Oakline Bank</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oakline Bank - Login</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
+      margin: 0;
+      padding: 0;
+      background: var(--bg-color, #f5f5f5);
+      color: var(--text-color, #333);
       transition: background 0.3s, color 0.3s;
     }
 
-    :root {
-      --bg: #f4f4f4;
-      --text: #333;
-      --card: white;
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
     }
 
-    body.dark {
-      --bg: #121212;
-      --text: #f0f0f0;
-      --card: #1f1f1f;
+    nav {
+      background: #003366;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 1rem;
+      text-decoration: none;
     }
 
     .login-container {
-      max-width: 400px;
-      margin: 100px auto;
-      background: var(--card);
+      max-width: 420px;
+      margin: 80px auto;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .login-container {
+      background: #1e1e1e;
     }
 
     h2 {
@@ -40,83 +53,141 @@
       margin-bottom: 20px;
     }
 
-    input, button, select {
+    input[type="email"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
+      padding: 12px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
     }
 
-    .toggle-mode {
-      text-align: right;
+    label {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .form-options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toggle-password {
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: underline;
+      color: #003366;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 12px;
+      background: #003366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .login-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .error,
+    .success {
+      color: red;
       font-size: 14px;
       margin-bottom: 10px;
+      display: none;
     }
 
-    .toggle-mode button {
-      background: none;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      font-weight: bold;
+    .success {
+      color: green;
     }
 
-    .links {
+    .bottom-link {
       text-align: center;
       margin-top: 15px;
       font-size: 14px;
     }
 
-    .links a {
-      color: #0077cc;
-      text-decoration: none;
-      margin: 0 5px;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 14px;
-      display: none;
-      margin-top: -5px;
-    }
-
-    .success-message {
-      color: green;
-      font-size: 14px;
-      display: none;
+    .dark-mode-toggle {
+      background: none;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
     }
 
     @media (max-width: 500px) {
-      .login-container {
-        margin: 40px 15px;
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
 </head>
 <body>
+  <nav>
+    <div>🌲 <strong>Oakline Bank</strong></div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="contact.html">Contact</a>
+      <a href="about.html">About</a>
+      <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </nav>
 
   <div class="login-container">
-    <div class="toggle-mode">
-      <button onclick="toggleDarkMode()">🌗 Toggle Dark Mode</button>
+    <h2>Welcome Back</h2>
+
+    <div class="error" id="errorMsg"></div>
+    <div class="success" id="successMsg"></div>
+
+    <label for="loginEmail">Email Address</label>
+    <input type="email" id="loginEmail" placeholder="you@example.com" required />
+
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" placeholder="Enter password" required />
+    <span class="toggle-password" onclick="togglePassword()">Show password</span>
+
+    <div class="form-options">
+      <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+      <a href="#" onclick="alert('Redirecting to password recovery...')">Forgot password?</a>
     </div>
 
-    <h2>Welcome Back</h2>
-    <input id="loginEmail" type="email" placeholder="Email" required />
-    <input id="loginPassword" type="password" placeholder="Password" required />
+    <button class="login-button" id="loginBtn" onclick="handleLogin()">
+      Log In
+      <span class="spinner" id="spinner">⏳</span>
+    </button>
 
-    <div id="errorMsg" class="error-message"></div>
-    <div id="successMsg" class="success-message"></div>
-
-    <!-- Optional 2FA (Placeholder) -->
-    <!-- <input id="login2FA" type="text" placeholder="Enter 2FA Code" /> -->
-
-    <button onclick="handleLogin()">Login</button>
-
-    <div class="links">
-      <a href="forgot.html">Forgot Password?</a> |
-      <a href="signup.html">Sign Up</a> |
-      <a href="index.html">Home</a>
+    <div class="bottom-link">
+      Don't have an account? <a href="signup.html">Create one</a>
     </div>
   </div>
 
@@ -125,40 +196,60 @@
       document.body.classList.toggle("dark");
     }
 
+    function togglePassword() {
+      const pwd = document.getElementById("loginPassword");
+      pwd.type = pwd.type === "password" ? "text" : "password";
+    }
+
     function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
+      const remember = document.getElementById('rememberMe').checked;
       const errorMsg = document.getElementById('errorMsg');
       const successMsg = document.getElementById('successMsg');
+      const spinner = document.getElementById('spinner');
+      const loginBtn = document.getElementById('loginBtn');
 
       errorMsg.style.display = "none";
       successMsg.style.display = "none";
+      spinner.style.display = "inline-block";
+      loginBtn.disabled = true;
 
-      if (!email || !password) {
-        errorMsg.innerText = "Please fill in both email and password.";
-        errorMsg.style.display = "block";
-        return;
-      }
+      setTimeout(() => {
+        spinner.style.display = "none";
+        loginBtn.disabled = false;
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        errorMsg.innerText = "Enter a valid email address.";
-        errorMsg.style.display = "block";
-        return;
-      }
+        if (!email || !password) {
+          errorMsg.innerText = "Please fill in both email and password.";
+          errorMsg.style.display = "block";
+          return;
+        }
 
-      if (password.length < 6) {
-        errorMsg.innerText = "Password must be at least 6 characters.";
-        errorMsg.style.display = "block";
-        return;
-      }
+        const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errorMsg.innerText = "Enter a valid email address.";
+          errorMsg.style.display = "block";
+          return;
+        }
 
-      // Placeholder for failed login attempts or 2FA in future
-      // Simulate successful login:
-      successMsg.innerText = "Login successful!";
-      successMsg.style.display = "block";
-      // Redirect after login if needed
-      // window.location.href = "dashboard.html";
+        if (password.length < 6) {
+          errorMsg.innerText = "Password must be at least 6 characters.";
+          errorMsg.style.display = "block";
+          return;
+        }
+
+        // ✅ Simulated login (store to localStorage)
+        localStorage.setItem("oakline_user_email", email);
+        if (remember) localStorage.setItem("oakline_remember", "true");
+
+        successMsg.innerText = "Login successful!";
+        successMsg.style.display = "block";
+
+        // Redirect to dashboard after delay
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      }, 1500);
     }
   </script>
 </body>
