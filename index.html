@@ -599,6 +599,11 @@ input:focus {
   opacity: 0;
   pointer-events: none;
 }
+/* Add this to your <style> tag or your external CSS file */
+.hide {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
     
   </style>
 </head>
@@ -980,6 +985,26 @@ input:focus {
     alert("Sign-up successful!");
     closeModal('signupModal');
   }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('#signupModal input, #signupModal select');
+    const error = document.getElementById('passwordError');
+
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        if (error.style.display === 'block') {
+          // Animate fade out
+          error.classList.add('hide');
+          setTimeout(() => {
+            error.style.display = 'none';
+            error.classList.remove('hide');
+            error.style.color = '#cc0000'; // Reset to red for future errors
+          }, 300);
+        }
+      });
+    });
+  });
 </script>
 </body>
 </html>
