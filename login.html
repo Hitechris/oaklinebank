@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Oakline Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-container h2 {
+      margin-bottom: 1rem;
+      color: #2a2f45;
+    }
+
+    .login-container input, .login-container button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .login-container button {
+      background: #2a2f45;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-container button:hover {
+      background: #1c2235;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 0.9rem;
+      display: none;
+      margin-top: 0.5rem;
+    }
+
+    .extra-links {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .extra-links a {
+      color: #2a2f45;
+      text-decoration: none;
+      margin: 0 5px;
+      font-size: 0.9rem;
+    }
+
+    .password-toggle {
+      position: relative;
+    }
+
+    .toggle-icon {
+      position: absolute;
+      top: 35%;
+      right: 10px;
+      cursor: pointer;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Log in to Oakline Bank</h2>
+
+    <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" required />
+    
+    <div class="password-toggle">
+      <input id="loginPassword" type="password" placeholder="Password" autocomplete="off" required />
+      <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+    </div>
+
+    <p id="loginError" class="error-msg"></p>
+
+    <button onclick="validateLogin()">Login</button>
+
+    <div class="extra-links">
+      <a href="signup.html">Create Account</a> |
+      <a href="#" onclick="alert('Password reset instructions will be sent.')">Forgot Password?</a> |
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    function validateLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const error = document.getElementById('loginError');
+
+      if (!email || !password) {
+        error.innerText = "Please fill in both fields.";
+        error.style.display = "block";
+        return;
+      }
+
+      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      if (!emailRegex.test(email)) {
+        error.innerText = "Please enter a valid email.";
+        error.style.display = "block";
+        return;
+      }
+
+      if (password.length < 6) {
+        error.innerText = "Password must be at least 6 characters.";
+        error.style.display = "block";
+        return;
+      }
+
+      error.style.display = "none";
+      alert("Login successful!");
+      // Redirect or perform login logic
+    }
+
+    function togglePassword() {
+      const passwordField = document.getElementById("loginPassword");
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+  </script>
+
+</body>
+</html>
