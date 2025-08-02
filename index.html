@@ -984,11 +984,14 @@ input:focus {
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
     <h2>Create an Account</h2>
 
-    <input id="signupFullName" type="text" placeholder="Full Name" autocomplete="off" required>
+   <input id="signupFirstName" type="text" placeholder="First Name" autocomplete="off" required>
+<input id="signupMiddleName" type="text" placeholder="Middle Name (Optional)" autocomplete="off">
+<input id="signupLastName" type="text" placeholder="Last Name" autocomplete="off" required>
+
     <input id="signupEmail" type="email" placeholder="Email" autocomplete="off" required>
     <input id="signupPhone" type="tel" placeholder="Phone Number" autocomplete="off" required>
 
-    <input id="signupDOB" type="date" placeholder="Date of Birth" autocomplete="off" required>
+<input id="signupDOB" type="date" placeholder="Date of Birth" autocomplete="off" required>
 
     <select id="signupAccountType" required>
       <option value="">Select Account Type</option>
