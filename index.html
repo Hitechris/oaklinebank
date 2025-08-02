@@ -857,8 +857,8 @@ window.onclick = function(event) {
   <div class="modal-content">
     <span class="close" onclick="closeModal('loginModal')">&times;</span>
     <h2>Login to Your Account</h2>
-    <input type="email" placeholder="Email" required>
-    <input type="password" placeholder="Password" required>
+<input type="email" placeholder="Email" autocomplete="off" required>
+<input type="password" placeholder="Password" autocomplete="off" required>
     <button class="modal-button">Login</button>
     <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot password?</a></p>
     <p>Don’t have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign up</a></p>
@@ -870,9 +870,9 @@ window.onclick = function(event) {
   <div class="modal-content">
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
     <h2>Create an Account</h2>
-    <input type="text" placeholder="Full Name" required>
-    <input type="email" placeholder="Email" required>
-    <input type="password" placeholder="Password" required>
+<input type="text" placeholder="Full Name" autocomplete="off" required>
+<input type="email" placeholder="Email" autocomplete="off" required>
+<input type="password" placeholder="Password" autocomplete="new-password" required>
     <button class="modal-button">Sign Up</button>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
@@ -883,7 +883,7 @@ window.onclick = function(event) {
   <div class="modal-content">
     <span class="close" onclick="closeModal('forgotModal')">&times;</span>
     <h2>Reset Your Password</h2>
-    <input type="email" placeholder="Enter your email" required>
+  <input type="email" placeholder="Enter your email" autocomplete="off" required>
     <button class="modal-button">Send Reset Link</button>
     <p>Remembered it? <a href="#" onclick="switchModal('forgotModal','loginModal')">Back to login</a></p>
   </div>
