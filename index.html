@@ -548,13 +548,29 @@ html {
       document.getElementById("result").innerText =
         `Estimated Future Value: $${finalAmount.toFixed(2)}`;
     }
-  </script>
-
-  <script>
+<script>
+  // Mobile Menu Toggle
   function toggleMenu() {
-    const nav = document.getElementById('navbar-links');
-    nav.classList.toggle('show');
+    document.getElementById('navbar-links').classList.toggle('active');
   }
+
+  // Dark Mode Toggle
+  const toggle = document.getElementById('modeToggle');
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('navbar').classList.add('dark-mode');
+      toggle.checked = true;
+    }
+  });
+
+  toggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('navbar').classList.toggle('dark-mode');
+    localStorage.setItem('theme', toggle.checked ? 'dark' : 'light');
+  });
 </script>
 </body>
 </html>
