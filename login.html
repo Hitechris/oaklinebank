@@ -7,140 +7,159 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f8f9fa;
       margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :root {
+      --bg: #f4f4f4;
+      --text: #333;
+      --card: white;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #f0f0f0;
+      --card: #1f1f1f;
     }
 
     .login-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 100%;
       max-width: 400px;
+      margin: 100px auto;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    .login-container h2 {
-      margin-bottom: 1rem;
-      color: #2a2f45;
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .login-container input, .login-container button {
+    input, button, select {
       width: 100%;
-      padding: 0.75rem;
-      margin-top: 0.75rem;
-      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
       border: 1px solid #ccc;
+      border-radius: 5px;
     }
 
-    .login-container button {
-      background: #2a2f45;
-      color: white;
+    .toggle-mode {
+      text-align: right;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .toggle-mode button {
+      background: none;
       border: none;
+      color: var(--text);
       cursor: pointer;
       font-weight: bold;
     }
 
-    .login-container button:hover {
-      background: #1c2235;
-    }
-
-    .error-msg {
-      color: red;
-      font-size: 0.9rem;
-      display: none;
-      margin-top: 0.5rem;
-    }
-
-    .extra-links {
-      margin-top: 1rem;
+    .links {
       text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
     }
 
-    .extra-links a {
-      color: #2a2f45;
+    .links a {
+      color: #0077cc;
       text-decoration: none;
       margin: 0 5px;
-      font-size: 0.9rem;
     }
 
-    .password-toggle {
-      position: relative;
+    .error-message {
+      color: red;
+      font-size: 14px;
+      display: none;
+      margin-top: -5px;
     }
 
-    .toggle-icon {
-      position: absolute;
-      top: 35%;
-      right: 10px;
-      cursor: pointer;
-      color: #888;
+    .success-message {
+      color: green;
+      font-size: 14px;
+      display: none;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        margin: 40px 15px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="login-container">
-    <h2>Log in to Oakline Bank</h2>
-
-    <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" required />
-    
-    <div class="password-toggle">
-      <input id="loginPassword" type="password" placeholder="Password" autocomplete="off" required />
-      <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+    <div class="toggle-mode">
+      <button onclick="toggleDarkMode()">🌗 Toggle Dark Mode</button>
     </div>
 
-    <p id="loginError" class="error-msg"></p>
+    <h2>Welcome Back</h2>
+    <input id="loginEmail" type="email" placeholder="Email" required />
+    <input id="loginPassword" type="password" placeholder="Password" required />
 
-    <button onclick="validateLogin()">Login</button>
+    <div id="errorMsg" class="error-message"></div>
+    <div id="successMsg" class="success-message"></div>
 
-    <div class="extra-links">
-      <a href="signup.html">Create Account</a> |
-      <a href="#" onclick="alert('Password reset instructions will be sent.')">Forgot Password?</a> |
-      <a href="index.html">← Back to Home</a>
+    <!-- Optional 2FA (Placeholder) -->
+    <!-- <input id="login2FA" type="text" placeholder="Enter 2FA Code" /> -->
+
+    <button onclick="handleLogin()">Login</button>
+
+    <div class="links">
+      <a href="forgot.html">Forgot Password?</a> |
+      <a href="signup.html">Sign Up</a> |
+      <a href="index.html">Home</a>
     </div>
   </div>
 
   <script>
-    function validateLogin() {
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const error = document.getElementById('loginError');
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+
+      errorMsg.style.display = "none";
+      successMsg.style.display = "none";
 
       if (!email || !password) {
-        error.innerText = "Please fill in both fields.";
-        error.style.display = "block";
+        errorMsg.innerText = "Please fill in both email and password.";
+        errorMsg.style.display = "block";
         return;
       }
 
-      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        error.innerText = "Please enter a valid email.";
-        error.style.display = "block";
+        errorMsg.innerText = "Enter a valid email address.";
+        errorMsg.style.display = "block";
         return;
       }
 
       if (password.length < 6) {
-        error.innerText = "Password must be at least 6 characters.";
-        error.style.display = "block";
+        errorMsg.innerText = "Password must be at least 6 characters.";
+        errorMsg.style.display = "block";
         return;
       }
 
-      error.style.display = "none";
-      alert("Login successful!");
-      // Redirect or perform login logic
-    }
-
-    function togglePassword() {
-      const passwordField = document.getElementById("loginPassword");
-      passwordField.type = passwordField.type === "password" ? "text" : "password";
+      // Placeholder for failed login attempts or 2FA in future
+      // Simulate successful login:
+      successMsg.innerText = "Login successful!";
+      successMsg.style.display = "block";
+      // Redirect after login if needed
+      // window.location.href = "dashboard.html";
     }
   </script>
-
 </body>
 </html>
