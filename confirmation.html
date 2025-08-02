@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transfer Confirmation | Oakline Bank</title>
+  <style>
+    :root {
+      --primary-color: #154734;
+      --background: #f9f9f9;
+      --text-color: #333;
+      --border-radius: 8px;
+      --transition: 0.3s ease;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: var(--primary-color);
+      margin: 0;
+    }
+    nav a {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-left: 1rem;
+      font-weight: 600;
+      transition: color var(--transition);
+    }
+    nav a:hover {
+      color: #0f3629;
+    }
+    main {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+    h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+    .receipt {
+      margin-top: 1.5rem;
+      text-align: left;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+    .receipt p {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .receipt p span {
+      font-weight: 600;
+    }
+    button.back-btn {
+      margin-top: 2rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+    button.back-btn:hover {
+      background-color: #0f3629;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Oakline Bank</h1>
+    <nav aria-label="Main navigation">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="transfer.html">Make Another Transfer</a>
+      <a href="index.html">Home</a>
+      <a href="logout.html">Logout</a>
+    </nav>
+  </header>
+
+  <main aria-live="polite">
+    <h2>Transfer Confirmation</h2>
+    <div id="confirmationContainer" class="receipt" role="region" aria-label="Transfer receipt">
+      <p><span>Transaction ID:</span> <span id="txnId">Loading...</span></p>
+      <p><span>Date:</span> <span id="txnDate">Loading...</span></p>
+      <p><span>From Account:</span> <span id="txnFrom">Loading...</span></p>
+      <p><span>To Account:</span> <span id="txnTo">Loading...</span></p>
+      <p><span>Amount Transferred:</span> $<span id="txnAmount">Loading...</span></p>
+    </div>
+
+    <button class="back-btn" onclick="goToDashboard()">Back to Dashboard</button>
+  </main>
+
+  <script>
+    function goToDashboard() {
+      window.location.href = 'dashboard.html';
+    }
+
+    const txnDataRaw = sessionStorage.getItem('lastTransaction');
+
+    if (!txnDataRaw) {
+      // No transaction data found, redirect to transfer page
+      alert('No transaction found. Redirecting to Transfer page.');
+      window.location.href = 'transfer.html';
+    } else {
+      const txn = JSON.parse(txnDataRaw);
+
+      document.getElementById('txnId').textContent = txn.id;
+      document.getElementById('txnDate').textContent = txn.date;
+      document.getElementById('txnFrom').textContent = capitalize(txn.from);
+      document.getElementById('txnTo').textContent = capitalize(txn.to);
+      document.getElementById('txnAmount').textContent = txn.amount;
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  </script>
+</body>
+</html>
