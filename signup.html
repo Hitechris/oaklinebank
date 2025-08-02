@@ -2,232 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Open an Account | Oakline Bank</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | Oakline Bank</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #f9f9f9;
+      padding: 20px;
+      background: #f5f5f5;
     }
-    header {
-      background-color: #00274d;
-      color: white;
-      padding: 1rem 2rem;
-      text-align: center;
-    }
-    .hero {
-      background: linear-gradient(to right, #003366, #0059b3);
-      color: white;
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-    .account-types {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      padding: 2rem;
-      background-color: #fff;
-    }
-    .account-type {
-      background: #f2f2f2;
-      padding: 1.5rem;
-      border-radius: 8px;
-      width: 300px;
-      margin: 1rem;
-    }
-    .account-type h3 {
-      color: #003366;
-    }
-    .signup-section {
-      padding: 2rem;
-      background-color: #fff;
-    }
-    form {
+    .container {
       max-width: 600px;
       margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, select {
+    h2 {
+      text-align: center;
+      color: #004080;
+    }
+    input, select, button {
       width: 100%;
-      padding: 0.7rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 8px 0;
       border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      display: none;
+    }
+    .tooltip {
+      font-size: 12px;
+      color: #666;
+    }
+    .account-info {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 10px;
     }
     button {
       background-color: #004080;
       color: white;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      font-size: 1rem;
       cursor: pointer;
+      border: none;
     }
-    #passwordError {
-      color: red;
-      display: none;
-      font-size: 14px;
-      margin-bottom: 10px;
+    button:hover {
+      background-color: #003060;
     }
-    footer {
+    .back-link {
       text-align: center;
-      padding: 1rem;
-      background-color: #00274d;
-      color: white;
+      margin-top: 15px;
+    }
+    .captcha-box {
+      background: #eee;
+      padding: 8px;
+      text-align: center;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Create an Account</h2>
+    <form onsubmit="return validateSignup()">
 
-<header>
-  <h1>Oakline Bank</h1>
-</header>
+      <label for="firstName">First Name</label>
+      <input id="firstName" type="text" placeholder="First Name" required>
 
-<section class="hero">
-  <h2>Start Your Journey with Oakline</h2>
-  <p>Open a Checking, Savings, or Business account in minutes.</p>
-</section>
+      <label for="middleName">Middle Name</label>
+      <input id="middleName" type="text" placeholder="Middle Name">
 
-<section class="account-types">
-  <div class="account-type">
-    <h3>Checking Account</h3>
-    <p>Perfect for everyday banking. Access your money easily and securely.</p>
+      <label for="lastName">Last Name</label>
+      <input id="lastName" type="text" placeholder="Last Name" required>
+
+      <label for="dob">Date of Birth</label>
+      <input id="dob" type="date" required>
+      <div class="tooltip">You must be at least 18 years old</div>
+
+      <label for="accountType">Account Type</label>
+      <select id="accountType" required>
+        <option value="">Select Account Type</option>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+        <option value="business">Business</option>
+      </select>
+      <div class="account-info">
+        <strong>Checking:</strong> Everyday spending account.<br>
+        <strong>Savings:</strong> Grow your funds with interest.<br>
+        <strong>Business:</strong> Tailored for small business needs.
+      </div>
+
+      <label for="ssn">Social Security Number</label>
+      <input id="ssn" type="text" placeholder="123-45-6789" required>
+
+      <label for="city">City</label>
+      <input id="city" type="text" required>
+
+      <label for="state">State</label>
+      <input id="state" type="text" required>
+
+      <label for="country">Country</label>
+      <input id="country" type="text" value="United States" required>
+
+      <label for="address">Home Address</label>
+      <input id="address" type="text" required>
+
+      <label for="password">Create Password</label>
+      <input id="password" type="password" placeholder="At least 6 characters" required>
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" type="password" required>
+
+      <label for="securityQuestion">Security Question</label>
+      <select id="securityQuestion" required>
+        <option value="">Select a question</option>
+        <option value="pet">What is your pet's name?</option>
+        <option value="school">What was the name of your first school?</option>
+        <option value="city">In what city were you born?</option>
+      </select>
+
+      <label for="securityAnswer">Your Answer</label>
+      <input id="securityAnswer" type="text" required>
+
+      <div class="captcha-box">
+        <input type="checkbox" id="captcha" required>
+        <label for="captcha">I'm not a robot</label>
+      </div>
+
+      <div>
+        <input type="checkbox" id="terms" required>
+        <label for="terms">I agree to the <a href="#">terms and conditions</a></label>
+      </div>
+
+      <p class="error" id="signupError"></p>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="back-link">
+      <p><a href="index.html">← Back to Home</a></p>
+    </div>
   </div>
-  <div class="account-type">
-    <h3>Savings Account</h3>
-    <p>Grow your savings with competitive interest rates and no monthly fees.</p>
-  </div>
-  <div class="account-type">
-    <h3>Business Account</h3>
-    <p>Built for small businesses and entrepreneurs to manage cash flow efficiently.</p>
-  </div>
-</section>
 
-<section class="signup-section">
-  <h2>Create an Account</h2>
-  <form onsubmit="event.preventDefault(); validateSignup();">
-    <input id="signupFullName" type="text" placeholder="Full Name" required>
-    <input id="signupEmail" type="email" placeholder="Email" required>
-    <input id="signupPhone" type="tel" placeholder="Phone Number" required>
-    <input id="signupDOB" type="date" placeholder="Date of Birth" required>
-    <select id="signupAccountType" required>
-      <option value="">Select Account Type</option>
-      <option value="checking">Checking</option>
-      <option value="savings">Savings</option>
-      <option value="business">Business</option>
-    </select>
-    <input id="signupSSN" type="text" placeholder="Social Security Number (SSN)" required>
-    <input id="signupCity" type="text" placeholder="City" required>
-    <input id="signupState" type="text" placeholder="State" required>
-    <input id="signupCountry" type="text" placeholder="Country" required>
-    <input id="signupAddress" type="text" placeholder="Home Address" required>
-    <input id="signupPassword" type="password" placeholder="Create Password" required>
-    <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required>
-    <select id="signupSecurityQuestion" required>
-      <option value="">Select a security question</option>
-      <option value="pet">What is your pet’s name?</option>
-      <option value="school">What was the name of your first school?</option>
-      <option value="city">In what city were you born?</option>
-    </select>
-    <input id="signupSecurityAnswer" type="text" placeholder="Security Answer" required>
-    <p id="passwordError"></p>
-    <button type="submit">Sign Up</button>
-  </form>
-</section>
+  <script>
+    function validateSignup() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const dob = document.getElementById('dob').value;
+      const email = ""; // You can add email field if needed
+      const ssn = document.getElementById('ssn').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const error = document.getElementById('signupError');
 
-<footer>
-  <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
-</footer>
+      // Age check
+      const birthDate = new Date(dob);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 18) {
+        error.innerText = "You must be at least 18 years old to register.";
+        error.style.display = "block";
+        return false;
+      }
 
-<script>
-  function validateSignup() {
-    const fullName = document.getElementById('signupFullName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const phone = document.getElementById('signupPhone').value.trim();
-    const dob = document.getElementById('signupDOB').value.trim();
-    const accountType = document.getElementById('signupAccountType').value;
-    const ssn = document.getElementById('signupSSN').value.trim();
-    const city = document.getElementById('signupCity').value.trim();
-    const state = document.getElementById('signupState').value.trim();
-    const country = document.getElementById('signupCountry').value.trim();
-    const address = document.getElementById('signupAddress').value.trim();
-    const password = document.getElementById('signupPassword').value;
-    const confirmPassword = document.getElementById('signupConfirmPassword').value;
-    const securityQuestion = document.getElementById('signupSecurityQuestion').value;
-    const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
-    const error = document.getElementById('passwordError');
+      // SSN check
+      const ssnRegex = /^\d{3}-?\d{2}-?\d{4}$/;
+      if (!ssnRegex.test(ssn)) {
+        error.innerText = "Enter a valid 9-digit SSN.";
+        error.style.display = "block";
+        return false;
+      }
 
-    if (
-      !fullName || !email || !phone || !dob || !accountType || !ssn || !city ||
-      !state || !country || !address || !password || !confirmPassword ||
-      !securityQuestion || !securityAnswer
-    ) {
-      error.innerText = "Please fill out all fields.";
-      error.style.display = "block";
-      return;
+      // Password check
+      const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+      if (!strongPassword.test(password)) {
+        error.innerText = "Password must have upper/lowercase letters and numbers.";
+        error.style.display = "block";
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        error.innerText = "Passwords do not match.";
+        error.style.display = "block";
+        return false;
+      }
+
+      error.style.display = "none";
+      alert("Sign-up successful!");
+      return true;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      error.innerText = "Please enter a valid email address.";
-      error.style.display = "block";
-      return;
-    }
-
-    const phoneRegex = /^\d{10,}$/;
-    if (!phoneRegex.test(phone)) {
-      error.innerText = "Please enter a valid phone number (at least 10 digits).";
-      error.style.display = "block";
-      return;
-    }
-
-    const ssnRegex = /^\d{3}-?\d{2}-?\d{4}$/;
-    if (!ssnRegex.test(ssn)) {
-      error.innerText = "Please enter a valid Social Security Number (SSN).";
-      error.style.display = "block";
-      return;
-    }
-
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    if (age < 18) {
-      error.innerText = "You must be at least 18 years old to sign up.";
-      error.style.display = "block";
-      return;
-    }
-
-    if (password.length < 6) {
-      error.innerText = "Password must be at least 6 characters long.";
-      error.style.display = "block";
-      return;
-    }
-
-    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
-    if (!strongPassword.test(password)) {
-      error.innerText = "Password must include upper and lower case letters and a number.";
-      error.style.display = "block";
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      error.innerText = "Passwords do not match.";
-      error.style.display = "block";
-      return;
-    }
-
-    // All checks passed
-    error.style.display = "none";
-    alert("Sign-up successful!");
-    // Submit form or send to server here
-  }
-</script>
-
+  </script>
 </body>
 </html>
