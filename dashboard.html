@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Oakline Bank Dashboard</title>
+<!-- Chart.js CDN for charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Reset & base */
+  body, html {
+    margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9; color: #222;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+  }
+  body.dark-mode {
+    background: #121212; color: #eee;
+  }
+  a {
+    color: #0066cc; text-decoration: none;
+  }
+  a:hover, a:focus {
+    text-decoration: underline;
+  }
+  /* Navbar */
+  nav {
+    background: #004080;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0; z-index: 100;
+  }
+  nav h1 {
+    margin: 0; font-size: 1.6rem; font-weight: 700;
+  }
+  nav .nav-links {
+    display: flex; gap: 1.2rem; align-items: center;
+  }
+  nav .nav-links button, nav .nav-links a {
+    background: transparent; border: none; color: white; cursor: pointer; font-weight: 600;
+    font-size: 1rem;
+  }
+  nav .nav-links button:hover,
+  nav .nav-links a:hover,
+  nav .nav-links button:focus,
+  nav .nav-links a:focus {
+    text-decoration: underline;
+    outline: none;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Greeting */
+  .greeting {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Account Balances Overview */
+  .accounts-overview {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .account-card {
+    background: white;
+    padding: 1.5rem;
+    flex: 1 1 300px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+    transition: background 0.3s;
+    position: relative;
+  }
+  body.dark-mode .account-card {
+    background: #1f1f1f;
+  }
+  .account-card h3 {
+    margin: 0 0 0.8rem 0;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .account-balance {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #004080;
+  }
+  body.dark-mode .account-balance {
+    color: #69a1ff;
+  }
+  .account-updated {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.3rem;
+  }
+  body.dark-mode .account-updated {
+    color: #aaa;
+  }
+
+  /* Transfer Funds Button */
+  .transfer-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 28px;
+    background-color: #154734;
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .transfer-button:hover,
+  .transfer-button:focus {
+    background-color: #0f3629;
+    outline: none;
+  }
+
+  /* Sections common styles */
+  section {
+    margin-bottom: 2rem;
+  }
+
+  /* Cards for other sections */
+  .card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+    padding: 1rem 1.5rem;
+    transition: background 0.3s;
+  }
+  body.dark-mode .card {
+    background: #1f1f1f;
+  }
+  .card h3 {
+    margin-top: 0;
+    font-weight: 700;
+  }
+
+  /* Charts layout */
+  .charts-section {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .chart-card {
+    flex: 1 1 500px;
+  }
+
+  /* Statements */
+  .statements ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .statements ul li {
+    margin: 0.6rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .statements button {
+    background: #004080;
+    border: none;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .statements button:hover,
+  .statements button:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Bills list */
+  .bills ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .bills ul li {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .due-soon {
+    color: #d9534f;
+    font-weight: 700;
+  }
+
+  /* Offers */
+  .offers .offer-item {
+    background: #e6f0ff;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    transition: background 0.3s;
+  }
+  body.dark-mode .offers .offer-item {
+    background: #2a3a55;
+  }
+
+  /* Security alerts */
+  .security-alerts ul {
+    list-style: none;
+    padding-left: 0;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  .security-alerts ul li {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* Recent payees */
+  .recent-payees .payee-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .recent-payees .payee-item {
+    background: #f0f5ff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+  }
+  .recent-payees .payee-item:hover,
+  body.dark-mode .recent-payees .payee-item:hover {
+    background: #d0e1ff;
+  }
+  body.dark-mode .recent-payees .payee-item {
+    background: #2a3a55;
+  }
+
+  /* Quick transfer form */
+  .quick-transfer form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 400px;
+  }
+  .quick-transfer select,
+  .quick-transfer input {
+    flex: 1 1 45%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .quick-transfer select:focus,
+  .quick-transfer input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .quick-transfer button {
+    flex: 1 1 100%;
+    padding: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .quick-transfer button:hover,
+  .quick-transfer button:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Currency converter */
+  .currency-converter {
+    max-width: 350px;
+  }
+  .currency-converter select,
+  .currency-converter input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .currency-converter select:focus,
+  .currency-converter input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .currency-converter button {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .currency-converter button:hover,
+  .currency-converter button:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Profile settings */
+  .profile-settings input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  .profile-settings input:focus {
+    border-color: #004080;
+    outline: none;
+  }
+  .profile-settings button {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    width: 100%;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #004080;
+    color: white;
+    transition: background 0.3s;
+  }
+  .profile-settings button:hover,
+  .profile-settings button:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Floating support chat button */
+  #supportChatBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #004080;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: background 0.3s;
+    z-index: 200;
+  }
+  #supportChatBtn:hover,
+  #supportChatBtn:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Support Chat Window */
+  #supportChatWindow {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 320px;
+    max-height: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 201;
+  }
+  body.dark-mode #supportChatWindow {
+    background: #222;
+    color: #eee;
+  }
+  #supportChatWindow header {
+    background: #004080;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #supportChatWindow header button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  #supportChatMessages {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    overflow-y: auto;
+    font-size: 0.9rem;
+  }
+  #supportChatInputWrapper {
+    display: flex;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #ccc;
+  }
+  #supportChatInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #supportChatSendBtn {
+    background: #004080;
+    border: none;
+    color: white;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #supportChatSendBtn:hover,
+  #supportChatSendBtn:focus {
+    background: #003060;
+    outline: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .accounts-overview {
+      flex-direction: column;
+    }
+    .charts-section {
+      flex-direction: column;
+    }
+    .quick-transfer, .currency-converter, .profile-settings {
+      max-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<nav role="navigation" aria-label="Primary navigation">
+  <h1>Oakline Bank</h1>
+  <div class="nav-links">
+    <button id="darkModeToggle" aria-label="Toggle dark mode">🌙</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</nav>
+
+<main class="container" role="main" aria-label="User Dashboard">
+  <section class="greeting" id="greeting" aria-live="polite" aria-atomic="true"></section>
+
+  <!-- Account Balances -->
+  <section class="accounts-overview" aria-label="Accounts overview">
+    <article class="account-card" aria-label="Checking Account balance">
+      <h3>Checking Account</h3>
+      <p class="account-balance" id="checkingBalance">$12550750.80</p>
+      <p class="account-updated" id="checkingUpdated">Updated just now</p>
+      <a href="transfer.html" class="transfer-button" aria-label="Transfer funds from checking account">Transfer Funds</a>
+    </article>
+    <article class="account-card" aria-label="Savings Account balance">
+      <h3>Savings Account</h3>
+      <p class="account-balance" id="savingsBalance">$7895300.54</p>
+      <p class="account-updated" id="savingsUpdated">Updated just now</p>
+      <a href="transfer.html" class="transfer-button" aria-label="Transfer funds from savings account">Transfer Funds</a>
+    </article>
+  </section>
+
+  <!-- Quick Transfer Section -->
+  <section class="quick-transfer card" aria-label="Quick transfer funds">
+    <h3>Quick Transfer</h3>
+    <form id="transferForm">
+      <label for="fromAccount">From:</label>
+      <select id="fromAccount" required aria-required="true">
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+
+      <label for="toAccount">To:</label>
+      <select id="toAccount" required aria-required="true">
+        <option value="savings">Savings</option>
+        <option value="checking">Checking</option>
+      </select>
+
+      <label for="transferAmount">Amount ($):</label>
+      <input
+        type="number"
+        id="transferAmount"
+        min="0.01"
+        step="0.01"
+        required
+        aria-required="true"
+        aria-describedby="transferAmountHelp"
+      />
+      <small id="transferAmountHelp">Enter amount to transfer</small>
+
+      <button type="submit">Transfer</button>
+      <p id="transferMessage" role="alert" aria-live="assertive"></p>
+    </form>
+  </section>
+
+  <!-- Charts Section -->
+  <section class="charts-section" aria-label="Financial charts">
+    <article class="chart-card" aria-label="Spending trends chart">
+      <h3>Spending Trends</h3>
+      <canvas id="spendingChart" aria-describedby="spendingChartDesc"></canvas>
+      <p id="spendingChartDesc" class="sr-only">Line chart showing user's spending trends over last 6 months</p>
+    </article>
+    <article class="chart-card" aria-label="Savings growth chart">
+      <h3>Savings Growth</h3>
+      <canvas id="savingsChart" aria-describedby="savingsChartDesc"></canvas>
+      <p id="savingsChartDesc" class="sr-only">Bar chart showing user's savings growth over last 6 months</p>
+    </article>
+  </section>
+
+  <!-- Statements Section -->
+  <section class="statements card" aria-label="Monthly bank statements">
+    <h3>Download Statements</h3>
+    <ul id="statementsList">
+      <li>
+        August 2025
+        <button onclick="downloadStatement('August 2025')">Download PDF</button>
+      </li>
+      <li>
+        July 2025
+        <button onclick="downloadStatement('July 2025')
+
+          <script>
+  // Show greeting with user name if available
+  const greetingEl = document.getElementById('greeting');
+  const userName = user.name || user.username || 'Valued Customer';
+  greetingEl.textContent = `Welcome back, ${userName}!`;
+
+  // Chart.js Data & Options
+  const spendingCtx = document.getElementById('spendingChart').getContext('2d');
+  const savingsCtx = document.getElementById('savingsChart').getContext('2d');
+
+  const spendingData = {
+    labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+    datasets: [{
+      label: 'Spending ($)',
+      data: [1200, 1100, 1400, 1350, 1250, 1150],
+      borderColor: '#004080',
+      backgroundColor: 'rgba(0,64,128,0.1)',
+      fill: true,
+      tension: 0.3,
+    }]
+  };
+
+  const spendingChart = new Chart(spendingCtx, {
+    type: 'line',
+    data: spendingData,
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  const savingsData = {
+    labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+    datasets: [{
+      label: 'Savings ($)',
+      data: [5000, 5300, 5600, 6000, 6400, 6800],
+      backgroundColor: '#69a1ff',
+      borderRadius: 5,
+    }]
+  };
+
+  const savingsChart = new Chart(savingsCtx, {
+    type: 'bar',
+    data: savingsData,
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Currency Converter
+  function convertCurrency() {
+    const usdAmount = parseFloat(document.getElementById('usdAmount').value);
+    const currency = document.getElementById('currencySelect').value;
+    const resultEl = document.getElementById('conversionResult');
+
+    if (isNaN(usdAmount) || usdAmount <= 0) {
+      resultEl.textContent = 'Please enter a valid amount.';
+      resultEl.style.color = 'red';
+      return;
+    }
+
+    // Fixed demo rates (as of today, approximate)
+    const rates = {
+      eur: 0.91,
+      gbp: 0.78,
+      jpy: 139.5
+    };
+
+    const converted = usdAmount * rates[currency];
+    resultEl.textContent = `${usdAmount.toFixed(2)} USD = ${converted.toFixed(2)} ${currency.toUpperCase()}`;
+    resultEl.style.color = 'green';
+  }
+
+  // Profile Settings Update
+  function updateProfile() {
+    const email = document.getElementById('updateEmail').value.trim();
+    const phone = document.getElementById('updatePhone').value.trim();
+    const password = document.getElementById('updatePassword').value;
+
+    if (email && !validateEmail(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    if (phone && !validatePhone(phone)) {
+      alert('Please enter a valid phone number.');
+      return;
+    }
+
+    if (password && password.length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
+
+    // Save to localStorage as part of user profile (for demo only)
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (password) user.password = password; // In real apps, NEVER store plaintext passwords!
+
+    localStorage.setItem('loggedInUser', JSON.stringify(user));
+    alert('Profile updated successfully!');
+    
+    // Clear password field
+    document.getElementById('updatePassword').value = '';
+  }
+
+  function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  function validatePhone(phone) {
+    const re = /^\+?\d{7,15}$/; // Simplified phone validation
+    return re.test(phone);
+  }
+
+  // Support Chat Logic
+  const supportChatBtn = document.getElementById('supportChatBtn');
+  const supportChatWindow = document.getElementById('supportChatWindow');
+  const supportChatMessages = document.getElementById('supportChatMessages');
+  const supportChatInput = document.getElementById('supportChatInput');
+
+  function toggleChat() {
+    if (supportChatWindow.style.display === 'flex') {
+      supportChatWindow.style.display = 'none';
+    } else {
+      supportChatWindow.style.display = 'flex';
+      supportChatInput.focus();
+    }
+  }
+
+  function sendSupportMessage() {
+    const message = supportChatInput.value.trim();
+    if (!message) return;
+
+    appendSupportMessage('You', message);
+    supportChatInput.value = '';
+
+    // Simulate support reply after delay
+    setTimeout(() => {
+      appendSupportMessage('Support', 'Thank you for your message! We will get back to you shortly.');
+    }, 1500);
+  }
+
+  function appendSupportMessage(sender, message) {
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    supportChatMessages.appendChild(p);
+    supportChatMessages.scrollTop = supportChatMessages.scrollHeight;
+  }
+</script>
+</body>
+</html>
+          
+
+       
