@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transfer Funds - Oakline Bank</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: #222;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    nav {
+      background-color: #004080;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      align-items: center;
+    }
+
+    nav .nav-links a {
+      color: white;
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode main {
+      background: #1f1f1f;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #004080;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #003060;
+    }
+
+    .success-message {
+      text-align: center;
+      color: green;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .back-link a {
+      text-decoration: none;
+      color: #004080;
+      font-weight: 500;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h1>Oakline Bank</h1>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="history.html">History</a>
+      <a href="contact.html">Contact</a>
+      <a href="index.html">Logout</a>
+    </div>
+  </nav>
+
+  <main>
+    <h2>Transfer Funds</h2>
+    <form id="transferForm">
+      <label for="recipientName">Recipient Name</label>
+      <input type="text" id="recipientName" required />
+
+      <label for="recipientAccount">Recipient Account Number</label>
+      <input type="text" id="recipientAccount" required pattern="[0-9]{10,}" />
+
+      <label for="transferAmount">Amount ($)</label>
+      <input type="number" id="transferAmount" step="0.01" min="1" required />
+
+      <label for="fromAccount">Transfer From</label>
+      <select id="fromAccount" required>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+
+      <button type="submit">Submit Transfer</button>
+      <div class="success-message" id="successMsg"></div>
+    </form>
+
+    <div class="back-link">
+      <a href="dashboard.html">← Back to Dashboard</a>
+    </div>
+  </main>
+
+  <div class="footer">
+    &copy; 2025 Oakline Bank. All rights reserved.
+  </div>
+
+  <script>
+    const form = document.getElementById('transferForm');
+    const msg = document.getElementById('successMsg');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('recipientName').value;
+      const account = document.getElementById('recipientAccount').value;
+      const amount = parseFloat(document.getElementById('transferAmount').value).toFixed(2);
+      const from = document.getElementById('fromAccount').value;
+      const date = new Date().toLocaleString();
+      const transactionId = 'TX' + Math.floor(Math.random() * 1000000000);
+
+      // Store for confirmation page
+      const transactionDetails = {
+        name,
+        account,
+        amount,
+        from,
+        date,
+        transactionId
+      };
+
+      localStorage.setItem('lastTransaction', JSON.stringify(transactionDetails));
+
+      msg.textContent = 'Transfer Successful! Redirecting...';
+
+      setTimeout(() => {
+        window.location.href = 'confirmation.html';
+      }, 1500);
+    });
+  </script>
+
+</body>
+</html>
