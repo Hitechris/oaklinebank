@@ -516,38 +516,37 @@ html {
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">&copy; 2025 Oakline Bank. All rights reserved.</div>
- <div
-© 2025 Oakline Bank. All rights reserved. | Member FDIC | Equal Housing Lender<br>
-        NMLS ID: 1234567 | Routing Number: 987654321<br>
-        Customer Service: 1-800-555-1234 | 
-        <a href="privacy.html">Privacy Policy</a> | 
-        <a href="terms.html">Terms & Conditions</a><br>
-        Oakline Bank, 123 Main Street, Anytown, USA 12345
-    
-         <a href="#" style="margin:0 10px; color:#aaa;">Facebook</a>
-        <a href="#" style="margin:0 10px; color:#aaa;">Twitter</a>
-        <a href="#" style="margin:0 10px; color:#aaa;">LinkedIn</a>
-     </div>
+  <div class="footer-bottom">
+  © 2025 Oakline Bank. All rights reserved. | Member FDIC | Equal Housing Lender<br>
+  NMLS ID: 1234567 | Routing Number: 987654321<br>
+  Customer Service: 1-800-555-1234 |
+  <a href="privacy.html">Privacy Policy</a> |
+  <a href="terms.html">Terms & Conditions</a><br>
+  Oakline Bank, 123 Main Street, Anytown, USA 12345
+  <br><br>
+  <a href="#" style="margin:0 10px; color:#aaa;">Facebook</a>
+  <a href="#" style="margin:0 10px; color:#aaa;">Twitter</a>
+  <a href="#" style="margin:0 10px; color:#aaa;">LinkedIn</a>
+</div>
   </footer>
   
 
-  <script>
-    function calculateSavings() {
-      const amount = parseFloat(document.getElementById("amount").value);
-      const rate = parseFloat(document.getElementById("rate").value) / 100;
-      const years = parseInt(document.getElementById("years").value);
+<script>
+  function calculateSavings() {
+    const amount = parseFloat(document.getElementById("amount").value);
+    const rate = parseFloat(document.getElementById("rate").value) / 100;
+    const years = parseInt(document.getElementById("years").value);
 
-      if (isNaN(amount) || isNaN(rate) || isNaN(years) || amount < 0 || rate < 0 || years < 0) {
-        document.getElementById("result").innerText = "Please enter valid positive numbers.";
-        return;
-      }
-
-      const finalAmount = amount * Math.pow(1 + rate, years);
-      document.getElementById("result").innerText =
-        `Estimated Future Value: $${finalAmount.toFixed(2)}`;
+    if (isNaN(amount) || isNaN(rate) || isNaN(years) || amount < 0 || rate < 0 || years < 0) {
+      document.getElementById("result").innerText = "Please enter valid positive numbers.";
+      return;
     }
-</script>
+
+    const finalAmount = amount * Math.pow(1 + rate, years);
+    document.getElementById("result").innerText =
+      `Estimated Future Value: $${finalAmount.toFixed(2)}`;
+  }
+
   // Mobile Menu Toggle
   function toggleMenu() {
     document.getElementById('navbar-links').classList.toggle('active');
