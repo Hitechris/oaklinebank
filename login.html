@@ -169,8 +169,8 @@
     <div class="error" id="errorMsg"></div>
     <div class="success" id="successMsg"></div>
 
-    <label for="loginEmail">Email Address</label>
-    <input type="email" id="loginEmail" placeholder="you@example.com" required />
+<label for="loginEmailOrUsername">Username or Email</label>
+<input type="text" id="loginEmailOrUsername" placeholder="you@example.com or username123" required />
 
     <label for="loginPassword">Password</label>
     <input type="password" id="loginPassword" placeholder="Enter password" required />
@@ -191,66 +191,70 @@
     </div>
   </div>
 
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-    }
+<script>
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+  }
 
-    function togglePassword() {
-      const pwd = document.getElementById("loginPassword");
-      pwd.type = pwd.type === "password" ? "text" : "password";
-    }
+  function togglePassword() {
+    const pwd = document.getElementById("loginPassword");
+    pwd.type = pwd.type === "password" ? "text" : "password";
+  }
 
-    function handleLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value.trim();
-      const remember = document.getElementById('rememberMe').checked;
-      const errorMsg = document.getElementById('errorMsg');
-      const successMsg = document.getElementById('successMsg');
-      const spinner = document.getElementById('spinner');
-      const loginBtn = document.getElementById('loginBtn');
+  function handleLogin() {
+    const loginInput = document.getElementById('loginEmailOrUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const remember = document.getElementById('rememberMe').checked;
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+    const spinner = document.getElementById('spinner');
+    const loginBtn = document.getElementById('loginBtn');
 
-      errorMsg.style.display = "none";
-      successMsg.style.display = "none";
-      spinner.style.display = "inline-block";
-      loginBtn.disabled = true;
+    errorMsg.style.display = "none";
+    successMsg.style.display = "none";
+    spinner.style.display = "inline-block";
+    loginBtn.disabled = true;
 
-      setTimeout(() => {
-        spinner.style.display = "none";
-        loginBtn.disabled = false;
+    setTimeout(() => {
+      spinner.style.display = "none";
+      loginBtn.disabled = false;
 
-        if (!email || !password) {
-          errorMsg.innerText = "Please fill in both email and password.";
-          errorMsg.style.display = "block";
-          return;
-        }
+      if (!loginInput || !password) {
+        errorMsg.innerText = "Please enter your username/email and password.";
+        errorMsg.style.display = "block";
+        return;
+      }
 
-        const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-        if (!emailRegex.test(email)) {
-          errorMsg.innerText = "Enter a valid email address.";
-          errorMsg.style.display = "block";
-          return;
-        }
+      // If input looks like an email, validate format
+if (loginInput.includes("@")) {
+  const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailFormat.test(loginInput)) {
+    errorMsg.innerText = "Enter a valid email address.";
+    errorMsg.style.display = "block";
+    return;
+  }
+}
 
-        if (password.length < 6) {
-          errorMsg.innerText = "Password must be at least 6 characters.";
-          errorMsg.style.display = "block";
-          return;
-        }
+      // Validate username/email (case-insensitive)
+      const validUsername = loginInput.toLowerCase() === "chris23".toLowerCase();
+      const validEmail = loginInput.toLowerCase() === "chris@example.com"; // optional
+      const validPassword = password === "Oakline"; // case-sensitive for security
 
-        // ✅ Simulated login (store to localStorage)
-        localStorage.setItem("oakline_user_email", email);
+      if ((validUsername || validEmail) && validPassword) {
+        // Save to localStorage
+        localStorage.setItem("oakline_user", loginInput);
         if (remember) localStorage.setItem("oakline_remember", "true");
 
         successMsg.innerText = "Login successful!";
         successMsg.style.display = "block";
 
-        // Redirect to dashboard after delay
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 1000);
-      }, 1500);
-    }
-  </script>
-</body>
-</html>
+      } else {
+        errorMsg.innerText = "Invalid username/email or password.";
+        errorMsg.style.display = "block";
+      }
+    }, 1500);
+  }
+</script>
