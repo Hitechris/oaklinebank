@@ -584,6 +584,21 @@ html {
 input:focus {
   outline: 2px solid #0052cc;
 }
+
+#passwordError {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #ffe6e6; /* light red background for errors */
+  color: #cc0000; /* red text for errors */
+  margin-top: 10px;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+#passwordError.hide {
+  opacity: 0;
+  pointer-events: none;
+}
     
   </style>
 </head>
@@ -833,7 +848,7 @@ input:focus {
   });
 
 });
-</script>
+</script> 
  
 <!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
@@ -867,12 +882,14 @@ input:focus {
       <option value="city">In what city were you born?</option>
     </select>
     <input type="text" placeholder="Security Answer" autocomplete="off" required>
-<p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
-<button class="modal-button" onclick="validateSignup()">Sign Up</button>
+    
+    <!-- Error Message Display -->
+    <p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
+    
+    <button class="modal-button" onclick="validateSignup()">Sign Up</button>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
-
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotModal" class="modal">
   <div class="modal-content">
@@ -898,38 +915,71 @@ input:focus {
     openModal(targetId);
   }
 
-<script>
-function validateSignup() {
-  const modal = document.getElementById('signupModal');
-  const inputs = modal.querySelectorAll('input, select');
-  const error = document.getElementById("passwordError");
 
-  let allFilled = true;
-  inputs.forEach(input => {
-    if (!input.value.trim()) {
-      allFilled = false;
+  function validateSignup() {
+    const fullName = document.querySelector('#signupModal input[placeholder="Full Name"]').value.trim();
+    const email = document.querySelector('#signupModal input[placeholder="Email"]').value.trim();
+    const phone = document.querySelector('#signupModal input[placeholder="Phone Number"]').value.trim();
+    const dob = document.querySelector('#signupModal input[placeholder="Date of Birth"]').value.trim();
+    const address = document.querySelector('#signupModal input[placeholder="Home Address"]').value.trim();
+    const password = document.querySelector('#signupModal input[placeholder="Create Password"]').value;
+    const confirmPassword = document.querySelector('#signupModal input[placeholder="Confirm Password"]').value;
+    const securityAnswer = document.querySelector('#signupModal input[placeholder="Security Answer"]').value.trim();
+    const securityQuestion = document.querySelector('#signupModal select').value;
+
+    const error = document.getElementById("passwordError");
+
+    if (
+      !fullName || !email || !phone || !dob || !address ||
+      !password || !confirmPassword || !securityAnswer || !securityQuestion
+    ) {
+      error.innerText = "Please fill out all fields.";
+      error.style.display = "block";
+      return;
     }
-  });
+    // ✅ Email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      error.innerText = "Please enter a valid email address.";
+      error.style.display = "block";
+      return;
+    }
 
-  const password = modal.querySelector('input[placeholder="Create Password"]').value;
-  const confirmPassword = modal.querySelector('input[placeholder="Confirm Password"]').value;
+    // ✅ Phone number format check (10+ digits)
+    const phoneRegex = /^\d{10,}$/;
+    if (!phoneRegex.test(phone)) {
+      error.innerText = "Please enter a valid phone number (at least 10 digits).";
+      error.style.display = "block";
+      return;
+    }
 
-  if (!allFilled) {
-    error.innerText = "Please fill out all fields.";
-    error.style.display = "block";
-    return false;
+    // ✅ Password length check
+    if (password.length < 6) {
+      error.innerText = "Password must be at least 6 characters long.";
+      error.style.display = "block";
+      return;
+    }
+
+    // ✅ Password strength check
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    if (!strongPassword.test(password)) {
+      error.innerText = "Password must include upper, lower case letters and a number.";
+      error.style.display = "block";
+      return;
+    }
+
+    // ✅ Password match check
+    if (password !== confirmPassword) {
+      error.innerText = "Passwords do not match.";
+      error.style.display = "block";
+      return;
+    }
+
+    // ✅ Success
+    error.style.display = "none";
+    alert("Sign-up successful!");
+    closeModal('signupModal');
   }
-
-  if (password !== confirmPassword) {
-    error.innerText = "Passwords do not match.";
-    error.style.display = "block";
-    return false;
-  }
-
-  error.style.display = "none";
-  alert("Sign-up successful!");
-  closeModal('signupModal');
-}
 </script>
 </body>
 </html>
