@@ -833,56 +833,40 @@ input:focus {
 
 });
 
- function openModal(id) {
-  document.getElementById(id).style.display = "block";
-}
-
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
-}
-
-function switchModal(currentId, targetId) {
-  closeModal(currentId);
-  openModal(targetId);
-}
-
-// Close modals if clicked outside content
-window.onclick = function(event) {
-  const modals = ['loginModal', 'signupModal', 'forgotModal'];
-  modals.forEach(id => {
-    const modal = document.getElementById(id);
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  });
-}; 
-</script>
-
+ 
 <!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('loginModal')">&times;</span>
     <h2>Login to Your Account</h2>
-    <form aria-label="Login Form" onsubmit="event.preventDefault()">
-      <input type="email" placeholder="Email" autocomplete="off" aria-label="Email address" required>
-      <input type="password" placeholder="Password" autocomplete="off" aria-label="Password" required>
-      <button class="modal-button" type="submit">Login</button>
-    </form>
+    <input type="email" placeholder="Email" autocomplete="off" required>
+    <input type="password" placeholder="Password" autocomplete="off" required>
+    <button class="modal-button">Login</button>
     <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot password?</a></p>
     <p>Don’t have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign up</a></p>
   </div>
 </div>
-<!-- SIGNUP MODAL -->
+
+<!-- SIGN UP MODAL -->
 <div id="signupModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
     <h2>Create an Account</h2>
-    <form aria-label="Signup Form" onsubmit="event.preventDefault()">
-      <input type="text" placeholder="Full Name" autocomplete="off" aria-label="Full Name" required>
-      <input type="email" placeholder="Email" autocomplete="off" aria-label="Email address" required>
-      <input type="password" placeholder="Password" autocomplete="off" aria-label="Password" required>
-      <button class="modal-button" type="submit">Sign Up</button>
-    </form>
+    <input type="text" placeholder="Full Name" autocomplete="off" required>
+    <input type="email" placeholder="Email" autocomplete="off" required>
+    <input type="tel" placeholder="Phone Number" autocomplete="off" required>
+    <input type="date" placeholder="Date of Birth" autocomplete="off" required>
+    <input type="text" placeholder="Home Address" autocomplete="off" required>
+    <input type="password" placeholder="Create Password" autocomplete="off" required>
+    <input type="password" placeholder="Confirm Password" autocomplete="off" required>
+    <select required>
+      <option value="">Select a security question</option>
+      <option value="pet">What is your pet’s name?</option>
+      <option value="school">What was the name of your first school?</option>
+      <option value="city">In what city were you born?</option>
+    </select>
+    <input type="text" placeholder="Security Answer" autocomplete="off" required>
+    <button class="modal-button">Sign Up</button>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
@@ -892,12 +876,36 @@ window.onclick = function(event) {
   <div class="modal-content">
     <span class="close" onclick="closeModal('forgotModal')">&times;</span>
     <h2>Reset Your Password</h2>
-    <form aria-label="Password Reset Form" onsubmit="event.preventDefault()">
-      <input type="email" placeholder="Enter your email" autocomplete="off" aria-label="Reset email" required>
-      <button class="modal-button" type="submit">Send Reset Link</button>
-    </form>
+    <input type="email" placeholder="Enter your email" autocomplete="off" required>
+    <button class="modal-button">Send Reset Link</button>
     <p>Remembered it? <a href="#" onclick="switchModal('forgotModal','loginModal')">Back to login</a></p>
   </div>
 </div>
+
+ <script>
+  function openModal(id) {
+    document.getElementById(id).style.display = "block";
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function switchModal(currentId, targetId) {
+    closeModal(currentId);
+    openModal(targetId);
+  }
+
+  // Close modals if clicked outside the modal content
+  window.onclick = function(event) {
+    const modals = ['loginModal', 'signupModal', 'forgotModal'];
+    modals.forEach(id => {
+      const modal = document.getElementById(id);
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  };
+</script> 
 </body>
 </html>
