@@ -1022,7 +1022,28 @@ input:focus {
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
-    
+
+  <!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+    <h2>Login to Your Account</h2>
+
+    <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" required>
+    <input id="loginPassword" type="password" placeholder="Password" autocomplete="off" required>
+
+    <label style="display: flex; align-items: center; margin-top: 10px;">
+      <input type="checkbox" id="rememberMe" style="margin-right: 8px;"> Remember Me
+    </label>
+
+    <p id="loginError" style="color: red; display: none; font-size: 14px;"></p>
+
+    <button class="modal-button" onclick="validateLogin()">Login</button>
+
+    <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot Password?</a></p>
+    <p>Don't have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign Up</a></p>
+  </div>
+</div>
     
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotModal" class="modal">
@@ -1129,6 +1150,58 @@ function validateSignup() {
   alert("Sign-up successful!");
   closeModal('signupModal');
 }
+
+let loginAttempts = 0;
+let lockoutTimer;
+
+function validateLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+  const error = document.getElementById('loginError');
+
+  // Lockout protection
+  if (loginAttempts >= 3) {
+    error.innerText = "Too many failed attempts. Try again in 30 seconds.";
+    error.style.display = "block";
+    return;
+  }
+
+  if (!email || !password) {
+    error.innerText = "Please enter both email and password.";
+    error.style.display = "block";
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    error.innerText = "Invalid email format.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Simulated login check (replace with real authentication)
+  const dummyEmail = "user@oakline.com";
+  const dummyPassword = "Password123";
+
+  if (email === dummyEmail && password === dummyPassword) {
+    error.style.display = "none";
+    alert(rememberMe ? "Welcome back! (remembered)" : "Login successful!");
+    closeModal('loginModal');
+    loginAttempts = 0; // Reset on success
+  } else {
+    loginAttempts++;
+    error.innerText = `Incorrect email or password. Attempt ${loginAttempts} of 3.`;
+    error.style.display = "block";
+
+    if (loginAttempts === 3) {
+      lockoutTimer = setTimeout(() => {
+        loginAttempts = 0;
+        error.style.display = "none";
+      }, 30000); // 30 seconds lockout
+    }
+  }
+}  
 </script>
 </body>
 </html>
