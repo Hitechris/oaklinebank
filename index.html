@@ -701,8 +701,69 @@ input:focus {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-    
-  </style>
+
+.footer {
+  background-color: #1a1a1a;
+  color: #eee;
+  padding: 40px 0 10px;
+  font-size: 14px;
+}
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}
+.footer-logo h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #00c894;
+}
+.footer-logo p {
+  font-size: 14px;
+  color: #aaa;
+}
+.footer-links,
+.footer-contact,
+.footer-social {
+  flex: 1 1 200px;
+  margin-top: 20px;
+}
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-links ul li {
+  margin: 8px 0;
+}
+.footer-links ul li a {
+  color: #eee;
+  text-decoration: none;
+}
+.footer-links ul li a:hover {
+  color: #00c894;
+}
+.footer-contact p {
+  margin: 6px 0;
+}
+.footer-social a {
+  display: inline-block;
+  margin-right: 10px;
+}
+.footer-social img {
+  width: 24px;
+  filter: brightness(0) invert(1);
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 12px;
+  color: #666;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}  </style>
 </head>
 <body>
 
@@ -1203,6 +1264,44 @@ function validateLogin() {
   }
 }  
 </script>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-logo">
+      <h3>Oakline Bank</h3>
+      <p>Modern Banking for Everyday Life</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html">Main</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <p>Email: support@oaklinebank.com</p>
+      <p>Phone: (800) 123-4567</p>
+      <p>123 Oakline Ave, Financial City, USA</p>
+    </div>
+
+    <div class="footer-social">
+      <h4>Connect</h4>
+      <a href="#"><img src="icons/facebook.svg" alt="Facebook" /></a>
+      <a href="#"><img src="icons/twitter.svg" alt="Twitter" /></a>
+      <a href="#"><img src="icons/instagram.svg" alt="Instagram" /></a>
+      <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn" /></a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
+  </div>
+</footer>
 </body>
 </html>
   
