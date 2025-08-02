@@ -235,6 +235,17 @@
         flex: 1 1 100%;
       }
     }
+
+    @keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
   </style>
 </head>
 <body>
@@ -275,6 +286,50 @@
       <div id="result"></div>
     </div>
   </section>
+
+  <!-- HERO #1: Animated Welcome -->
+<section style="padding: 100px 40px; color: white; text-align: center; position: relative; overflow: hidden; background: linear-gradient(-45deg, #003366, #0052cc, #007fff, #003366); background-size: 400% 400%; animation: gradientBG 10s ease infinite;">
+  <div style="max-width: 700px; margin: 0 auto; animation: fadeIn 2s ease-out;">
+    <h1 style="font-size: 3rem; margin-bottom: 20px;">Your Future, Financed Smoothly</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 30px;">Join millions of customers who trust Oakline for their savings, loans, and digital banking needs.</p>
+    <a href="/login.html" style="background-color: white; color: #003366; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;">Open an Account</a>
+  </div>
+</section>
+
+  <!-- HERO #2: Features Section -->
+<section style="padding: 80px 40px; background-color: #f9fbff; text-align: center;">
+  <h2 style="font-size: 2.5rem; color: #003366; margin-bottom: 40px;">Why Choose Oakline?</h2>
+  <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/security-checked.png" alt="Secure" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">Secure Banking</h3>
+      <p>Advanced encryption keeps your data and money safe.</p>
+    </div>
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/smartphone.png" alt="Mobile App" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">Mobile Control</h3>
+      <p>Access your finances anywhere, anytime with our app.</p>
+    </div>
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/handshake.png" alt="Support" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">24/7 Support</h3>
+      <p>Real humans ready to help with any issue — day or night.</p>
+    </div>
+
+  </div>
+</section>
+
+  <!-- HERO #3: CTA Section -->
+<section style="padding: 100px 40px; background-color: #e6f0ff; text-align: center;">
+  <h2 style="font-size: 2.8rem; color: #003366; margin-bottom: 20px;">Ready to Start Your Journey?</h2>
+  <p style="font-size: 1.2rem; color: #333; margin-bottom: 30px;">
+    Open an account in minutes. No hidden fees. No surprises.
+  </p>
+  <a href="/signup.html" style="background-color: #0052cc; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">Get Started</a>
+</section>
 
   <section class="testimonials">
     <h2>What Our Clients Say</h2>
