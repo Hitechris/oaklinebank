@@ -867,7 +867,8 @@ input:focus {
       <option value="city">In what city were you born?</option>
     </select>
     <input type="text" placeholder="Security Answer" autocomplete="off" required>
-    <button class="modal-button">Sign Up</button>
+<p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
+<button class="modal-button" onclick="validateSignup()">Sign Up</button>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
@@ -897,6 +898,23 @@ input:focus {
     openModal(targetId);
   }
 
+function validateSignup() {
+  const password = document.querySelector('#signupModal input[placeholder="Create Password"]').value;
+  const confirmPassword = document.querySelector('#signupModal input[placeholder="Confirm Password"]').value;
+  const error = document.getElementById("passwordError");
+
+  if (password !== confirmPassword) {
+    error.innerText = "Passwords do not match.";
+    error.style.display = "block";
+    return false;
+  } else {
+    error.style.display = "none";
+    // Submit logic can go here if needed
+    alert("Sign-up successful!");
+    closeModal('signupModal'); // Optional: close modal after success
+  }
+}
+  
   // ✅ Use addEventListener to prevent conflicts
   window.addEventListener('click', function(event) {
     const modals = ['loginModal', 'signupModal', 'forgotModal'];
