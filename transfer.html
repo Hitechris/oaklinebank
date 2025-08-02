@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transfer Funds | Oakline Bank</title>
+  <style>
+    :root {
+      --primary-color: #154734;
+      --background: #f9f9f9;
+      --text-color: #333;
+      --success-color: #2e7d32;
+      --error-color: #c62828;
+      --border-radius: 8px;
+      --transition: 0.3s ease;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: var(--primary-color);
+      margin: 0;
+    }
+    nav a {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-left: 1rem;
+      font-weight: 600;
+      transition: color var(--transition);
+    }
+    nav a:hover {
+      color: #0f3629;
+    }
+    main {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    select, input[type="number"] {
+      padding: 0.7rem;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+      margin-bottom: 1.25rem;
+      transition: border-color var(--transition);
+    }
+    select:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      font-size: 1.1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+    button:hover {
+      background-color: #0f3629;
+    }
+    #message {
+      margin-top: 1rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Oakline Bank</h1>
+    <nav aria-label="Main navigation">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="transfer.html" aria-current="page">Transfer</a>
+      <a href="confirmation.html">Confirmation</a>
+      <a href="index.html">Home</a>
+      <a href="logout.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Transfer Funds</h2>
+
+    <form id="transferForm" novalidate>
+      <label for="fromAccount">From Account</label>
+      <select id="fromAccount" required>
+        <option value="">-- Select Account --</option>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+
+      <label for="toAccount">To Account</label>
+      <select id="toAccount" required>
+        <option value="">-- Select Account --</option>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+
+      <label for="amount">Amount ($)</label>
+      <input
+        id="amount"
+        type="number"
+        min="0.01"
+        step="0.01"
+        placeholder="Enter amount"
+        required
+      />
+
+      <button type="submit">Submit Transfer</button>
+      <p id="message" role="alert" aria-live="assertive"></p>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('transferForm');
+    const messageEl = document.getElementById('message');
+
+    // Get user balances from localStorage or set defaults
+    let user = JSON.parse(localStorage.getItem('loggedInUser')) || {};
+    if (!user.checkingBalance) user.checkingBalance = 1532.45;
+    if (!user.savingsBalance) user.savingsBalance = 8210.89;
+
+    function generateTransactionId() {
+      return 'TXN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      messageEl.textContent = '';
+      messageEl.style.color = '';
+
+      const from = form.fromAccount.value;
+      const to = form.toAccount.value;
+      const amount = parseFloat(form.amount.value);
+
+      if (!from || !to) {
+        messageEl.textContent = 'Please select both accounts.';
+        messageEl.style.color = 'red';
+        return;
+      }
+      if (from === to) {
+        messageEl.textContent = 'From and To accounts must be different.';
+        messageEl.style.color = 'red';
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        messageEl.textContent = 'Please enter a valid positive amount.';
+        messageEl.style.color = 'red';
+        return;
+      }
+      if (user[from + 'Balance'] < amount) {
+        messageEl.textContent = `Insufficient funds in ${from} account.`;
+        messageEl.style.color = 'red';
+        return;
+      }
+
+      // Deduct and add funds
+      user[from + 'Balance'] -= amount;
+      user[to + 'Balance'] += amount;
+      user.lastUpdated = new Date().toISOString();
+
+      // Save updated balances
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+
+      // Generate transaction details
+      const transaction = {
+        id: generateTransactionId(),
+        from,
+        to,
+        amount: amount.toFixed(2),
+        date: new Date().toLocaleString()
+      };
+
+      // Save transaction data to sessionStorage to pass to confirmation
+      sessionStorage.setItem('lastTransaction', JSON.stringify(transaction));
+
+      // Redirect to confirmation page
+      window.location.href = 'confirmation.html';
+    });
+  </script>
+</body>
+</html>
