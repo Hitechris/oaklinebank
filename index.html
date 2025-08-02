@@ -321,7 +321,24 @@ html {
       border-top: 1px solid #4c6ea7;
       padding-top: 15px;
     }
-    @media (max-width: 768px) {
+
+    .footer-licenses {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #cce6ff;
+  margin-bottom: 15px;
+}
+
+.footer-licenses p {
+  margin: 5px 0;
+}
+
+.footer-icon {
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+   @media (max-width: 768px) {
       .hero {
         flex-direction: column;
         text-align: center;
@@ -803,9 +820,19 @@ input:focus {
   <a href="#" style="margin:0 10px; color:#aaa;">Twitter</a>
   <a href="#" style="margin:0 10px; color:#aaa;">LinkedIn</a>
 </div>
-  </footer>
-  
+  <div class="footer-licenses">
+    <p>
+      <img src="https://www.fdic.gov/images/shared/fdic-logo.svg" alt="FDIC Logo" class="footer-icon" />
+      Member FDIC. Oakline Bank is an Equal Housing Lender.
+    </p>
+    <p>NMLS ID: 1234567 | © 2025 Oakline Bank. All rights reserved.</p>
+  </div>
 
+  <div class="footer-bottom">
+    <!-- Existing bottom footer text if any -->
+  </div>
+</footer>
+  
 <script>
   function calculateSavings() {
     const amount = parseFloat(document.getElementById("amount").value);
