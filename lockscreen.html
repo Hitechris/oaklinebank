@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Session Locked | Oakline Bank</title>
+  <style>
+    :root {
+      --primary-color: #154734;
+      --background: #f2f2f2;
+      --text: #333;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      --background: #121212;
+      --text: #f5f5f5;
+    }
+    .lockscreen-container {
+      background: white;
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .dark-mode .lockscreen-container {
+      background: #1e1e1e;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+    p {
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="password"]:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    button {
+      background-color: var(--primary-color);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0f3629;
+    }
+    .logout-link {
+      display: block;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    .logout-link:hover {
+      text-decoration: underline;
+    }
+    .error-message {
+      color: red;
+      margin-bottom: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="lockscreen-container" role="main" aria-labelledby="lockscreenTitle">
+    <h1 id="lockscreenTitle">Session Locked</h1>
+    <p>For your security, please re-enter your password to continue.</p>
+    <div class="error-message" id="errorMessage" role="alert" aria-live="assertive"></div>
+    <form id="unlockForm" novalidate>
+      <input
+        type="password"
+        id="passwordInput"
+        name="password"
+        aria-label="Password"
+        placeholder="Enter your password"
+        required
+        autocomplete="current-password"
+      />
+      <button type="submit">Unlock</button>
+    </form>
+    <a href="logout.html" class="logout-link" tabindex="0">Log out</a>
+  </div>
+
+  <script>
+    // Reapply dark mode if saved
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+
+    const form = document.getElementById('unlockForm');
+    const passwordInput = document.getElementById('passwordInput');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      errorMessage.style.display = 'none';
+
+      const enteredPassword = passwordInput.value.trim();
+      if (!enteredPassword) {
+        errorMessage.textContent = 'Please enter your password.';
+        errorMessage.style.display = 'block';
+        passwordInput.focus();
+        return;
+      }
+
+      // Simulated password check: In a real app, verify securely server-side
+      // Here, we check against the stored password in localStorage (hashed ideally)
+      const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+      if (!userData) {
+        errorMessage.textContent = 'No user logged in. Please log in again.';
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 3000);
+        return;
+      }
+
+      // For demo: assume password stored in plain text in userData.password (not secure)
+      if (enteredPassword === userData.password) {
+        // Unlock session by redirecting to dashboard or homepage
+        window.location.href = 'dashboard.html';
+      } else {
+        errorMessage.textContent = 'Incorrect password. Please try again.';
+        errorMessage.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    });
+  </script>
+</body>
+</html>
