@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f6f8;
+      color: #333;
+      transition: 0.3s ease;
+    }
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    nav {
+      background: #004080;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .nav-links a, nav button {
+      margin-left: 1rem;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .balance-card, .feature-box, .quick-transfer {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    body.dark .balance-card, body.dark .feature-box, body.dark .quick-transfer {
+      background: #1e1e1e;
+    }
+    .balance-card h2 {
+      margin-top: 0;
+    }
+    .account-balance {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #004080;
+    }
+    body.dark .account-balance {
+      color: #69a1ff;
+    }
+    .quick-transfer form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .quick-transfer input, .quick-transfer select {
+      flex: 1 1 45%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .quick-transfer button {
+      flex: 1 1 100%;
+      background: #004080;
+      color: white;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .quick-transfer button:hover {
+      background: #003060;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .feature-box h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    /* Footer */
+.footer {
+  background: #003060;
+  color: white;
+  padding: 2rem 1rem 1rem;
+  margin-top: 3rem;
+}
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.footer-column {
+  flex: 1 1 250px;
+}
+.footer-column h3, .footer-column h4 {
+  margin-bottom: 1rem;
+}
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-column ul li {
+  margin-bottom: 0.5rem;
+}
+.footer-column a {
+  color: white;
+  text-decoration: none;
+}
+.footer-column a:hover {
+  text-decoration: underline;
+}
+.social-icons a img {
+  width: 24px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.footer-bottom {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #ccc;
+}
+body.dark-mode .footer {
+  background: #1f1f1f;
+  color: #eee;
+}
+body.dark-mode .footer-column a {
+  color: #ccc;
+}
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>Oakline Bank</h1>
+    <div class="nav-links">
+      <a href="transfer.html">Transfer</a>
+      <a href="history.html">History</a>
+      <button id="darkModeToggle">🌙</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="balance-card">
+      <h2>Account Balances</h2>
+      <p>Checking: <span class="account-balance" id="checkingBalance">$0.00</span></p>
+      <p>Savings: <span class="account-balance" id="savingsBalance">$0.00</span></p>
+    </div>
+
+    <div class="quick-transfer">
+      <h2>Quick Transfer</h2>
+      <form id="quickTransferForm">
+        <select id="fromAccount" required>
+          <option value="checking">From: Checking</option>
+          <option value="savings">From: Savings</option>
+        </select>
+        <select id="toAccount" required>
+          <option value="savings">To: Savings</option>
+          <option value="checking">To: Checking</option>
+        </select>
+        <input type="number" id="amount" min="1" step="0.01" placeholder="Amount ($)" required />
+        <button type="submit">Send Transfer</button>
+      </form>
+    </div>
+
+  <section class="features-grid">
+  <div class="feature-box"><h3>Loan Overview</h3><p>Track loan balances and upcoming payments.</p></div>
+  <div class="feature-box"><h3>Investment Portfolio</h3><p>View stocks, bonds, and returns.</p></div>
+  <div class="feature-box"><h3>Credit Score Tracker</h3><p>Monitor and improve your credit score.</p></div>
+  <div class="feature-box"><h3>Budget Planner</h3><p>Set spending goals and track your habits.</p></div>
+  <div class="feature-box"><h3>Notifications Center</h3><p>Stay up-to-date with alerts and messages.</p></div>
+  <div class="feature-box"><h3>Bill Payment Center</h3><p>Schedule and manage your utility bills easily.</p></div>
+  <div class="feature-box"><h3>Travel Notifications</h3><p>Enable secure travel access for your cards.</p></div>
+  <div class="feature-box"><h3>Recurring Transfers</h3><p>Set up automatic transfers between accounts.</p></div>
+  <div class="feature-box"><h3>eStatements Archive</h3><p>Access past statements anytime, securely.</p></div>
+  <div class="feature-box"><h3>Card Management</h3><p>Activate, freeze, or replace your cards.</p></div>
+  <div class="feature-box"><h3>Mobile Deposit</h3><p>Deposit checks instantly from your phone.</p></div>
+  <div class="feature-box"><h3>Fraud Alerts</h3><p>Get instant alerts for suspicious activity.</p></div>
+  <div class="feature-box"><h3>Support Chat</h3><p>Chat with a banker in real-time.</p></div>
+  <div class="feature-box"><h3>Account Nicknames</h3><p>Personalize your account names.</p></div>
+  <div class="feature-box"><h3>Spending Analyzer</h3><p>Visual breakdown of your spending habits.</p></div>
+</section>
+  </main>
+
+  <script>
+    // Dark mode
+    const toggle = document.getElementById('darkModeToggle');
+    toggle.onclick = () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    };
+    window.onload = () => {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark');
+      }
+
+      // Load balances
+      let user = JSON.parse(localStorage.getItem('loggedInUser')) || {};
+      user.checkingBalance = user.checkingBalance || 8696680.45;
+      user.savingsBalance = user.savingsBalance || 6304589.00;
+
+      document.getElementById('checkingBalance').textContent = `$${user.checkingBalance.toFixed(2)}`;
+      document.getElementById('savingsBalance').textContent = `$${user.savingsBalance.toFixed(2)}`;
+    };
+
+    // Logout
+    document.getElementById('logoutBtn').onclick = () => {
+      localStorage.removeItem('loggedInUser');
+      window.location.href = "index.html";
+    };
+
+    // Transfer
+    document.getElementById('quickTransferForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const from = document.getElementById('fromAccount').value;
+      const to = document.getElementById('toAccount').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      let user = JSON.parse(localStorage.getItem('loggedInUser')) || {};
+
+      if (from === to) return alert("Cannot transfer to the same account.");
+      if (isNaN(amount) || amount <= 0) return alert("Enter valid amount.");
+
+      if (user[from + "Balance"] < amount) {
+        alert("Insufficient funds in " + from + " account.");
+        return;
+      }
+
+      user[from + "Balance"] -= amount;
+      user[to + "Balance"] += amount;
+
+      const transaction = {
+        id: "TX" + Date.now(),
+        from,
+        to,
+        amount,
+        date: new Date().toLocaleString()
+      };
+
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+      localStorage.setItem('lastTransaction', JSON.stringify(transaction));
+      window.location.href = "confirmation.html";
+    });
+  </script>
+
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="footer-column">
+      <h3>Oakline Bank</h3>
+      <p>Modern Banking for Everyday Life.</p>
+    </div>
+
+    <div class="footer-column">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="transfer.html">Transfer</a></li>
+        <li><a href="history.html">Transaction History</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h4>Contact</h4>
+      <p>Email: support@oaklinebank.com</p>
+      <p>Phone: 1-800-OAK-BANK</p>
+      <div class="social-icons">
+        <a href="#"><img src="icons/facebook.svg" alt="Facebook" /></a>
+        <a href="#"><img src="icons/twitter.svg" alt="Twitter" /></a>
+        <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn" /></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>
