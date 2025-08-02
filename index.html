@@ -55,6 +55,24 @@ nav a:hover {
   color: #cce6ff;
 }
 
+ .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: var(--color-bg-light);
+  transition: background-color 0.3s;
+}
+
+.navbar.dark-mode {
+  background-color: var(--color-bg-dark);
+}
+
+/* Align toggle nicely */
+.toggle-container {
+  margin-left: 1rem;
+}   
+    
 /* Mobile hamburger */
 .menu-toggle {
   display: none;
@@ -315,6 +333,14 @@ html {
     <a href="#testimonials">Testimonials</a>
     <a href="#footer">Contact</a>
     <a href="/login.html">Login</a>
+
+    <!-- Mode toggle -->
+  <div class="toggle-container">
+    <label class="switch" aria-label="Toggle dark mode">
+      <input type="checkbox" id="modeToggle" />
+      <span class="slider"></span>
+    </label>
+  </div> 
   </nav>
 </header>
 
