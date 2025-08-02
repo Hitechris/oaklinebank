@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome to Oakline Bank</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fa;
+      color: #222;
+      line-height: 1.6;
+    }
+    header {
+      background-color: #003366;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #cce6ff;
+    }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: linear-gradient(120deg, #0052cc, #007fff);
+      color: white;
+      padding: 60px 40px;
+    }
+    .hero-text {
+      flex: 1 1 50%;
+      max-width: 600px;
+    }
+    .hero-text h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+    .cta-button {
+      background-color: white;
+      color: #0052cc;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .cta-button:hover {
+      background-color: #f0f0f0;
+    }
+    .hero-img {
+      flex: 1 1 40%;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .hero-img img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+    }
+    section.calculator {
+      padding: 60px 40px;
+      background-color: #f0f4f8;
+      text-align: center;
+    }
+    section.calculator h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    section.calculator p {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    .calculator-form {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .calculator-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+    .calculator-form input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .calculator-form button {
+      background: #0052cc;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .calculator-form button:hover {
+      background: #003d99;
+    }
+    #result {
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #0052cc;
+    }
+    section.testimonials {
+      padding: 60px 40px;
+      background-color: #ffffff;
+    }
+    section.testimonials h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #003366;
+    }
+    .testimonial-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .testimonial-card {
+      flex: 1 1 250px;
+      max-width: 300px;
+      background-color: #f9f9f9;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      color: #333;
+    }
+    .testimonial-card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      object-fit: cover;
+    }
+    .testimonial-card p {
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+    .testimonial-card .name {
+      font-weight: 700;
+      color: #0052cc;
+    }
+    footer {
+      background-color: #003366;
+      color: #fff;
+      padding: 50px 40px 20px;
+    }
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+    .footer-column {
+      flex: 1 1 30%;
+      margin-bottom: 20px;
+    }
+    .footer-column h3 {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+    .footer-column ul {
+      list-style: none;
+      padding: 0;
+      color: #cce6ff;
+    }
+    .footer-column ul li {
+      margin-bottom: 10px;
+    }
+    .footer-column ul li a {
+      color: #cce6ff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .footer-column ul li a:hover {
+      color: #ffffff;
+    }
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.9rem;
+      border-top: 1px solid #4c6ea7;
+      padding-top: 15px;
+    }
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-text h1 {
+        font-size: 2.2rem;
+      }
+      nav a {
+        margin-left: 15px;
+        font-size: 0.95rem;
+      }
+      .footer-column {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Oakline Bank</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="/login.html">Login</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Welcome to Oakline Bank</h1>
+      <p>Secure. Simple. Seamless.<br>Your financial future starts here with Oakline Bank — trusted by millions.</p>
+      <a href="/login.html" class="cta-button">Get Started</a>
+    </div>
+    <div class="hero-img">
+      <img src="https://via.placeholder.com/400x300?text=Bank+Image" alt="Oakline Bank Hero Image" />
+    </div>
+  </section>
+
+  <section class="calculator">
+    <h2>Savings Growth Calculator</h2>
+    <p>Estimate your future savings with Oakline Bank.</p>
+    <div class="calculator-form">
+      <label for="amount">Initial Amount ($)</label>
+      <input type="number" id="amount" placeholder="e.g., 1000" />
+      <label for="rate">Annual Interest Rate (%)</label>
+      <input type="number" id="rate" placeholder="e.g., 5" />
+      <label for="years">Years</label>
+      <input type="number" id="years" placeholder="e.g., 10" />
+      <button onclick="calculateSavings()">Calculate</button>
+      <div id="result"></div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <h2>What Our Clients Say</h2>
+    <div class="testimonial-cards">
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jane Doe" />
+        <p>“Oakline made managing my savings so easy. Their mobile app is top-notch!”</p>
+        <p class="name">Jane Doe</p>
+      </div>
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos B." />
+        <p>“I got approved for my home loan in days. Their service is incredible.”</p>
+        <p class="name">Carlos B.</p>
+      </div>
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Amina R." />
+        <p>“Oakline helped me start my first business. I’ll never bank anywhere else.”</p>
+        <p class="name">Amina R.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>About Oakline</h3>
+        <p>Oakline Bank is committed to providing modern, reliable banking solutions with a personal touch.</p>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Open Account</a></li>
+          <li><a href="#">Loan Services</a></li>
+          <li><a href="#">Credit Cards</a></li>
+          <li><a href="#">Mobile Banking</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Contact Us</h3>
+        <ul>
+          <li>Email: support@oaklinebank.com</li>
+          <li>Phone: +1 (800) 123-4567</li>
+          <li>Address: 456 Finance Ave, NY</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2025 Oakline Bank. All rights reserved.</div>
+  </footer>
+
+  <script>
+    function calculateSavings() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const rate = parseFloat(document.getElementById("rate").value) / 100;
+      const years = parseInt(document.getElementById("years").value);
+
+      if (isNaN(amount) || isNaN(rate) || isNaN(years) || amount < 0 || rate < 0 || years < 0) {
+        document.getElementById("result").innerText = "Please enter valid positive numbers.";
+        return;
+      }
+
+      const finalAmount = amount * Math.pow(1 + rate, years);
+      document.getElementById("result").innerText =
+        `Estimated Future Value: $${finalAmount.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
