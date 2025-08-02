@@ -577,7 +577,13 @@ html {
   font-size: 1.5rem;
   cursor: pointer;
 }
-    
+
+    input::placeholder {
+  color: #999;
+}
+input:focus {
+  outline: 2px solid #0052cc;
+}
     
   </style>
 </head>
@@ -852,28 +858,31 @@ window.onclick = function(event) {
 }; 
 </script>
 
-  <!-- LOGIN MODAL -->
+<!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('loginModal')">&times;</span>
     <h2>Login to Your Account</h2>
-<input type="email" placeholder="Email" autocomplete="off" required>
-<input type="password" placeholder="Password" autocomplete="off" required>
-    <button class="modal-button">Login</button>
+    <form aria-label="Login Form" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="Email" autocomplete="off" aria-label="Email address" required>
+      <input type="password" placeholder="Password" autocomplete="off" aria-label="Password" required>
+      <button class="modal-button" type="submit">Login</button>
+    </form>
     <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot password?</a></p>
     <p>Don’t have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign up</a></p>
   </div>
 </div>
-
 <!-- SIGNUP MODAL -->
 <div id="signupModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
     <h2>Create an Account</h2>
-<input type="text" placeholder="Full Name" autocomplete="off" required>
-<input type="email" placeholder="Email" autocomplete="off" required>
-<input type="password" placeholder="Password" autocomplete="new-password" required>
-    <button class="modal-button">Sign Up</button>
+    <form aria-label="Signup Form" onsubmit="event.preventDefault()">
+      <input type="text" placeholder="Full Name" autocomplete="off" aria-label="Full Name" required>
+      <input type="email" placeholder="Email" autocomplete="off" aria-label="Email address" required>
+      <input type="password" placeholder="Password" autocomplete="off" aria-label="Password" required>
+      <button class="modal-button" type="submit">Sign Up</button>
+    </form>
     <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
   </div>
 </div>
@@ -883,8 +892,10 @@ window.onclick = function(event) {
   <div class="modal-content">
     <span class="close" onclick="closeModal('forgotModal')">&times;</span>
     <h2>Reset Your Password</h2>
-  <input type="email" placeholder="Enter your email" autocomplete="off" required>
-    <button class="modal-button">Send Reset Link</button>
+    <form aria-label="Password Reset Form" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="Enter your email" autocomplete="off" aria-label="Reset email" required>
+      <button class="modal-button" type="submit">Send Reset Link</button>
+    </form>
     <p>Remembered it? <a href="#" onclick="switchModal('forgotModal','loginModal')">Back to login</a></p>
   </div>
 </div>
