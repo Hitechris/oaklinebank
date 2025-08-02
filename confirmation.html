@@ -3,163 +3,159 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Transfer Confirmation | Oakline Bank</title>
+  <title>Transfer Confirmation - Oakline Bank</title>
   <style>
-    :root {
-      --primary-color: #154734;
-      --background: #f9f9f9;
-      --text-color: #333;
-      --border-radius: 8px;
-      --transition: 0.3s ease;
-    }
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--background);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f2f2;
+      color: #222;
+      transition: background-color 0.3s, color 0.3s;
     }
-    header {
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 2rem;
+
+    body.dark-mode {
+      background: #121212;
+      color: #eee;
+    }
+
+    nav {
+      background-color: #004080;
+      color: white;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      padding: 1rem 2rem;
     }
-    header h1 {
-      color: var(--primary-color);
-      margin: 0;
-    }
-    nav a {
-      color: var(--primary-color);
-      text-decoration: none;
+
+    nav .nav-links a {
+      color: white;
       margin-left: 1rem;
-      font-weight: 600;
-      transition: color var(--transition);
+      text-decoration: none;
+      font-weight: 500;
     }
-    nav a:hover {
-      color: #0f3629;
+
+    nav .nav-links a:hover {
+      text-decoration: underline;
     }
+
     main {
+      max-width: 600px;
+      margin: 2rem auto;
       background: white;
       padding: 2rem;
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
+    body.dark-mode main {
+      background: #1f1f1f;
+    }
+
     h2 {
-      color: var(--primary-color);
-      margin-top: 0;
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
+
     .receipt {
-      margin-top: 1.5rem;
-      text-align: left;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
+      border: 1px dashed #aaa;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
     }
-    .receipt p {
-      margin: 0.5rem 0;
+
+    .receipt-item {
+      margin: 0.75rem 0;
       font-size: 1.1rem;
     }
-    .receipt p span {
+
+    .receipt-item strong {
+      display: inline-block;
+      width: 160px;
       font-weight: 600;
     }
-    button {
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
       margin-top: 2rem;
-      background-color: var(--primary-color);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .buttons a, .buttons button {
+      flex: 1 1 45%;
+      padding: 0.75rem;
+      text-align: center;
+      background-color: #004080;
       color: white;
       border: none;
-      padding: 0.8rem 1.6rem;
-      font-size: 1rem;
-      border-radius: var(--border-radius);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color var(--transition);
     }
-    button:hover {
-      background-color: #0f3629;
+
+    .buttons a:hover,
+    .buttons button:hover {
+      background-color: #003060;
     }
-    #printBtn {
-      margin-left: 1rem;
-    }
-    /* Print styles to only print receipt content */
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #confirmationContainer, #confirmationContainer * {
-        visibility: visible;
-      }
-      #confirmationContainer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
+
+    .footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Oakline Bank</h1>
-    <nav aria-label="Main navigation">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="transfer.html">Make Another Transfer</a>
-      <a href="index.html">Home</a>
-      <a href="logout.html">Logout</a>
-    </nav>
-  </header>
 
-  <main aria-live="polite">
+  <nav>
+    <h1>Oakline Bank</h1>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="transfer.html">Transfer Again</a>
+      <a href="index.html">Logout</a>
+    </div>
+  </nav>
+
+  <main>
     <h2>Transfer Confirmation</h2>
-    <div id="confirmationContainer" class="receipt" role="region" aria-label="Transfer receipt">
-      <p><span>Transaction ID:</span> <span id="txnId">Loading...</span></p>
-      <p><span>Date:</span> <span id="txnDate">Loading...</span></p>
-      <p><span>From Account:</span> <span id="txnFrom">Loading...</span></p>
-      <p><span>To Account:</span> <span id="txnTo">Loading...</span></p>
-      <p><span>Amount Transferred:</span> $<span id="txnAmount">Loading...</span></p>
+    <div class="receipt" id="receiptContainer">
+      <!-- Receipt data will be injected here -->
     </div>
 
-    <div>
-      <button class="back-btn" onclick="goToDashboard()">Back to Dashboard</button>
-      <button id="printBtn" onclick="printReceipt()">Print Receipt</button>
+    <div class="buttons">
+      <a href="dashboard.html">🏠 Back to Dashboard</a>
+      <button onclick="window.print()">🖨️ Print Receipt</button>
     </div>
   </main>
 
+  <div class="footer">
+    &copy; 2025 Oakline Bank. All rights reserved.
+  </div>
+
   <script>
-    function goToDashboard() {
-      window.location.href = 'dashboard.html';
-    }
+    // Load transaction data from localStorage
+    const data = JSON.parse(localStorage.getItem('lastTransaction'));
 
-    function printReceipt() {
-      window.print();
-    }
-
-    const txnDataRaw = sessionStorage.getItem('lastTransaction');
-
-    if (!txnDataRaw) {
-      // No transaction data found, redirect to transfer page
-      alert('No transaction found. Redirecting to Transfer page.');
-      window.location.href = 'transfer.html';
+    if (data) {
+      const receipt = document.getElementById('receiptContainer');
+      receipt.innerHTML = `
+        <div class="receipt-item"><strong>Recipient Name:</strong> ${data.name}</div>
+        <div class="receipt-item"><strong>Account Number:</strong> ${data.account}</div>
+        <div class="receipt-item"><strong>Amount:</strong> $${parseFloat(data.amount).toLocaleString()}</div>
+        <div class="receipt-item"><strong>From Account:</strong> ${data.from.charAt(0).toUpperCase() + data.from.slice(1)}</div>
+        <div class="receipt-item"><strong>Transaction Date:</strong> ${data.date}</div>
+        <div class="receipt-item"><strong>Transaction ID:</strong> ${data.transactionId}</div>
+      `;
     } else {
-      const txn = JSON.parse(txnDataRaw);
-
-      document.getElementById('txnId').textContent = txn.id;
-      document.getElementById('txnDate').textContent = txn.date;
-      document.getElementById('txnFrom').textContent = capitalize(txn.from);
-      document.getElementById('txnTo').textContent = capitalize(txn.to);
-      document.getElementById('txnAmount').textContent = txn.amount;
+      document.getElementById('receiptContainer').innerHTML = '<p>No transaction data available.</p>';
     }
 
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
+    // Optional: apply dark mode if enabled
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
     }
   </script>
+
 </body>
 </html>
