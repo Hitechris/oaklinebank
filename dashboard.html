@@ -513,6 +513,89 @@
       max-width: 100%;
     }
   }
+
+  .account-balance-section {
+  padding: 2rem;
+}
+
+.account-balances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.account-box {
+  flex: 1 1 250px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dark-mode .account-box {
+  background-color: #1e1e1e;
+}
+
+.account-box h3 {
+  margin: 0 0 0.5rem;
+}
+
+.account-box .balance {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #154734;
+}
+
+.account-box small {
+  color: #888;
+}
+
+.transfer-section {
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+form {
+  max-width: 400px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+select,
+input[type="number"] {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+button[type="submit"] {
+  background-color: #154734;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0f3629;
+}
+
+.transfer-message {
+  margin-top: 1rem;
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
@@ -531,6 +614,52 @@
     <!-- Accounts will be inserted here -->
   </section>
 
+<!-- ✅ Account Balances Section -->
+<section class="account-balance-section">
+  <h2>Account Balances</h2>
+  <div class="account-balances">
+    <div class="account-box" id="checkingBox">
+      <h3>Checking Account</h3>
+      <p class="balance" id="checkingBalance">$0.00</p>
+      <small id="checkingUpdated">Updated just now</small>
+    </div>
+    <div class="account-box" id="savingsBox">
+      <h3>Savings Account</h3>
+      <p class="balance" id="savingsBalance">$0.00</p>
+      <small id="savingsUpdated">Updated just now</small>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ Quick Transfer Section -->
+<section class="transfer-section">
+  <h2>Quick Transfer</h2>
+  <form id="transferForm">
+    <div class="form-group">
+      <label for="fromAccount">From:</label>
+      <select id="fromAccount" required>
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="toAccount">To:</label>
+      <select id="toAccount" required>
+        <option value="savings">Savings</option>
+        <option value="checking">Checking</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="transferAmount">Amount ($):</label>
+      <input type="number" id="transferAmount" min="0.01" step="0.01" required />
+    </div>
+
+    <button type="submit">Transfer</button>
+    <p id="transferMessage" class="transfer-message"></p>
+  </form>
+</section> 
   <section class="charts-section" aria-label="Financial charts">
     <div class="chart-card" aria-label="Spending trends">
       <h3>Spending Trends</h3>
@@ -590,20 +719,6 @@
     </div>
   </section>
 
-  <section class="quick-transfer">
-    <h3>Quick Transfer</h3>
-    <form id="transferForm">
-      <select required>
-        <option value="">From Account</option>
-        <option value="checking">Checking</option>
-        <option value="savings">Savings</option>
-      </select>
-      <input type="text" placeholder="To (Name or Account)" required>
-      <input type="number" placeholder="Amount $" min="1" required>
-      <button type="submit">Transfer</button>
-    </form>
-  </section>
-
   <section class="currency-converter">
     <h3>Currency Converter</h3>
     <input type="number" placeholder="Amount in USD" id="usdAmount">
@@ -647,7 +762,74 @@
 </div>
 
 <script>
-  // Your JavaScript will go here
+  // Your JavaScript will go here<script>
+// Load or set default balances
+let user = JSON.parse(localStorage.getItem('loggedInUser')) || {};
+if (!user.checkingBalance || !user.savingsBalance) {
+  user.checkingBalance = 869,680.45;
+  user.savingsBalance = 630,489;
+  user.lastUpdated = new Date().toLocaleString();
+  localStorage.setItem('loggedInUser', JSON.stringify(user));
+}
+
+// Show balances
+document.getElementById('checkingBalance').textContent = `$${user.checkingBalance.toFixed(2)}`;
+document.getElementById('savingsBalance').textContent = `$${user.savingsBalance.toFixed(2)}`;
+document.getElementById('checkingUpdated').textContent = `Updated: ${user.lastUpdated}`;
+document.getElementById('savingsUpdated').textContent = `Updated: ${user.lastUpdated}`;
+
+// Transfer handler
+const transferForm = document.getElementById('transferForm');
+const transferMessage = document.getElementById('transferMessage');
+
+transferForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const from = document.getElementById('fromAccount').value;
+  const to = document.getElementById('toAccount').value;
+  const amount = parseFloat(document.getElementById('transferAmount').value);
+
+  if (from === to) {
+    transferMessage.textContent = 'Please choose different accounts.';
+    transferMessage.style.color = 'red';
+    return;
+  }
+
+  if (amount <= 0 || isNaN(amount)) {
+    transferMessage.textContent = 'Enter a valid transfer amount.';
+    transferMessage.style.color = 'red';
+    return;
+  }
+
+  if (from === 'checking' && user.checkingBalance < amount) {
+    transferMessage.textContent = 'Insufficient funds in Checking.';
+    transferMessage.style.color = 'red';
+    return;
+  }
+
+  if (from === 'savings' && user.savingsBalance < amount) {
+    transferMessage.textContent = 'Insufficient funds in Savings.';
+    transferMessage.style.color = 'red';
+    return;
+  }
+
+  // Do transfer
+  user[from + 'Balance'] -= amount;
+  user[to + 'Balance'] += amount;
+  user.lastUpdated = new Date().toLocaleString();
+  localStorage.setItem('loggedInUser', JSON.stringify(user));
+
+  // Update UI
+  document.getElementById('checkingBalance').textContent = `$${user.checkingBalance.toFixed(2)}`;
+  document.getElementById('savingsBalance').textContent = `$${user.savingsBalance.toFixed(2)}`;
+  document.getElementById('checkingUpdated').textContent = `Updated: ${user.lastUpdated}`;
+  document.getElementById('savingsUpdated').textContent = `Updated: ${user.lastUpdated}`;
+
+  transferMessage.textContent = `Transfer successful!`;
+  transferMessage.style.color = 'green';
+  transferForm.reset();
+});
+
 </script>
 </body>
 </html>
