@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oakline Bank Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg, #f4f4f4);
+      color: var(--text, #111);
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      background-color: var(--nav-bg, #004d66);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .navbar h1 { margin: 0; }
+    .navbar .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+    }
+
+    .dashboard {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-gap: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h3 { margin-top: 0; }
+    .transactions, .notifications {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .btn-toggle {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+    }
+
+    .dark {
+      --bg: #121212;
+      --text: #f4f4f4;
+      --nav-bg: #222;
+    }
+
+    .transfer-form input, .transfer-form button {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: var(--nav-bg, #004d66);
+      color: white;
+    }
+
+    a.button-link {
+      display: inline-block;
+      margin: 10px 10px 0 0;
+      padding: 8px 15px;
+      background: #004d66;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1>Oakline Bank</h1>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+      <button class="btn-toggle" onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="card">
+      <h2>Welcome, <span id="userName">Customer</span>!</h2>
+      <p>Here's an overview of your Oakline Bank account.</p>
+    </div>
+
+    <div class="card">
+      <h3>Account Summary</h3>
+      <p>Checking: $2,500.00</p>
+      <p>Savings: $7,800.00</p>
+      <p>Business: $12,000.00</p>
+    </div>
+
+    <div class="card transactions">
+      <h3>Recent Transactions</h3>
+      <ul>
+        <li>Deposit - $1,000.00</li>
+        <li>Electric Bill - $120.50</li>
+        <li>Transfer to Savings - $500.00</li>
+        <li>ATM Withdrawal - $60.00</li>
+      </ul>
+    </div>
+
+    <div class="card notifications">
+      <h3>Notifications</h3>
+      <ul>
+        <li>⚠️ New login from a different device</li>
+        <li>✅ Your statement is ready</li>
+        <li>🎉 Congrats on hitting your savings goal!</li>
+      </ul>
+    </div>
+
+    <div class="card transfer-form">
+      <h3>Quick Transfer</h3>
+      <input type="text" id="toAccount" placeholder="To Account (e.g., Savings)">
+      <input type="number" id="transferAmount" placeholder="Amount ($)">
+      <button onclick="transfer()">Transfer</button>
+    </div>
+
+    <div class="card">
+      <h3>Savings Trends</h3>
+      <canvas id="savingsChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Oakline Bank. All rights reserved.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    function transfer() {
+      const to = document.getElementById('toAccount').value;
+      const amount = document.getElementById('transferAmount').value;
+      if (!to || !amount || amount <= 0) {
+        alert("Please enter valid transfer details.");
+      } else {
+        alert(`Transferred $${amount} to ${to}.`);
+      }
+    }
+
+    // Fake user data (could be from login session in real app)
+    document.getElementById('userName').innerText = "John Doe";
+
+    // Sample savings chart
+    const ctx = document.getElementById('savingsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Savings Balance',
+          data: [1500, 1800, 2100, 2400, 3100, 3900],
+          backgroundColor: 'rgba(0,77,102,0.2)',
+          borderColor: '#004d66',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
