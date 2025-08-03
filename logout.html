@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logout | Oakline Bank</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      text-align: center;
+      padding: 4rem 1rem;
+      transition: background-color 0.3s ease;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .logout-container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 2.5rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .checkmark {
+      font-size: 4rem;
+      color: #198754;
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    .dark-mode .logout-container {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+    }
+
+    .dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .btn-custom {
+      margin-top: 1.5rem;
+    }
+
+    .footer-note {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-top: 2.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dark-toggle">
+    <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
+
+  <div class="logout-container">
+    <div class="checkmark">✅</div>
+    <h2 class="mt-3">You’ve been securely logged out</h2>
+    <p class="text-muted">We’ve cleared your session. You can log back in anytime.</p>
+
+    <p><strong>Logout Time:</strong> <span id="logoutTime"></span></p>
+
+    <div class="mt-4">
+      <a href="login.html" class="btn btn-primary me-2">Log In Again</a>
+      <a href="index.html" class="btn btn-outline-secondary">Back to Home</a>
+    </div>
+
+    <div class="mt-4">
+      <p id="redirectText" class="text-muted">
+        Redirecting to login in <span id="countdown">7</span> seconds...
+      </p>
+      <button id="cancelRedirect" class="btn btn-sm btn-warning">Cancel Redirect</button>
+    </div>
+
+    <div class="footer-note">
+      &copy; <span id="year"></span> Oakline Bank. All rights reserved.
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script>
+    // Dark mode toggle
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    // Set current year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Show logout timestamp
+    const now = new Date();
+    const formatted = now.toLocaleString();
+    document.getElementById("logoutTime").textContent = formatted;
+
+    // Clear session
+    localStorage.removeItem("loggedInUser");
+    const role = localStorage.getItem("userRole") || "default";
+    localStorage.clear();
+
+    // Countdown + redirect
+    let seconds = 7;
+    const countdown = document.getElementById("countdown");
+    const redirectText = document.getElementById("redirectText");
+    const cancelBtn = document.getElementById("cancelRedirect");
+
+    const redirectMap = {
+      admin: "admin-login.html",
+      business: "business-login.html",
+      default: "login.html"
+    };
+
+    let countdownTimer = setInterval(() => {
+      seconds--;
+      countdown.textContent = seconds;
+
+      if (seconds <= 0) {
+        clearInterval(countdownTimer);
+        window.location.href = redirectMap[role] || "login.html";
+      }
+    }, 1000);
+
+    cancelBtn.addEventListener("click", () => {
+      clearInterval(countdownTimer);
+      redirectText.textContent = "Auto-redirect canceled.";
+      cancelBtn.disabled = true;
+      cancelBtn.textContent = "Canceled";
+    });
+  </script>
+
+</body>
+</html>
