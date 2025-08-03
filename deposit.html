@@ -5,19 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deposit Funds - Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    .deposit-container {
-      max-width: 500px;
-      margin: 80px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    body { background-color: #f8f9fa; }
+    .container { max-width: 500px; margin-top: 80px; }
   </style>
 </head>
 <body>
@@ -35,60 +26,63 @@
     </div>
   </nav>
 
-  <div class="deposit-container">
-    <h4 class="mb-4 text-center">Deposit Funds</h4>
+  <div class="container bg-white p-4 shadow-sm rounded">
+    <h4 class="mb-4">Deposit Funds</h4>
     <form id="depositForm">
       <div class="mb-3">
-        <label for="depositAmount" class="form-label">Amount to Deposit ($)</label>
-        <input type="number" class="form-control" id="depositAmount" required min="1" />
+        <label for="depositAccount" class="form-label">Deposit To</label>
+        <select class="form-select" id="depositAccount" required>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
       </div>
+
       <div class="mb-3">
-        <label for="depositNote" class="form-label">Description (optional)</label>
-        <input type="text" class="form-control" id="depositNote" placeholder="e.g. Paycheck, gift, etc." />
+        <label for="depositAmount" class="form-label">Amount ($)</label>
+        <input type="number" class="form-control" id="depositAmount" min="1" required />
       </div>
-      <button type="submit" class="btn btn-success w-100">Make Deposit</button>
+
+      <div class="mb-3">
+        <label for="depositNote" class="form-label">Note (optional)</label>
+        <input type="text" class="form-control" id="depositNote" placeholder="e.g. Paycheck, refund, etc." />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Submit Deposit</button>
     </form>
-    <div id="depositSuccess" class="alert alert-success mt-3 d-none">
-      Deposit successful! Redirecting...
-    </div>
   </div>
 
   <script>
     document.getElementById('depositForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
+      const accountType = document.getElementById('depositAccount').value;
       const amount = parseFloat(document.getElementById('depositAmount').value);
       const note = document.getElementById('depositNote').value.trim();
       const date = new Date().toLocaleString();
-      const reference = 'DP' + Date.now();
 
-      // Get current balance
-      let balance = parseFloat(localStorage.getItem('balance') || '0');
-      balance += amount;
-      localStorage.setItem('balance', balance.toFixed(2));
+      const balanceKey = accountType === "checking" ? "checkingBalance" : "savingsBalance";
+      let currentBalance = parseFloat(localStorage.getItem(balanceKey) || "0");
 
-      // Create transaction
+      // Update balance
+      currentBalance += amount;
+      localStorage.setItem(balanceKey, currentBalance.toFixed(2));
+
+      // Save transaction
       const transaction = {
         type: "Deposit",
+        account: accountType,
         amount: amount,
         date: date,
-        note: note || "Standard Deposit",
-        reference: reference,
-        description: note || "Standard Deposit"
+        description: `Deposit to ${accountType} ${note ? `(${note})` : ""}`
       };
 
-      // Save to transactions and latestTransaction
       let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
       transactions.push(transaction);
       localStorage.setItem('transactions', JSON.stringify(transactions));
       localStorage.setItem('latestTransaction', JSON.stringify(transaction));
 
-      // Show message and redirect
-      document.getElementById('depositSuccess').classList.remove('d-none');
-
-      setTimeout(() => {
-        window.location.href = "confirmation.html";
-      }, 1500);
+      // Redirect to confirmation
+      window.location.href = "confirmation.html";
     });
   </script>
 
