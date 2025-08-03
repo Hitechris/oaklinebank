@@ -32,6 +32,10 @@
     .d-label {
       font-weight: 500;
     }
+#recipientSection {
+  display: none;
+}
+    
   </style>
 </head>
 <body>
@@ -94,24 +98,27 @@
       alert("No transaction found.");
       window.location.href = "dashboard.html";
     }
+document.getElementById("txType").textContent = tx.type || "-";
+document.getElementById("txAmount").textContent = parseFloat(tx.amount).toFixed(2);
+document.getElementById("fromAccount").textContent = tx.from || tx.account || "Checking / Savings";
 
-    document.getElementById("txType").textContent = tx.type || "-";
-    document.getElementById("txAmount").textContent = parseFloat(tx.amount).toFixed(2);
-    document.getElementById("fromAccount").textContent = tx.from || "Checking / Savings";
+document.getElementById("txNote").textContent = tx.note || tx.description || "—";
+document.getElementById("txId").textContent = tx.reference || tx.transactionId || generateTransactionID(tx);
+document.getElementById("txDate").textContent = tx.date || new Date().toLocaleString();
 
-    document.getElementById("txNote").textContent = tx.note || tx.description || "—";
-    document.getElementById("txId").textContent = tx.reference || generateTransactionID(tx);
-    document.getElementById("txDate").textContent = tx.date || new Date().toLocaleString();
+const recipientSection = document.getElementById("recipientSection");
+if (tx.type === "Transfer") {
+  recipientSection.style.display = "block";
+  document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
+  document.getElementById("recipientAccount").textContent = tx.accountNumber || tx.recipientAccount || "-";
+  document.getElementById("routingNumber").textContent = tx.routingNumber || "-";
+} else {
+  recipientSection.style.display = "none";
+}
 
-    // Transfer-specific recipient section
-    const recipientSection = document.getElementById("recipientSection");
-    if (tx.type === "Transfer") {
-      document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
-      document.getElementById("recipientAccount").textContent = tx.recipientAccount || "-";
-      document.getElementById("routingNumber").textContent = tx.routingNumber || "-";
-    } else {
-      recipientSection.style.display = "none";
-    }
+function generateTransactionID(tx) {
+  return tx.type[0] + "-" + Date.now().toString().slice(-6);
+}
 
     function generateTransactionID(tx) {
       return tx.type[0] + "-" + Date.now().toString().slice(-6);
