@@ -20,8 +20,12 @@
       font-size: 48px;
       color: #198754;
     }
-    .field-label {
-      font-weight: 500;
+    .label {
+      font-weight: 600;
+    }
+    .value {
+      font-weight: 400;
+      color: #333;
     }
   </style>
 </head>
@@ -43,12 +47,20 @@
   <div class="confirmation-container text-center">
     <div class="mb-4">
       <i class="fas fa-check-circle confirmation-icon"></i>
-      <h4 class="mt-3" id="confirmationTitle">Transaction Successful</h4>
-      <p class="text-muted" id="confirmationMessage">Your transaction has been completed successfully.</p>
+      <h4 class="mt-3">Transaction Successful</h4>
+      <p class="text-muted">Your transaction has been completed.</p>
     </div>
 
-    <div class="text-start" id="confirmationDetails">
-      <!-- Dynamic content goes here -->
+    <div class="text-start">
+      <p><span class="label">Transaction Type:</span> <span class="value" id="txType"></span></p>
+      <p><span class="label">From Account:</span> <span class="value" id="fromAccount"></span></p>
+      <p id="recipientNameRow"><span class="label">Recipient Name:</span> <span class="value" id="recipientName"></span></p>
+      <p id="accountNumberRow"><span class="label">Account Number:</span> <span class="value" id="accountNumber"></span></p>
+      <p id="routingNumberRow"><span class="label">Routing Number:</span> <span class="value" id="routingNumber"></span></p>
+      <p><span class="label">Amount:</span> <span class="value">$<span id="amount"></span></span></p>
+      <p id="noteRow"><span class="label">Note:</span> <span class="value" id="note"></span></p>
+      <p><span class="label">Transaction ID:</span> <span class="value" id="transactionId"></span></p>
+      <p><span class="label">Date:</span> <span class="value" id="date"></span></p>
     </div>
 
     <div class="mt-4">
@@ -60,51 +72,31 @@
 
   <script>
     const tx = JSON.parse(localStorage.getItem('latestTransaction'));
-    const details = document.getElementById('confirmationDetails');
-    const title = document.getElementById('confirmationTitle');
-    const message = document.getElementById('confirmationMessage');
-
     if (!tx) {
       window.location.href = "dashboard.html";
     } else {
-      const isDeposit = tx.type === "Deposit";
-      const isTransfer = tx.type === "Transfer";
+      document.getElementById("txType").textContent = tx.type || "-";
+      document.getElementById("fromAccount").textContent = tx.from || "-";
+      document.getElementById("amount").textContent = parseFloat(tx.amount).toFixed(2);
+      document.getElementById("transactionId").textContent = tx.reference || tx.id || generateID();
+      document.getElementById("date").textContent = tx.date || new Date().toLocaleString();
 
-      if (isDeposit) {
-        title.textContent = "Deposit Successful";
-        message.textContent = "Your deposit has been completed successfully.";
-
-        details.innerHTML = `
-          <p><span class="field-label">Amount:</span> $${parseFloat(tx.amount).toFixed(2)}</p>
-          <p><span class="field-label">Description:</span> ${tx.description || '-'}</p>
-          <p><span class="field-label">Reference:</span> ${tx.reference || '-'}</p>
-          <p><span class="field-label">Date:</span> ${tx.date || '-'}</p>
-        `;
-      } else if (isTransfer) {
-        title.textContent = "Transfer Successful";
-        message.textContent = "Your transfer has been completed successfully.";
-
-        details.innerHTML = `
-          <p><span class="field-label">Recipient Name:</span> ${tx.recipientName || '-'}</p>
-          <p><span class="field-label">Recipient Account:</span> ${tx.recipientAccount || '-'}</p>
-          <p><span class="field-label">Routing Number:</span> ${tx.routingNumber || '-'}</p>
-          <p><span class="field-label">Amount:</span> $${parseFloat(tx.amount).toFixed(2)}</p>
-          <p><span class="field-label">Note:</span> ${tx.note || '-'}</p>
-          <p><span class="field-label">Transaction ID:</span> ${tx.reference || '-'}</p>
-          <p><span class="field-label">Date:</span> ${tx.date || '-'}</p>
-        `;
+      // Optional fields
+      if (tx.type === "Transfer") {
+        document.getElementById("recipientName").textContent = tx.recipientName || "-";
+        document.getElementById("accountNumber").textContent = tx.recipientAccount || "-";
+        document.getElementById("routingNumber").textContent = tx.routingNumber || "021000021"; // fallback
+        document.getElementById("note").textContent = tx.note || "—";
       } else {
-        title.textContent = "Transaction Successful";
-        message.textContent = `Your ${tx.type} was completed.`;
-
-        details.innerHTML = `
-          <p><span class="field-label">Type:</span> ${tx.type}</p>
-          <p><span class="field-label">Amount:</span> $${parseFloat(tx.amount).toFixed(2)}</p>
-          <p><span class="field-label">Description:</span> ${tx.description || '-'}</p>
-          <p><span class="field-label">Reference:</span> ${tx.reference || '-'}</p>
-          <p><span class="field-label">Date:</span> ${tx.date || '-'}</p>
-        `;
+        document.getElementById("recipientNameRow").style.display = "none";
+        document.getElementById("accountNumberRow").style.display = "none";
+        document.getElementById("routingNumberRow").style.display = "none";
+        document.getElementById("noteRow").style.display = "none";
       }
+    }
+
+    function generateID() {
+      return "TX" + Math.floor(Math.random() * 1000000000);
     }
   </script>
 
