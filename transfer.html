@@ -60,49 +60,51 @@
     </form>
   </div>
 
-  <script>
-    document.getElementById('transferForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+<script>
+  document.getElementById('transferForm').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-      const fromAccount = document.getElementById('fromAccount').value;
-      const recipientName = document.getElementById('recipientName').value.trim();
-      const accountNumber = document.getElementById('accountNumber').value.trim();
-      const routingNumber = document.getElementById('routingNumber').value.trim();
-      const amount = parseFloat(document.getElementById('transferAmount').value);
-      const note = document.getElementById('transferNote').value.trim();
-      const date = new Date().toLocaleString();
-      const reference = 'TX' + Date.now();
+    const fromAccount = document.getElementById('fromAccount').value;
+    const recipientName = document.getElementById('recipientName').value.trim();
+    const accountNumber = document.getElementById('accountNumber').value.trim();
+    const routingNumber = document.getElementById('routingNumber').value.trim();
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+    const note = document.getElementById('transferNote').value.trim();
+    const date = new Date().toLocaleString();
+    const reference = 'TX' + Date.now();
 
-      let balance = parseFloat(localStorage.getItem('balance') || "0");
-      if (amount > balance) {
-        alert("Insufficient balance.");
-        return;
-      }
+    let balances = JSON.parse(localStorage.getItem('accountBalances')) || { checking: 0, savings: 0 };
+    const selected = fromAccount.toLowerCase();
 
-      const transaction = {
-        type: "Transfer",
-        from: fromAccount,
-        to: recipientName,
-        accountNumber: accountNumber,
-        routingNumber: routingNumber,
-        amount: amount,
-        note: note,
-        date: date,
-        reference: reference,
-        description: `Transfer to ${recipientName} (${accountNumber})`
-      };
+    if (amount > balances[selected]) {
+      alert("Insufficient balance in " + fromAccount + " account.");
+      return;
+    }
 
-      let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-      transactions.push(transaction);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-      localStorage.setItem('latestTransaction', JSON.stringify(transaction));
+    balances[selected] -= amount;
+    localStorage.setItem('accountBalances', JSON.stringify(balances));
 
-      balance -= amount;
-      localStorage.setItem('balance', balance.toFixed(2));
+    const transaction = {
+      type: "Transfer",
+      from: fromAccount,
+      recipientName: recipientName,
+      recipientAccount: accountNumber,
+      routingNumber: routingNumber,
+      amount: amount,
+      note: note,
+      date: date,
+      reference: reference,
+      description: `Transfer to ${recipientName} (${accountNumber})`
+    };
 
-      window.location.href = "confirmation.html";
-    });
-  </script>
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    transactions.push(transaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('latestTransaction', JSON.stringify(transaction));
+
+    window.location.href = "confirmation.html";
+  });
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
