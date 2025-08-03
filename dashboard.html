@@ -230,18 +230,30 @@
   </div>
 </div>
 
- <!-- Balance Display -->
+<!-- Balance Display -->
 <div class="balances" aria-label="Account balances">
   <!-- Checking Account -->
   <div class="balance-card">
     <h6>Checking Account</h6>
     <div id="checkingBalance" class="amount">$0.00</div>
     <div class="mt-2">
-      <small>Account #: <span id="checkingAccountNumber">****1023</span></small><br>
-      <small>Routing #: <span id="checkingRoutingNumber">021000021</span></small>
+      <small>
+        Account #: 
+        <span id="checkingAccountNumber">****1023</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('checking')" data-bs-toggle="tooltip" title="Show/Hide">
+          <i class="fas fa-eye"></i>
+        </button>
+      </small><br>
+      <small>
+        Routing #: 
+        <span id="checkingRoutingNumber">021000021</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
+          <i class="fas fa-copy"></i>
+        </button>
+      </small>
     </div>
     <div class="mt-3 d-flex justify-content-center gap-2">
-      <button class="btn btn-outline-primary btn-sm" onclick="copyText('****1023')" data-bs-toggle="tooltip" title="Copy Account Number">
+      <button class="btn btn-outline-primary btn-sm" onclick="copyText('1234567890')" data-bs-toggle="tooltip" title="Copy Account Number">
         <i class="fas fa-copy"></i>
       </button>
       <a href="checking-details.html" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="View Details">
@@ -255,11 +267,23 @@
     <h6>Savings Account</h6>
     <div id="savingsBalance" class="amount">$0.00</div>
     <div class="mt-2">
-      <small>Account #: <span id="savingsAccountNumber">****2045</span></small><br>
-      <small>Routing #: <span id="savingsRoutingNumber">021000021</span></small>
+      <small>
+        Account #: 
+        <span id="savingsAccountNumber">****2045</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('savings')" data-bs-toggle="tooltip" title="Show/Hide">
+          <i class="fas fa-eye"></i>
+        </button>
+      </small><br>
+      <small>
+        Routing #: 
+        <span id="savingsRoutingNumber">021000021</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
+          <i class="fas fa-copy"></i>
+        </button>
+      </small>
     </div>
     <div class="mt-3 d-flex justify-content-center gap-2">
-      <button class="btn btn-outline-primary btn-sm" onclick="copyText('****2045')" data-bs-toggle="tooltip" title="Copy Account Number">
+      <button class="btn btn-outline-primary btn-sm" onclick="copyText('0987654321')" data-bs-toggle="tooltip" title="Copy Account Number">
         <i class="fas fa-copy"></i>
       </button>
       <a href="savings-details.html" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="View Details">
@@ -318,7 +342,26 @@ function copyText(text) {
 
 const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 tooltips.forEach(t => new bootstrap.Tooltip(t));
-    
+
+    function toggleAccount(type) {
+  const el = document.getElementById(`${type}AccountNumber`);
+  const masked = type === 'checking' ? '****1023' : '****2045';
+  const full = type === 'checking' ? '1234567890' : '0987654321';
+
+  el.textContent = (el.textContent === masked) ? full : masked;
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert(`Copied: ${text}`);
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+  });
+}
+
+// Initialize tooltips
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+tooltipTriggerList.forEach(tt => new bootstrap.Tooltip(tt));
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
