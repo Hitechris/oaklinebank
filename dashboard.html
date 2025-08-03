@@ -1,275 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard | Oakline Bank</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f8;
-      transition: background-color 0.3s ease;
-    }
-    .dark-mode {
-      background-color: #121212;
-      color: #fff;
-    }
-    .dark-mode .card,
-    .dark-mode .navbar,
-    .dark-mode .sidebar {
-      background-color: #1e1e1e;
-      color: #fff;
-    }
-
-    /* Layout */
-    .wrapper {
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 250px;
-      background-color: #fff;
-      padding: 1rem;
-      border-right: 1px solid #ddd;
-    }
-    .sidebar a {
-      display: block;
-      color: #333;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.5rem;
-      border-radius: 5px;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-    .sidebar a:hover,
-    .sidebar a.active {
-      background-color: #007bff;
-      color: white;
-    }
-    .dark-mode .sidebar a {
-      color: #ccc;
-    }
-    .dark-mode .sidebar a:hover,
-    .dark-mode .sidebar a.active {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .main-content {
-      flex-grow: 1;
-      padding: 2rem;
-    }
-
-    .navbar {
-      background-color: #ffffff;
-      border-bottom: 1px solid #ddd;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .dark-mode .navbar {
-      border-color: #333;
-    }
-
-    .balance-card {
-      font-size: 1.2rem;
-      padding: 1rem 1.5rem;
-    }
-    .balance-amount {
-      font-size: 2rem;
-      font-weight: bold;
-    }
-
-    .transaction-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .transaction-item {
-      border-bottom: 1px solid #ccc;
-      padding: 0.75rem 0;
-    }
-    .transaction-item:last-child {
-      border-bottom: none;
-    }
-
-    .profile-dropdown {
-      position: relative;
-    }
-    .profile-dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: white;
-      border: 1px solid #ccc;
-      min-width: 150px;
-      display: none;
-      z-index: 1000;
-    }
-    .profile-dropdown-menu a {
-      display: block;
-      padding: 0.5rem 1rem;
-      text-decoration: none;
-      color: #333;
-    }
-    .profile-dropdown-menu a:hover {
-      background: #f0f0f0;
-    }
-    .dark-mode .profile-dropdown-menu {
-      background: #222;
-      border-color: #444;
-    }
-    .dark-mode .profile-dropdown-menu a {
-      color: #fff;
-    }
-    .dark-mode .profile-dropdown-menu a:hover {
-      background: #333;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard | Oakline Bank</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+    min-height: 100vh;
+  }
+  .dark-mode {
+    background-color: #121212;
+    color: #eee;
+  }
+  .dark-mode .sidebar,
+  .dark-mode .navbar,
+  .dark-mode .card {
+    background-color: #1e1e1e !important;
+    color: #eee !important;
+  }
+  .sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    background: white;
+    border-right: 1px solid #ddd;
+    padding: 1.5rem 1rem;
+  }
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  .sidebar a i {
+    margin-right: 0.75rem;
+  }
+  .sidebar a:hover,
+  .sidebar a.active {
+    background-color: #0d6efd;
+    color: white;
+  }
+  .dark-mode .sidebar a {
+    color: #ccc;
+  }
+  .dark-mode .sidebar a:hover,
+  .dark-mode .sidebar a.active {
+    background-color: #0d6efd;
+    color: white;
+  }
+  .main-content {
+    margin-left: 240px;
+    padding: 2rem;
+  }
+  .navbar {
+    background: white;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .dark-mode .navbar {
+    background: #1e1e1e;
+    border-color: #444;
+  }
+  .profile-dropdown {
+    position: relative;
+  }
+  .profile-dropdown img {
+    cursor: pointer;
+  }
+  .profile-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 110%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 140px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .profile-menu a {
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #333;
+  }
+  .profile-menu a:hover {
+    background-color: #f8f9fa;
+  }
+  .dark-mode .profile-menu {
+    background: #2c2c2c;
+    border-color: #444;
+  }
+  .dark-mode .profile-menu a {
+    color: #eee;
+  }
+  .dark-mode .profile-menu a:hover {
+    background-color: #444;
+  }
+  .card {
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    margin-bottom: 1.5rem;
+  }
+  .balance-amount {
+    font-size: 2.75rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+  }
+  .quick-actions .btn {
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+  }
+  .transaction-list {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .transaction-item {
+    border-bottom: 1px solid #ddd;
+    padding: 0.75rem 0;
+  }
+  .transaction-item:last-child {
+    border-bottom: none;
+  }
+  .dark-toggle-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+  }
+</style>
 </head>
 <body>
 
-<div class="wrapper">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h4>Oakline Bank</h4>
-    <a href="dashboard.html" class="active"><i class="fas fa-home me-2"></i>Dashboard</a>
-    <a href="international-transfer.html"><i class="fas fa-globe me-2"></i>International Transfer</a>
-    <a href="local-transfer.html"><i class="fas fa-building-columns me-2"></i>Local Transfer</a>
-    <a href="between-account.html"><i class="fas fa-retweet me-2"></i>Between Accounts</a>
-    <a href="deposit.html"><i class="fas fa-arrow-down me-2"></i>Deposit</a>
-    <a href="withdrawal.html"><i class="fas fa-arrow-up me-2"></i>Withdraw</a>
-    <a href="#" onclick="toggleDarkMode()"><i class="fas fa-moon me-2"></i>Toggle Dark Mode</a>
-  </aside>
+<div class="sidebar">
+  <h4 class="mb-4">Oakline Bank</h4>
+  <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="international-transfer.html"><i class="fas fa-globe"></i> International Transfer</a>
+  <a href="local-transfer.html"><i class="fas fa-building-columns"></i> Local Transfer</a>
+  <a href="between-account.html"><i class="fas fa-retweet"></i> Between Accounts</a>
+  <a href="deposit.html"><i class="fas fa-arrow-down"></i> Deposit</a>
+  <a href="withdrawal.html"><i class="fas fa-arrow-up"></i> Withdrawal</a>
+  <a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Navbar -->
-    <div class="navbar">
-      <div><strong>Welcome,</strong> <span id="usernameDisplay">User</span></div>
-      <div class="profile-dropdown">
-        <img src="https://i.pravatar.cc/40" class="rounded-circle" style="cursor:pointer" onclick="toggleProfileMenu()" />
-        <div class="profile-dropdown-menu" id="profileMenu">
-          <a href="#" onclick="logout()">Logout</a>
-        </div>
+<div class="main-content">
+  <nav class="navbar">
+    <div><strong>Welcome,</strong> <span id="usernameDisplay">User</span></div>
+    <div class="profile-dropdown">
+      <img src="https://i.pravatar.cc/40" alt="Profile" id="profileAvatar" class="rounded-circle" />
+      <div class="profile-menu" id="profileMenu">
+        <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
+  </nav>
 
-    <!-- Balances -->
-    <div class="row mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5>Checking Account</h5>
+        <div id="checkingBalance" class="balance-amount">$0.00</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5>Savings Account</h5>
+        <div id="savingsBalance" class="balance-amount">$0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card quick-actions p-4">
+    <h5 class="mb-3">Quick Actions</h5>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <a href="international-transfer.html" class="btn btn-outline-primary w-100">
+          <i class="fas fa-globe"></i> International Transfer
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="local-transfer.html" class="btn btn-outline-primary w-100">
+          <i class="fas fa-building-columns"></i> Local Transfer
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="between-account.html" class="btn btn-outline-primary w-100">
+          <i class="fas fa-retweet"></i> Between Accounts
+        </a>
+      </div>
       <div class="col-md-6">
-        <div class="card balance-card shadow-sm mb-3">
-          <h5>Checking Account</h5>
-          <div id="checkingBalance" class="balance-amount">$0.00</div>
-        </div>
+        <a href="deposit.html" class="btn btn-success w-100">
+          <i class="fas fa-arrow-down"></i> Deposit Funds
+        </a>
       </div>
       <div class="col-md-6">
-        <div class="card balance-card shadow-sm mb-3">
-          <h5>Savings Account</h5>
-          <div id="savingsBalance" class="balance-amount">$0.00</div>
-        </div>
+        <a href="withdrawal.html" class="btn btn-danger w-100">
+          <i class="fas fa-arrow-up"></i> Withdraw Funds
+        </a>
       </div>
     </div>
+  </div>
 
-    <!-- Quick Actions -->
-    <div class="card shadow-sm p-4 mb-4">
-      <h5 class="mb-3">Quick Actions</h5>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <a href="international-transfer.html" class="btn btn-outline-primary w-100">
-            <i class="fas fa-globe"></i> International Transfer
-          </a>
-        </div>
-        <div class="col-md-4">
-          <a href="local-transfer.html" class="btn btn-outline-primary w-100">
-            <i class="fas fa-building-columns"></i> Local Transfer
-          </a>
-        </div>
-        <div class="col-md-4">
-          <a href="between-account.html" class="btn btn-outline-primary w-100">
-            <i class="fas fa-retweet"></i> Between Accounts
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a href="deposit.html" class="btn btn-success w-100">
-            <i class="fas fa-arrow-down"></i> Deposit Funds
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a href="withdrawal.html" class="btn btn-danger w-100">
-            <i class="fas fa-arrow-up"></i> Withdraw Funds
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Transactions -->
-    <div class="card shadow-sm mt-4 p-3">
-      <h5 class="mb-3">Recent Transactions</h5>
-      <div class="transaction-list" id="transactionList">
-        <p class="text-muted">No transactions yet.</p>
-      </div>
+  <div class="card p-4">
+    <h5 class="mb-3">Recent Transactions</h5>
+    <div id="transactionList" class="transaction-list">
+      <p class="text-muted">No transactions yet.</p>
     </div>
   </div>
 </div>
 
+<button class="btn btn-secondary dark-toggle-btn" id="darkToggleBtn" title="Toggle Dark Mode">
+  <i class="fas fa-moon"></i>
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
+  // Format USD currency with commas and decimals
   function formatCurrency(amount) {
     return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   }
 
+  // Load user data from localStorage or default
   const username = localStorage.getItem('loggedInUser') || 'User';
-  const balances = JSON.parse(localStorage.getItem('accountBalances')) || {
+  let balances = JSON.parse(localStorage.getItem('accountBalances')) || {
     checking: 0,
     savings: 0
   };
-  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 
+  // Display username and balances
   document.getElementById('usernameDisplay').textContent = username;
-  document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
-  document.getElementById('savingsBalance').textContent = formatCurrency(balances.savings);
+  const checkingBalanceEl = document.getElementById('checkingBalance');
+  const savingsBalanceEl = document.getElementById('savingsBalance');
+  const transactionListEl = document.getElementById('transactionList');
 
-  const transactionList = document.getElementById('transactionList');
-  if (transactions.length > 0) {
-    transactionList.innerHTML = '';
+  function updateBalancesUI() {
+    checkingBalanceEl.textContent = formatCurrency(balances.checking);
+    savingsBalanceEl.textContent = formatCurrency(balances.savings);
+  }
+
+  function displayTransactions() {
+    transactionListEl.innerHTML = '';
+    if (transactions.length === 0) {
+      transactionListEl.innerHTML = '<p class="text-muted">No transactions yet.</p>';
+      return;
+    }
     transactions.slice().reverse().forEach(tx => {
-      const item = document.createElement('div');
-      item.classList.add('transaction-item');
-      item.innerHTML = `
-        <strong>${tx.account.toUpperCase()}</strong> - ${tx.type.toUpperCase()}
-        <br><span>${formatCurrency(tx.amount)}</span><br>
+      const div = document.createElement('div');
+      div.className = 'transaction-item';
+      div.innerHTML = `
+        <strong>${tx.account.charAt(0).toUpperCase() + tx.account.slice(1)}</strong> - 
+        ${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}: 
+        <span>${formatCurrency(tx.amount)}</span><br/>
         <small class="text-muted">${new Date(tx.date).toLocaleString()}</small>
       `;
-      transactionList.appendChild(item);
+      transactionListEl.appendChild(div);
     });
   }
 
-  function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-  }
+  // Initial UI update
+  updateBalancesUI();
+  displayTransactions();
 
+  // Logout handlers
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutLink = document.getElementById('logoutLink');
   function logout() {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('accountBalances');
     localStorage.removeItem('transactions');
     window.location.href = 'logout.html';
   }
+  logoutBtn.addEventListener('click', logout);
+  logoutLink.addEventListener('click', e => {
+    e.preventDefault();
+    logout();
+  });
 
-  function toggleProfileMenu() {
-    const menu = document.getElementById('profileMenu');
-    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-  }
-
-  window.onclick = function(e) {
-    if (!e.target.matches('img')) {
-      const menu = document.getElementById('profileMenu');
-      if (menu && menu.style.display === 'block') {
-        menu.style.display = 'none';
-      }
+  // Profile dropdown toggle
+  const profileAvatar = document.getElementById('profileAvatar');
+  const profileMenu = document.getElementById('profileMenu');
+  profileAvatar.addEventListener('click', () => {
+    profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+  });
+  window.addEventListener('click', e => {
+    if (!profileAvatar.contains(e.target) && !profileMenu.contains(e.target)) {
+      profileMenu.style.display = 'none';
     }
-  }
+  });
+
+  // Dark mode toggle
+  const darkToggleBtn = document.getElementById('darkToggleBtn');
+  darkToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+  });
 </script>
 
 </body>
