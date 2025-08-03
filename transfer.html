@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transfer Funds - Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { background-color: #f8f9fa; }
+    .transfer-container { max-width: 550px; margin: auto; margin-top: 80px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light px-3">
+    <a href="index.html" class="navbar-brand">Oakline Bank</a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-bars me-1"></i> Menu
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+        <li><a class="dropdown-item" href="transactions.html">Transaction History</a></li>
+        <li><a class="dropdown-item" href="index.html">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="transfer-container bg-white p-4 shadow-sm rounded">
+    <h4 class="mb-4">Transfer Funds</h4>
+    <form id="transferForm">
+      <div class="mb-3">
+        <label for="fromAccount" class="form-label">From Account</label>
+        <select class="form-select" id="fromAccount" required>
+          <option value="Checking">Checking</option>
+          <option value="Savings">Savings</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="recipientName" class="form-label">Recipient Name</label>
+        <input type="text" class="form-control" id="recipientName" required />
+      </div>
+      <div class="mb-3">
+        <label for="accountNumber" class="form-label">Recipient Account Number</label>
+        <input type="text" class="form-control" id="accountNumber" required />
+      </div>
+      <div class="mb-3">
+        <label for="routingNumber" class="form-label">Recipient Routing Number</label>
+        <input type="text" class="form-control" id="routingNumber" required />
+      </div>
+      <div class="mb-3">
+        <label for="transferAmount" class="form-label">Amount ($)</label>
+        <input type="number" class="form-control" id="transferAmount" required min="1" />
+      </div>
+      <div class="mb-3">
+        <label for="transferNote" class="form-label">Note (optional)</label>
+        <input type="text" class="form-control" id="transferNote" />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Send Transfer</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('transferForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const fromAccount = document.getElementById('fromAccount').value;
+      const recipientName = document.getElementById('recipientName').value.trim();
+      const accountNumber = document.getElementById('accountNumber').value.trim();
+      const routingNumber = document.getElementById('routingNumber').value.trim();
+      const amount = parseFloat(document.getElementById('transferAmount').value);
+      const note = document.getElementById('transferNote').value.trim();
+      const date = new Date().toLocaleString();
+      const reference = 'TX' + Date.now();
+
+      let balance = parseFloat(localStorage.getItem('balance') || "0");
+      if (amount > balance) {
+        alert("Insufficient balance.");
+        return;
+      }
+
+      const transaction = {
+        type: "Transfer",
+        from: fromAccount,
+        to: recipientName,
+        accountNumber: accountNumber,
+        routingNumber: routingNumber,
+        amount: amount,
+        note: note,
+        date: date,
+        reference: reference,
+        description: `Transfer to ${recipientName} (${accountNumber})`
+      };
+
+      let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+      transactions.push(transaction);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      localStorage.setItem('latestTransaction', JSON.stringify(transaction));
+
+      balance -= amount;
+      localStorage.setItem('balance', balance.toFixed(2));
+
+      window.location.href = "confirmation.html";
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
