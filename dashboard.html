@@ -5,367 +5,272 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard | Oakline Bank</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f6f8;
       transition: background-color 0.3s ease;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
     .dark-mode {
       background-color: #121212;
       color: #fff;
     }
-    .dark-mode .card {
+    .dark-mode .card,
+    .dark-mode .navbar,
+    .dark-mode .sidebar {
       background-color: #1e1e1e;
-      border-color: #333;
       color: #fff;
     }
-    .container {
-      max-width: 900px;
-      margin-top: 3rem;
+
+    /* Layout */
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #fff;
+      padding: 1rem;
+      border-right: 1px solid #ddd;
+    }
+    .sidebar a {
+      display: block;
+      color: #333;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #007bff;
+      color: white;
+    }
+    .dark-mode .sidebar a {
+      color: #ccc;
+    }
+    .dark-mode .sidebar a:hover,
+    .dark-mode .sidebar a.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .main-content {
       flex-grow: 1;
+      padding: 2rem;
+    }
+
+    .navbar {
+      background-color: #ffffff;
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dark-mode .navbar {
+      border-color: #333;
+    }
+
+    .balance-card {
+      font-size: 1.2rem;
+      padding: 1rem 1.5rem;
     }
     .balance-amount {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 2rem;
+      font-weight: bold;
     }
+
     .transaction-list {
       max-height: 300px;
       overflow-y: auto;
     }
     .transaction-item {
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #ccc;
       padding: 0.75rem 0;
     }
     .transaction-item:last-child {
       border-bottom: none;
     }
-    .dark-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
+
+    .profile-dropdown {
+      position: relative;
+    }
+    .profile-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      min-width: 150px;
+      display: none;
       z-index: 1000;
     }
-    /* Send Money Section */
-    .send-money-section .form-label {
-      font-weight: 600;
+    .profile-dropdown-menu a {
+      display: block;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      color: #333;
     }
-    .send-money-section .alert {
-      margin-top: 1rem;
+    .profile-dropdown-menu a:hover {
+      background: #f0f0f0;
+    }
+    .dark-mode .profile-dropdown-menu {
+      background: #222;
+      border-color: #444;
+    }
+    .dark-mode .profile-dropdown-menu a {
+      color: #fff;
+    }
+    .dark-mode .profile-dropdown-menu a:hover {
+      background: #333;
     }
   </style>
 </head>
 <body>
 
-  <div class="dark-toggle">
-    <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()">
-      <i class="fas fa-moon"></i> Toggle Dark Mode
-    </button>
-  </div>
+<div class="wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h4>Oakline Bank</h4>
+    <a href="dashboard.html" class="active"><i class="fas fa-home me-2"></i>Dashboard</a>
+    <a href="international-transfer.html"><i class="fas fa-globe me-2"></i>International Transfer</a>
+    <a href="local-transfer.html"><i class="fas fa-building-columns me-2"></i>Local Transfer</a>
+    <a href="between-account.html"><i class="fas fa-retweet me-2"></i>Between Accounts</a>
+    <a href="deposit.html"><i class="fas fa-arrow-down me-2"></i>Deposit</a>
+    <a href="withdrawal.html"><i class="fas fa-arrow-up me-2"></i>Withdraw</a>
+    <a href="#" onclick="toggleDarkMode()"><i class="fas fa-moon me-2"></i>Toggle Dark Mode</a>
+  </aside>
 
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1>Welcome, <span id="usernameDisplay">User</span></h1>
-      <button class="btn btn-danger" id="logoutBtn">Logout</button>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Navbar -->
+    <div class="navbar">
+      <div><strong>Welcome,</strong> <span id="usernameDisplay">User</span></div>
+      <div class="profile-dropdown">
+        <img src="https://i.pravatar.cc/40" class="rounded-circle" style="cursor:pointer" onclick="toggleProfileMenu()" />
+        <div class="profile-dropdown-menu" id="profileMenu">
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </div>
     </div>
 
-    <div class="row mb-4">
-      <div class="col-md-6 mb-3">
-        <div class="card p-4 shadow-sm">
-          <h5>Checking Account Balance</h5>
+    <!-- Balances -->
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card balance-card shadow-sm mb-3">
+          <h5>Checking Account</h5>
           <div id="checkingBalance" class="balance-amount">$0.00</div>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
-        <div class="card p-4 shadow-sm">
-          <h5>Savings Account Balance</h5>
+      <div class="col-md-6">
+        <div class="card balance-card shadow-sm mb-3">
+          <h5>Savings Account</h5>
           <div id="savingsBalance" class="balance-amount">$0.00</div>
         </div>
       </div>
     </div>
 
-    <!-- Send Money Section -->
-    <div class="card p-4 shadow-sm mb-4 send-money-section">
-      <h4>Send Money</h4>
-      <form id="sendMoneyForm" class="row g-3" novalidate>
+    <!-- Quick Actions -->
+    <div class="card shadow-sm p-4 mb-4">
+      <h5 class="mb-3">Quick Actions</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <a href="international-transfer.html" class="btn btn-outline-primary w-100">
+            <i class="fas fa-globe"></i> International Transfer
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="local-transfer.html" class="btn btn-outline-primary w-100">
+            <i class="fas fa-building-columns"></i> Local Transfer
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="between-account.html" class="btn btn-outline-primary w-100">
+            <i class="fas fa-retweet"></i> Between Accounts
+          </a>
+        </div>
         <div class="col-md-6">
-          <label for="transferClass" class="form-label">Transfer Type</label>
-          <select id="transferClass" class="form-select" required>
-            <option value="">Select Transfer Type</option>
-            <option value="international">International Transfer</option>
-            <option value="local">Local Transfer</option>
-            <option value="between">Between My Accounts</option>
-          </select>
+          <a href="deposit.html" class="btn btn-success w-100">
+            <i class="fas fa-arrow-down"></i> Deposit Funds
+          </a>
         </div>
-
-        <!-- Conditional fields for between accounts -->
-        <div class="col-md-6 d-none" id="betweenAccountsFromDiv">
-          <label for="betweenFromAccount" class="form-label">From Account</label>
-          <select id="betweenFromAccount" class="form-select">
-            <option value="checking">Checking</option>
-            <option value="savings">Savings</option>
-          </select>
-        </div>
-
-        <div class="col-md-6 d-none" id="betweenToAccountDiv">
-          <label for="betweenToAccount" class="form-label">To Account</label>
-          <select id="betweenToAccount" class="form-select">
-            <option value="checking">Checking</option>
-            <option value="savings">Savings</option>
-          </select>
-        </div>
-
-        <!-- For local and international -->
-        <div class="col-md-6 d-none" id="recipientAccountDiv">
-          <label for="recipientAccount" class="form-label">Recipient Account Number</label>
-          <input type="text" id="recipientAccount" class="form-control" placeholder="Enter Account Number" />
-        </div>
-
-        <div class="col-md-6 d-none" id="recipientNameDiv">
-          <label for="recipientName" class="form-label">Recipient Name</label>
-          <input type="text" id="recipientName" class="form-control" placeholder="Enter Recipient Name" />
-        </div>
-
         <div class="col-md-6">
-          <label for="transferAmount" class="form-label">Amount ($)</label>
-          <input
-            type="number"
-            id="transferAmount"
-            class="form-control"
-            placeholder="0.00"
-            min="0.01"
-            step="0.01"
-            required
-          />
+          <a href="withdrawal.html" class="btn btn-danger w-100">
+            <i class="fas fa-arrow-up"></i> Withdraw Funds
+          </a>
         </div>
-
-        <div class="col-12 text-end">
-          <button type="submit" class="btn btn-primary">Send Money</button>
-        </div>
-
-        <div class="col-12">
-          <div id="sendMoneyAlert" class="alert d-none" role="alert"></div>
-        </div>
-      </form>
+      </div>
     </div>
 
-    <div class="card p-4 shadow-sm">
-      <h4>Recent Transactions</h4>
-      <div id="transactionList" class="transaction-list"></div>
+    <!-- Recent Transactions -->
+    <div class="card shadow-sm mt-4 p-3">
+      <h5 class="mb-3">Recent Transactions</h5>
+      <div class="transaction-list" id="transactionList">
+        <p class="text-muted">No transactions yet.</p>
+      </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-  <script>
-    // Format number with commas and decimals (USD)
-    function formatCurrency(amount) {
-      return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    }
+<script>
+  function formatCurrency(amount) {
+    return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  }
 
-    // Load user info & balances from localStorage or set defaults
-    let username = localStorage.getItem('loggedInUser') || 'User';
-    let balances = JSON.parse(localStorage.getItem('accountBalances')) || {
-      checking: 0,
-      savings: 0,
-    };
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  const username = localStorage.getItem('loggedInUser') || 'User';
+  const balances = JSON.parse(localStorage.getItem('accountBalances')) || {
+    checking: 0,
+    savings: 0
+  };
+  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 
-    // Display username
-    document.getElementById('usernameDisplay').textContent = username;
+  document.getElementById('usernameDisplay').textContent = username;
+  document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
+  document.getElementById('savingsBalance').textContent = formatCurrency(balances.savings);
 
-    // Display balances
-    function displayBalances() {
-      document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
-      document.getElementById('savingsBalance').textContent = formatCurrency(balances.savings);
-    }
-
-    // Display transactions
-    function displayTransactions() {
-      const list = document.getElementById('transactionList');
-      list.innerHTML = '';
-      if (transactions.length === 0) {
-        list.innerHTML = '<p class="text-muted">No transactions yet.</p>';
-        return;
-      }
-      transactions.slice().reverse().forEach((tx) => {
-        const div = document.createElement('div');
-        div.classList.add('transaction-item');
-        div.innerHTML = `
-          <strong>${tx.account.charAt(0).toUpperCase() + tx.account.slice(1)}</strong> - 
-          ${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}: 
-          <span>${formatCurrency(tx.amount)}</span>
-          <br />
-          <small class="text-muted">${new Date(tx.date).toLocaleString()}</small>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    // Update balances after transaction
-    function updateBalances(account, type, amount) {
-      if (type === 'deposit') {
-        balances[account] += amount;
-      } else if (type === 'withdrawal') {
-        if (balances[account] < amount) {
-          alert('Insufficient funds for withdrawal.');
-          return false;
-        }
-        balances[account] -= amount;
-      }
-      localStorage.setItem('accountBalances', JSON.stringify(balances));
-      return true;
-    }
-
-    // Add new transaction
-    function addTransaction(account, type, amount) {
-      const newTransaction = {
-        account,
-        type,
-        amount,
-        date: new Date().toISOString(),
-      };
-      transactions.push(newTransaction);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-      displayTransactions();
-    }
-
-    // Handle Send Money transfer
-    document.getElementById('sendMoneyForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const transferClass = document.getElementById('transferClass').value;
-      const amountInput = document.getElementById('transferAmount');
-      const amount = parseFloat(amountInput.value);
-      const alertBox = document.getElementById('sendMoneyAlert');
-
-      alertBox.classList.add('d-none');
-      alertBox.textContent = '';
-
-      if (!transferClass) {
-        showAlert('Please select a transfer type.', 'danger');
-        return;
-      }
-      if (!amount || amount <= 0) {
-        showAlert('Please enter a valid amount.', 'danger');
-        return;
-      }
-
-      if (transferClass === 'between') {
-        const fromAccount = document.getElementById('betweenFromAccount').value;
-        const toAccount = document.getElementById('betweenToAccount').value;
-
-        if (!fromAccount || !toAccount) {
-          showAlert('Please select both From and To accounts.', 'danger');
-          return;
-        }
-        if (fromAccount === toAccount) {
-          showAlert('From and To accounts cannot be the same.', 'danger');
-          return;
-        }
-        if (balances[fromAccount] < amount) {
-          showAlert('Insufficient funds in the source account.', 'danger');
-          return;
-        }
-
-        // Deduct from source
-        balances[fromAccount] -= amount;
-        // Add to destination
-        balances[toAccount] += amount;
-
-        // Save balances
-        localStorage.setItem('accountBalances', JSON.stringify(balances));
-
-        // Log transactions as transfer withdrawal + deposit
-        addTransaction(fromAccount, 'transfer out', amount);
-        addTransaction(toAccount, 'transfer in', amount);
-
-        showAlert(`Transferred ${formatCurrency(amount)} from ${capitalize(fromAccount)} to ${capitalize(toAccount)} successfully.`, 'success');
-
-      } else if (transferClass === 'local' || transferClass === 'international') {
-        // For this demo, treat local and international the same except we require recipient info
-
-        const recipientAccount = document.getElementById('recipientAccount').value.trim();
-        const recipientName = document.getElementById('recipientName').value.trim();
-
-        if (!recipientAccount || !recipientName) {
-          showAlert('Please enter recipient account number and name.', 'danger');
-          return;
-        }
-
-        // For simplicity, we withdraw from checking account only (could be extended)
-        if (balances.checking < amount) {
-          showAlert('Insufficient funds in checking account.', 'danger');
-          return;
-        }
-
-        balances.checking -= amount;
-        localStorage.setItem('accountBalances', JSON.stringify(balances));
-        addTransaction('checking', transferClass === 'local' ? 'local transfer' : 'international transfer', amount);
-
-        showAlert(`Sent ${formatCurrency(amount)} ${transferClass} to ${recipientName} successfully.`, 'success');
-      }
-
-      displayBalances();
-      e.target.reset();
-      toggleSendMoneyFields(); // reset fields visibility
+  const transactionList = document.getElementById('transactionList');
+  if (transactions.length > 0) {
+    transactionList.innerHTML = '';
+    transactions.slice().reverse().forEach(tx => {
+      const item = document.createElement('div');
+      item.classList.add('transaction-item');
+      item.innerHTML = `
+        <strong>${tx.account.toUpperCase()}</strong> - ${tx.type.toUpperCase()}
+        <br><span>${formatCurrency(tx.amount)}</span><br>
+        <small class="text-muted">${new Date(tx.date).toLocaleString()}</small>
+      `;
+      transactionList.appendChild(item);
     });
+  }
 
-    // Show alert helper
-    function showAlert(message, type = 'info') {
-      const alertBox = document.getElementById('sendMoneyAlert');
-      alertBox.textContent = message;
-      alertBox.className = 'alert alert-' + type;
-      alertBox.classList.remove('d-none');
-    }
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+  }
 
-    // Capitalize first letter helper
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('accountBalances');
+    localStorage.removeItem('transactions');
+    window.location.href = 'logout.html';
+  }
 
-    // Toggle fields based on transfer type
-    function toggleSendMoneyFields() {
-      const transferType = document.getElementById('transferClass').value;
-      const betweenFrom = document.getElementById('betweenAccountsFromDiv');
-      const betweenTo = document.getElementById('betweenToAccountDiv');
-      const recipientAccount = document.getElementById('recipientAccountDiv');
-      const recipientName = document.getElementById('recipientNameDiv');
+  function toggleProfileMenu() {
+    const menu = document.getElementById('profileMenu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  }
 
-      betweenFrom.classList.add('d-none');
-      betweenTo.classList.add('d-none');
-      recipientAccount.classList.add('d-none');
-      recipientName.classList.add('d-none');
-
-      if (transferType === 'between') {
-        betweenFrom.classList.remove('d-none');
-        betweenTo.classList.remove('d-none');
-      } else if (transferType === 'local' || transferType === 'international') {
-        recipientAccount.classList.remove('d-none');
-        recipientName.classList.remove('d-none');
+  window.onclick = function(e) {
+    if (!e.target.matches('img')) {
+      const menu = document.getElementById('profileMenu');
+      if (menu && menu.style.display === 'block') {
+        menu.style.display = 'none';
       }
     }
+  }
+</script>
 
-    document.getElementById('transferClass').addEventListener('change', toggleSendMoneyFields);
-
-    // Logout button
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('loggedInUser');
-      localStorage.removeItem('accountBalances');
-      localStorage.removeItem('transactions');
-      window.location.href = 'logout.html';
-    });
-
-    // Dark mode toggle
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
-
-    // Initial load
-    displayBalances();
-    displayTransactions();
-    toggleSendMoneyFields(); // initialize fields visibility
-  </script>
 </body>
 </html>
