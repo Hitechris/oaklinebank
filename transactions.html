@@ -1,229 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Transaction History - Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    body.dark-mode {
-      background-color: #121212;
-      color: #eee;
-    }
-
-    nav {
-      background: #004080;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav .nav-links a {
-      color: white;
-      margin-left: 1.5rem;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    nav .nav-links a:hover {
-      text-decoration: underline;
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .transaction-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    body.dark-mode .transaction-table {
-      background: #1e1e1e;
-    }
-
-    .transaction-table thead {
-      background: #004080;
-      color: white;
-    }
-
-    .transaction-table th,
-    .transaction-table td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .transaction-table tr:hover {
-      background-color: #f0f8ff;
-    }
-
-    body.dark-mode .transaction-table tr:hover {
-      background-color: #2a2a2a;
-    }
-
-    .type-transfer { color: #2e86de; font-weight: bold; }
-    .type-debit { color: #d9534f; font-weight: bold; }
-    .type-credit { color: #28a745; font-weight: bold; }
-
-    .status-success {
-      color: green;
-      font-weight: 600;
-    }
-
-    .status-failed {
-      color: red;
-      font-weight: 600;
-    }
-
-    .footer {
-      text-align: center;
-      margin: 3rem 0 1rem;
-      color: #888;
-    }
-
-    @media (max-width: 768px) {
-      .transaction-table thead {
-        display: none;
-      }
-
-      .transaction-table tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-
-      .transaction-table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #eee;
-      }
-
-      .transaction-table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #555;
-      }
-    }
-
-    .top-buttons {
-      text-align: right;
-      margin-bottom: 1rem;
-    }
-
-    .top-buttons button {
-      padding: 0.5rem 1rem;
-      background: #004080;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .top-buttons button:hover {
-      background: #003060;
-    }
+    body { background-color: #f8f9fa; }
+    table th, table td { vertical-align: middle; }
   </style>
 </head>
 <body>
-
-  <nav>
-    <h1>Oakline Bank</h1>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="transfer.html">Transfer</a>
-      <a href="index.html">Logout</a>
+  <nav class="navbar navbar-light bg-light px-3">
+    <a href="index.html" class="navbar-brand">Oakline Bank</a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-bars me-1"></i> Menu
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+        <li><a class="dropdown-item" href="deposit.html">Deposit Funds</a></li>
+        <li><a class="dropdown-item" href="withdrawal.html">Withdraw Funds</a></li>
+        <li><a class="dropdown-item" href="index.html">Logout</a></li>
+      </ul>
     </div>
   </nav>
 
-  <main>
-    <div class="top-buttons">
-      <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  <div class="container mt-5">
+    <h4 class="mb-4">All Transactions</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Amount ($)</th>
+            <th>Balance After</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTableBody"></tbody>
+      </table>
     </div>
-
-    <h2>Transaction History</h2>
-    <table class="transaction-table">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Amount</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Note</th>
-        </tr>
-      </thead>
-      <tbody id="transactionList">
-        <!-- Transactions will be added here -->
-      </tbody>
-    </table>
-  </main>
-
-  <div class="footer">
-    &copy; 2025 Oakline Bank. All rights reserved.
+    <div id="noTransactions" class="text-muted text-center mt-4 d-none">
+      No transactions yet.
+    </div>
   </div>
 
   <script>
-    const transactions = [
-      { type: 'transfer', amount: 5000, date: '2025-08-01', status: 'success', note: 'To Jane Doe' },
-      { type: 'debit', amount: 3000000, date: '2025-07-29', status: 'success', note: 'Check Withdrawal' },
-      { type: 'credit', amount: 10000, date: '2025-07-25', status: 'success', note: 'Salary' },
-      { type: 'transfer', amount: 200, date: '2025-07-15', status: 'success', note: 'Transfer to savings' },
-      { type: 'debit', amount: 120, date: '2025-07-10', status: 'failed', note: 'Card Declined' },
-      { type: 'credit', amount: 7500, date: '2025-07-05', status: 'success', note: 'Refund: Amazon' }
-    ];
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    const tbody = document.getElementById('transactionTableBody');
+    const empty = document.getElementById('noTransactions');
+    let runningBalance = 0;
 
-    const tableBody = document.getElementById('transactionList');
+    if (transactions.length === 0) {
+      empty.classList.remove('d-none');
+    } else {
+      transactions.forEach((tx, index) => {
+        if (tx.type === "Deposit") {
+          runningBalance += parseFloat(tx.amount);
+        } else if (tx.type === "Withdrawal") {
+          runningBalance -= parseFloat(tx.amount);
+        } else if (tx.type === "Transfer") {
+          runningBalance -= parseFloat(tx.amount);
+        }
 
-    transactions.forEach(tx => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="type-${tx.type}" data-label="Type">${capitalize(tx.type)}</td>
-        <td data-label="Amount">$${tx.amount.toLocaleString()}</td>
-        <td data-label="Date">${tx.date}</td>
-        <td class="status-${tx.status}" data-label="Status">${capitalize(tx.status)}</td>
-        <td data-label="Note">${tx.note}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    }
-
-    // Load saved dark mode
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${tx.date}</td>
+          <td>${tx.type}</td>
+          <td>${tx.description || '-'}</td>
+          <td class="${tx.type === 'Deposit' ? 'text-success' : 'text-danger'}">
+            ${tx.type === 'Deposit' ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}
+          </td>
+          <td>$${runningBalance.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
     }
   </script>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
