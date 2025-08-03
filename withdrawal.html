@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <style>
     body { background-color: #f8f9fa; }
-    .withdraw-container { max-width: 500px; margin: auto; margin-top: 80px; }
+    .container { max-width: 500px; margin-top: 80px; }
   </style>
 </head>
 <body>
@@ -26,55 +26,68 @@
     </div>
   </nav>
 
-  <div class="withdraw-container bg-white p-4 shadow-sm rounded">
+  <div class="container bg-white p-4 shadow-sm rounded">
     <h4 class="mb-4">Withdraw Funds</h4>
     <form id="withdrawForm">
       <div class="mb-3">
-        <label for="withdrawAmount" class="form-label">Amount ($)</label>
-        <input type="number" class="form-control" id="withdrawAmount" required min="1" />
+        <label for="withdrawAccount" class="form-label">Withdraw From</label>
+        <select class="form-select" id="withdrawAccount" required>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
       </div>
+
+      <div class="mb-3">
+        <label for="withdrawAmount" class="form-label">Amount ($)</label>
+        <input type="number" class="form-control" id="withdrawAmount" min="1" required />
+      </div>
+
       <div class="mb-3">
         <label for="withdrawNote" class="form-label">Note (optional)</label>
-        <input type="text" class="form-control" id="withdrawNote" placeholder="e.g. Cash for rent" />
+        <input type="text" class="form-control" id="withdrawNote" placeholder="e.g. ATM, transfer, etc." />
       </div>
-      <button type="submit" class="btn btn-danger w-100">Withdraw</button>
+
+      <button type="submit" class="btn btn-danger w-100">Submit Withdrawal</button>
     </form>
-    <div id="withdrawSuccess" class="alert alert-success mt-3 d-none">
-      Withdrawal successful! View it in <a href="transactions.html" class="alert-link">Transaction History</a>.
-    </div>
   </div>
 
   <script>
     document.getElementById('withdrawForm').addEventListener('submit', function (e) {
       e.preventDefault();
+
+      const accountType = document.getElementById('withdrawAccount').value;
       const amount = parseFloat(document.getElementById('withdrawAmount').value);
       const note = document.getElementById('withdrawNote').value.trim();
       const date = new Date().toLocaleString();
 
-      // Check balance
-      let balance = parseFloat(localStorage.getItem('balance') || "0");
-      if (amount > balance) {
-        alert("Insufficient balance.");
+      const balanceKey = accountType === "checking" ? "checkingBalance" : "savingsBalance";
+      let currentBalance = parseFloat(localStorage.getItem(balanceKey) || "0");
+
+      if (amount > currentBalance) {
+        alert("Insufficient balance in your " + accountType + " account.");
         return;
       }
 
+      // Deduct balance
+      currentBalance -= amount;
+      localStorage.setItem(balanceKey, currentBalance.toFixed(2));
+
+      // Save transaction
       const transaction = {
         type: "Withdrawal",
+        account: accountType,
         amount: amount,
         date: date,
-        description: note || "Withdrawal"
+        description: `Withdrawal from ${accountType} ${note ? `(${note})` : ""}`
       };
 
       let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
       transactions.push(transaction);
       localStorage.setItem('transactions', JSON.stringify(transactions));
+      localStorage.setItem('latestTransaction', JSON.stringify(transaction));
 
-      // Update balance
-      balance -= amount;
-      localStorage.setItem('balance', balance.toFixed(2));
-
-      document.getElementById('withdrawForm').reset();
-      document.getElementById('withdrawSuccess').classList.remove('d-none');
+      // Redirect to confirmation
+      window.location.href = "confirmation.html";
     });
   </script>
 
