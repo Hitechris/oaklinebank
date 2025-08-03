@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      transition: background-color 0.3s ease;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #f1f1f1;
+    }
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background-color: #fff;
+      border-right: 1px solid #ddd;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 60px;
+    }
+    .dark-mode .sidebar {
+      background-color: #1a1a1a;
+      border-color: #333;
+    }
+    .sidebar .nav-link {
+      padding: 15px 20px;
+      color: #333;
+      font-weight: 600;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #e9f0ff;
+      color: #0d6efd;
+    }
+    .dark-mode .sidebar .nav-link {
+      color: #ccc;
+    }
+    .dark-mode .sidebar .nav-link:hover {
+      background-color: #2a2a2a;
+    }
+    .main-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .dark-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 999;
+    }
+    .balance-card h5 {
+      font-weight: 600;
+    }
+    .balance-card h2 {
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar d-flex flex-column">
+    <h4 class="text-center text-primary mb-4">Oakline Bank</h4>
+    <a href="dashboard.html" class="nav-link">Dashboard</a>
+    <a href="deposit.html" class="nav-link">Deposit</a>
+    <a href="withdrawal.html" class="nav-link">Withdraw</a>
+    <a href="between-account.html" class="nav-link">Between Accounts</a>
+    <a href="local-transfer.html" class="nav-link">Local Transfer</a>
+    <a href="international-transfer.html" class="nav-link">International Transfer</a>
+    <a href="statements.html" class="nav-link">Statements</a>
+    <a href="transactions.html" class="nav-link">Transaction History</a>
+    <a href="budget.html" class="nav-link">Budget Planner</a>
+    <a href="credit-score.html" class="nav-link">Credit Score</a>
+    <a href="investments.html" class="nav-link">Investment Portfolio</a>
+    <a href="loan-overview.html" class="nav-link">Loan Overview</a>
+    <a href="profile.html" class="nav-link">Profile Settings</a>
+    <a href="notifications.html" class="nav-link">Notifications</a>
+    <a href="help.html" class="nav-link">Help & Support</a>
+    <a href="logout.html" class="nav-link text-danger">Logout</a>
+  </div>
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-toggle">
+    <button id="darkModeToggle" class="btn btn-outline-secondary btn-sm">
+      <i class="fas fa-moon"></i> Toggle Dark Mode
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <h3 id="userWelcome">Welcome, User</h3>
+      <img src="https://ui-avatars.com/api/?name=User&background=0d6efd&color=fff&size=40" alt="Profile" class="rounded-circle" />
+    </div>
+
+    <!-- Balances -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card p-4 balance-card shadow-sm">
+          <h5 class="text-muted">Checking Account</h5>
+          <h2 id="checkingBalance" class="text-primary">$0.00</h2>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card p-4 balance-card shadow-sm">
+          <h5 class="text-muted">Savings Account</h5>
+          <h2 id="savingsBalance" class="text-success">$0.00</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next: Feature Grid Section (coming next) -->
+
+  </div>
+
+  <script>
+    // Currency formatting
+    function formatCurrency(amount) {
+      return amount.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Load balances
+    function loadBalances() {
+      let balances = JSON.parse(localStorage.getItem('accountBalances'));
+      if (!balances) {
+        balances = { checking: 12500.55, savings: 78500.25 };
+        localStorage.setItem('accountBalances', JSON.stringify(balances));
+      }
+      document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
+      document.getElementById('savingsBalance').textContent = formatCurrency(balances.savings);
+    }
+
+    // Load username
+    function loadUsername() {
+      const name = localStorage.getItem('loggedInUser') || 'User';
+      document.getElementById('userWelcome').textContent = `Welcome, ${name}`;
+      document.querySelector('img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0d6efd&color=fff&size=40`;
+    }
+
+    // Dark Mode toggle
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Real-time balance sync
+    window.addEventListener('storage', e => {
+      if (e.key === 'accountBalances') loadBalances();
+    });
+
+    // Init
+    loadUsername();
+    loadBalances();
+  </script>
+</body>
+</html>
