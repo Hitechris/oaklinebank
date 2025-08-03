@@ -128,26 +128,30 @@
     }
 
     filtered.forEach((tx, index) => {
-      if (tx.type === "Deposit") {
+      if (tx.type && tx.type.toLowerCase() === "deposit") {
         runningBalance += parseFloat(tx.amount);
-      } else if (tx.type === "Withdrawal" || tx.type === "Transfer") {
+      } else if (tx.type && (tx.type.toLowerCase() === "withdrawal" || tx.type.toLowerCase() === "transfer")) {
         runningBalance -= parseFloat(tx.amount);
       }
 
       const row = document.createElement('tr');
 
-      const receiptBtn = tx.type === "Transfer"
+      const receiptBtn = tx.type && tx.type.toLowerCase() === "transfer"
         ? `<button class="btn btn-sm btn-outline-secondary" onclick="viewReceipt(${transactions.indexOf(tx)})" title="View Receipt">
              <i class="fas fa-receipt"></i>
            </button>`
         : "";
 
+      const isDeposit = tx.type && tx.type.toLowerCase() === 'deposit';
+      const amountClass = isDeposit ? 'text-success' : 'text-danger';
+      const sign = isDeposit ? '+' : '-';
+
       row.innerHTML = `
         <td>${tx.date}</td>
         <td>${tx.type}</td>
         <td>${tx.description || '-'}</td>
-        <td class="${tx.type === 'Deposit' ? 'text-success' : 'text-danger'}">
-          ${tx.type === 'Deposit' ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}
+        <td class="${amountClass}">
+          ${sign}$${parseFloat(tx.amount).toFixed(2)}
         </td>
         <td>$${runningBalance.toFixed(2)}</td>
         <td>${receiptBtn}</td>
@@ -171,14 +175,14 @@
     const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     sorted.forEach(tx => {
-      if (tx.type === "Deposit") runningBalance += parseFloat(tx.amount);
-      else if (tx.type === "Withdrawal" || tx.type === "Transfer") runningBalance -= parseFloat(tx.amount);
+      if (tx.type && tx.type.toLowerCase() === "deposit") runningBalance += parseFloat(tx.amount);
+      else if (tx.type && (tx.type.toLowerCase() === "withdrawal" || tx.type.toLowerCase() === "transfer")) runningBalance -= parseFloat(tx.amount);
 
       csvRows.push([
         tx.date,
         tx.type,
         tx.description || '',
-        (tx.type === "Deposit" ? '+' : '-') + parseFloat(tx.amount).toFixed(2),
+        (tx.type && tx.type.toLowerCase() === "deposit" ? '+' : '-') + parseFloat(tx.amount).toFixed(2),
         runningBalance.toFixed(2)
       ]);
     });
