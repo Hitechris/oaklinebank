@@ -71,33 +71,36 @@
   </div>
 
   <script>
-    const tx = JSON.parse(localStorage.getItem('latestTransaction'));
-    if (!tx) {
-      window.location.href = "dashboard.html";
-    } else {
-      document.getElementById("txType").textContent = tx.type || "-";
-      document.getElementById("fromAccount").textContent = tx.from || "-";
-      document.getElementById("amount").textContent = parseFloat(tx.amount).toFixed(2);
-      document.getElementById("transactionId").textContent = tx.reference || tx.id || generateID();
-      document.getElementById("date").textContent = tx.date || new Date().toLocaleString();
+const tx = JSON.parse(localStorage.getItem('latestTransaction'));
+if (!tx) {
+  window.location.href = "dashboard.html";
+} else {
+  document.getElementById("txType").textContent = tx.type || "-";
+  document.getElementById("fromAccount").textContent = tx.account || tx.from || "-";
+  document.getElementById("amount").textContent = parseFloat(tx.amount).toFixed(2);
+  document.getElementById("transactionId").textContent = tx.transactionId || tx.reference || generateID();
+  document.getElementById("date").textContent = tx.date || new Date().toLocaleString();
 
-      // Optional fields
-      if (tx.type === "Transfer") {
-        document.getElementById("recipientName").textContent = tx.recipientName || "-";
-        document.getElementById("accountNumber").textContent = tx.recipientAccount || "-";
-        document.getElementById("routingNumber").textContent = tx.routingNumber || "021000021"; // fallback
-        document.getElementById("note").textContent = tx.note || "—";
-      } else {
-        document.getElementById("recipientNameRow").style.display = "none";
-        document.getElementById("accountNumberRow").style.display = "none";
-        document.getElementById("routingNumberRow").style.display = "none";
-        document.getElementById("noteRow").style.display = "none";
-      }
+  if (tx.type === "Transfer") {
+    document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
+    document.getElementById("accountNumber").textContent = tx.recipientAccount || tx.accountNumber || "-";
+    document.getElementById("routingNumber").textContent = tx.routingNumber || "021000021"; // fallback
+    document.getElementById("note").textContent = tx.note || "—";
+  } else {
+    // Hide irrelevant fields for Deposit or Withdrawal
+    document.getElementById("recipientNameRow").style.display = "none";
+    document.getElementById("accountNumberRow").style.display = "none";
+    document.getElementById("routingNumberRow").style.display = "none";
+    document.getElementById("noteRow").style.display = tx.note ? "block" : "none";
+    if (tx.note) {
+      document.getElementById("note").textContent = tx.note;
     }
+  }
+}
 
-    function generateID() {
-      return "TX" + Math.floor(Math.random() * 1000000000);
-    }
+function generateID() {
+  return "TX" + Math.floor(Math.random() * 1000000000);
+}
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
