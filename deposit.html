@@ -71,15 +71,15 @@
       balances[accountType] += amount;
       localStorage.setItem('accountBalances', JSON.stringify(balances));
 
-      const transaction = {
-        type: "Deposit",
-        amount: amount,
-        date: date,
-        account: accountType,
-        description: `Deposit to ${accountType} account ${note ? `(${note})` : ""}`,
-        transactionId: transactionId,
-        note: note
-      };
+   const transaction = {
+  type: "Deposit",
+  amount: amount,
+  date: date,
+  account: accountType,
+  description: `Deposit to ${accountType} account ${note ? `(${note})` : ""}`,
+  reference: transactionId,   // <--- Changed here
+  note: note
+};
 
       const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
       transactions.push(transaction);
