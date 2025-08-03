@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Withdrawal - Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 2rem;
+    }
+    .form-section {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-section">
+    <h2 class="mb-4 text-center">Withdraw Funds</h2>
+    <form id="withdrawForm">
+      <div class="mb-3">
+        <label for="accountType" class="form-label">Select Account</label>
+        <select class="form-select" id="accountType" required>
+          <option value="">Choose...</option>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="withdrawAmount" class="form-label">Amount ($)</label>
+        <input type="number" class="form-control" id="withdrawAmount" min="1" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="withdrawMethod" class="form-label">Withdrawal Method</label>
+        <select class="form-select" id="withdrawMethod" required>
+          <option value="">Select method...</option>
+          <option value="ATM">ATM</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash Pickup">Cash Pickup</option>
+          <option value="Mobile Money">Mobile Money</option>
+        </select>
+      </div>
+
+      <div id="recipientFields" class="hidden">
+        <div class="mb-3">
+          <label for="recipientName" class="form-label">Recipient Name</label>
+          <input type="text" class="form-control" id="recipientName" />
+        </div>
+        <div class="mb-3">
+          <label for="recipientAccount" class="form-label">Recipient Account Number</label>
+          <input type="text" class="form-control" id="recipientAccount" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100">Withdraw</button>
+    </form>
+  </div>
+
+  <script>
+    const withdrawForm = document.getElementById("withdrawForm");
+    const methodSelect = document.getElementById("withdrawMethod");
+    const recipientFields = document.getElementById("recipientFields");
+
+    // Show/hide recipient info based on method
+    methodSelect.addEventListener("change", () => {
+      const method = methodSelect.value;
+      if (method === "Bank Transfer" || method === "Mobile Money" || method === "Cash Pickup") {
+        recipientFields.classList.remove("hidden");
+      } else {
+        recipientFields.classList.add("hidden");
+      }
+    });
+
+    withdrawForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const accountType = document.getElementById("accountType").value;
+      const amount = parseFloat(document.getElementById("withdrawAmount").value);
+      const method = document.getElementById("withdrawMethod").value;
+      const recipientName = document.getElementById("recipientName").value.trim();
+      const recipientAccount = document.getElementById("recipientAccount").value.trim();
+
+      if (!accountType || isNaN(amount) || amount <= 0 || !method) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      let balances = JSON.parse(localStorage.getItem("accountBalances")) || {
+        checking: 1000,
+        savings: 1000,
+      };
+
+      if (balances[accountType] < amount) {
+        alert("Insufficient funds.");
+        return;
+      }
+
+      balances[accountType] -= amount;
+      localStorage.setItem("accountBalances", JSON.stringify(balances));
+
+      const transaction = {
+        type: "Withdrawal",
+        method: method,
+        accountType: accountType,
+        amount: amount.toFixed(2),
+        recipientName: recipientName || "",
+        recipientAccount: recipientAccount || "",
+        transactionId: "TX" + Date.now(),
+        date: new Date().toLocaleString()
+      };
+
+      localStorage.setItem("latestTransaction", JSON.stringify(transaction));
+      window.location.href = "receipt.html";
+    });
+  </script>
+</body>
+</html>
