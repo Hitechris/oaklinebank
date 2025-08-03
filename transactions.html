@@ -29,6 +29,46 @@
 
   <div class="container mt-5">
     <h4 class="mb-4">All Transactions</h4>
+
+    <div class="d-flex justify-content-between align-items-center my-3 flex-wrap">
+  <div class="mb-2">
+    <label for="filterType" class="form-label me-2">Filter by Type:</label>
+    <select id="filterType" class="form-select form-select-sm d-inline-block w-auto">
+      <option value="All">All</option>
+      <option value="Deposit">Deposit</option>
+      <option value="Withdrawal">Withdrawal</option>
+      <option value="Transfer">Transfer</option>
+    </select>
+  </div>
+  <button class="btn btn-outline-primary btn-sm mb-2" onclick="exportToCSV()">
+    <i class="fas fa-file-export me-1"></i> Export to CSV
+  </button>
+</div>
+    <!-- FILTER & EXPORT CONTROLS -->
+<div class="row mb-3">
+  <div class="col-md-4 mb-2">
+    <label for="filterType" class="form-label">Filter by Type:</label>
+    <select id="filterType" class="form-select form-select-sm">
+      <option value="All">All</option>
+      <option value="Deposit">Deposit</option>
+      <option value="Withdrawal">Withdrawal</option>
+      <option value="Transfer">Transfer</option>
+    </select>
+  </div>
+  <div class="col-md-3 mb-2">
+    <label for="startDate" class="form-label">From:</label>
+    <input type="date" id="startDate" class="form-control form-control-sm" />
+  </div>
+  <div class="col-md-3 mb-2">
+    <label for="endDate" class="form-label">To:</label>
+    <input type="date" id="endDate" class="form-control form-control-sm" />
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <button class="btn btn-outline-primary btn-sm w-100" onclick="exportToCSV()">
+      <i class="fas fa-file-export me-1"></i> Export CSV
+    </button>
+  </div>
+</div>
     <div class="table-responsive">
       <table class="table table-bordered table-hover text-center align-middle">
 <thead class="table-light">
@@ -53,12 +93,41 @@
   const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
   const tbody = document.getElementById('transactionTableBody');
   const empty = document.getElementById('noTransactions');
-  let runningBalance = 0;
 
-  if (transactions.length === 0) {
-    empty.classList.remove('d-none');
-  } else {
-    transactions.forEach((tx, index) => {
+  const filterSelect = document.getElementById('filterType');
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+
+  function parseDate(dateStr) {
+    return new Date(dateStr + 'T00:00:00');
+  }
+
+  function renderTransactions() {
+    tbody.innerHTML = '';
+    empty.classList.add('d-none');
+    let runningBalance = 0;
+
+    const typeFilter = filterSelect.value;
+    const startDate = startDateInput.value ? parseDate(startDateInput.value) : null;
+    const endDate = endDateInput.value ? parseDate(endDateInput.value) : null;
+
+    // Newest-first
+    const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const filtered = sorted.filter(tx => {
+      const txDate = new Date(tx.date);
+      const matchesType = typeFilter === "All" || tx.type === typeFilter;
+      const matchesStart = !startDate || txDate >= startDate;
+      const matchesEnd = !endDate || txDate <= endDate;
+      return matchesType && matchesStart && matchesEnd;
+    });
+
+    if (filtered.length === 0) {
+      empty.classList.remove('d-none');
+      return;
+    }
+
+    filtered.forEach((tx, index) => {
       if (tx.type === "Deposit") {
         runningBalance += parseFloat(tx.amount);
       } else if (tx.type === "Withdrawal" || tx.type === "Transfer") {
@@ -68,7 +137,7 @@
       const row = document.createElement('tr');
 
       const receiptBtn = tx.type === "Transfer"
-        ? `<button class="btn btn-sm btn-outline-secondary" onclick="viewReceipt(${index})" title="View Receipt">
+        ? `<button class="btn btn-sm btn-outline-secondary" onclick="viewReceipt(${transactions.indexOf(tx)})" title="View Receipt">
              <i class="fas fa-receipt"></i>
            </button>`
         : "";
@@ -92,6 +161,42 @@
     localStorage.setItem('latestTransaction', JSON.stringify(tx));
     window.location.href = "receipt.html";
   }
+
+  function exportToCSV() {
+    if (transactions.length === 0) return alert("No transactions to export.");
+
+    const csvRows = [["Date", "Type", "Description", "Amount", "Balance"]];
+    let runningBalance = 0;
+
+    const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sorted.forEach(tx => {
+      if (tx.type === "Deposit") runningBalance += parseFloat(tx.amount);
+      else if (tx.type === "Withdrawal" || tx.type === "Transfer") runningBalance -= parseFloat(tx.amount);
+
+      csvRows.push([
+        tx.date,
+        tx.type,
+        tx.description || '',
+        (tx.type === "Deposit" ? '+' : '-') + parseFloat(tx.amount).toFixed(2),
+        runningBalance.toFixed(2)
+      ]);
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(r => r.join(",")).join("\n");
+    const link = document.createElement("a");
+    link.href = encodeURI(csvContent);
+    link.download = "oakline-transactions.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  filterSelect.addEventListener('change', renderTransactions);
+  startDateInput.addEventListener('change', renderTransactions);
+  endDateInput.addEventListener('change', renderTransactions);
+
+  renderTransactions();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
