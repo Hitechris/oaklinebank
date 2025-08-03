@@ -9,116 +9,145 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f8fa;
+      background-color: #f7f9fb;
       transition: background-color 0.3s ease;
+      padding-bottom: 40px;
     }
+
     .dark-mode {
       background-color: #121212;
       color: #eaeaea;
     }
+
     .dark-mode .card {
       background-color: #1e1e1e;
       color: #fff;
     }
-    .hero {
-      padding: 2rem;
-      background: linear-gradient(to right, #0d6efd, #0056b3);
-      color: white;
-      text-align: center;
-      border-radius: 10px;
-      margin-bottom: 2rem;
-    }
-    .balance-card h5 {
-      font-weight: 600;
-    }
-    .balance-card h2 {
-      font-size: 2rem;
-    }
-    .features-grid .card {
-      transition: transform 0.2s ease;
-    }
-    .features-grid .card:hover {
-      transform: translateY(-5px);
-    }
+
     .dark-toggle {
       position: fixed;
       top: 15px;
       right: 15px;
       z-index: 1000;
     }
+
+    .hero-banner {
+      background: linear-gradient(to right, #0d6efd, #0056b3);
+      padding: 2rem;
+      text-align: center;
+      color: white;
+      border-radius: 12px;
+      margin: 2rem auto;
+      max-width: 960px;
+    }
+
+    .balance-section {
+      max-width: 960px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .balance-card h5 {
+      font-weight: 600;
+    }
+
+    .balance-card h2 {
+      font-size: 2.1rem;
+      font-weight: 700;
+    }
+
+    .features-grid {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .features-grid .card {
+      text-align: center;
+      padding: 1.5rem;
+      transition: transform 0.2s ease;
+      border: none;
+    }
+
+    .features-grid .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+
+    a.card-link {
+      text-decoration: none;
+      color: inherit;
+    }
   </style>
 </head>
 <body>
-
   <!-- Dark Mode Toggle -->
   <div class="dark-toggle">
-    <button class="btn btn-sm btn-outline-light bg-dark" onclick="toggleDarkMode()">
+    <button class="btn btn-outline-light btn-sm bg-dark" onclick="toggleDarkMode()">
       <i class="fas fa-moon"></i>
     </button>
   </div>
 
   <!-- HERO SECTION -->
-  <section class="hero container mt-4">
+  <section class="hero-banner">
     <h2>Welcome to Oakline Bank</h2>
     <p id="userWelcome">Hello, User</p>
   </section>
 
-  <!-- ACCOUNT BALANCE SECTION -->
-  <section class="container mb-4">
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <div class="card shadow-sm p-4 balance-card">
-          <h5 class="text-muted">Checking Account</h5>
+  <!-- ACCOUNT BALANCES -->
+  <section class="balance-section container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card balance-card shadow-sm p-4">
+          <h5>Checking Account</h5>
           <h2 id="checkingBalance" class="text-primary">$0.00</h2>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
-        <div class="card shadow-sm p-4 balance-card">
-          <h5 class="text-muted">Savings Account</h5>
+      <div class="col-md-6">
+        <div class="card balance-card shadow-sm p-4">
+          <h5>Savings Account</h5>
           <h2 id="savingsBalance" class="text-success">$0.00</h2>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FEATURE CARDS SECTION -->
-  <section class="container features-grid mb-5">
+  <!-- FEATURE GRID SECTION -->
+  <section class="features-grid container mt-4">
     <div class="row g-4">
       <div class="col-md-4">
-        <a href="deposit.html" class="text-decoration-none text-dark">
-          <div class="card shadow-sm p-4 text-center">
+        <a href="deposit.html" class="card-link">
+          <div class="card shadow-sm">
             <i class="fas fa-piggy-bank fa-2x mb-2 text-primary"></i>
             <h6>Deposit Funds</h6>
           </div>
         </a>
       </div>
       <div class="col-md-4">
-        <a href="withdrawal.html" class="text-decoration-none text-dark">
-          <div class="card shadow-sm p-4 text-center">
+        <a href="withdrawal.html" class="card-link">
+          <div class="card shadow-sm">
             <i class="fas fa-money-bill-wave fa-2x mb-2 text-danger"></i>
             <h6>Withdraw Funds</h6>
           </div>
         </a>
       </div>
       <div class="col-md-4">
-        <a href="between-account.html" class="text-decoration-none text-dark">
-          <div class="card shadow-sm p-4 text-center">
+        <a href="between-account.html" class="card-link">
+          <div class="card shadow-sm">
             <i class="fas fa-random fa-2x mb-2 text-warning"></i>
             <h6>Between Accounts</h6>
           </div>
         </a>
       </div>
       <div class="col-md-6">
-        <a href="local-transfer.html" class="text-decoration-none text-dark">
-          <div class="card shadow-sm p-4 text-center">
+        <a href="local-transfer.html" class="card-link">
+          <div class="card shadow-sm">
             <i class="fas fa-university fa-2x mb-2 text-info"></i>
             <h6>Local Transfer</h6>
           </div>
         </a>
       </div>
       <div class="col-md-6">
-        <a href="international-transfer.html" class="text-decoration-none text-dark">
-          <div class="card shadow-sm p-4 text-center">
+        <a href="international-transfer.html" class="card-link">
+          <div class="card shadow-sm">
             <i class="fas fa-globe fa-2x mb-2 text-success"></i>
             <h6>International Transfer</h6>
           </div>
@@ -127,6 +156,7 @@
     </div>
   </section>
 
+  <!-- SCRIPT LOGIC -->
   <script>
     function formatCurrency(amount) {
       return amount.toLocaleString('en-US', {
@@ -140,7 +170,7 @@
     function loadBalances() {
       let balances = JSON.parse(localStorage.getItem('accountBalances'));
       if (!balances) {
-        balances = { checking: 10250.50, savings: 50500.75 };
+        balances = { checking: 12500.75, savings: 45250.50 };
         localStorage.setItem('accountBalances', JSON.stringify(balances));
       }
       document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
