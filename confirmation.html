@@ -10,16 +10,15 @@
     body { background-color: #f8f9fa; }
     .confirmation-container {
       max-width: 600px;
-      margin: auto;
-      margin-top: 80px;
-      background-color: #fff;
+      margin: 80px auto;
+      background: white;
       padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .success-icon {
-      font-size: 50px;
-      color: #28a745;
+    .confirmation-icon {
+      font-size: 48px;
+      color: #198754;
     }
   </style>
 </head>
@@ -39,47 +38,43 @@
   </nav>
 
   <div class="confirmation-container text-center">
-    <i class="fas fa-check-circle success-icon mb-3"></i>
-    <h4 class="mb-3">Transfer Successful</h4>
+    <div class="mb-4">
+      <i class="fas fa-check-circle confirmation-icon"></i>
+      <h4 class="mt-3">Transfer Successful</h4>
+      <p class="text-muted">Your transfer has been completed successfully.</p>
+    </div>
 
-    <div class="text-start mt-4">
-      <p><strong>Recipient:</strong> <span id="receiptName"></span></p>
-      <p><strong>Account Number:</strong> <span id="receiptAccount"></span></p>
-      <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-      <p><strong>Date:</strong> <span id="receiptDate"></span></p>
-      <p><strong>Reference ID:</strong> <span id="receiptRef"></span></p>
-      <p><strong>Description:</strong> <span id="receiptDescription"></span></p>
+    <div class="text-start">
+      <p><strong>From Account:</strong> <span id="fromAccount"></span></p>
+      <p><strong>Recipient Name:</strong> <span id="recipientName"></span></p>
+      <p><strong>Account Number:</strong> <span id="accountNumber"></span></p>
+      <p><strong>Routing Number:</strong> <span id="routingNumber"></span></p>
+      <p><strong>Amount:</strong> $<span id="amount"></span></p>
+      <p><strong>Note:</strong> <span id="note"></span></p>
+      <p><strong>Transaction ID:</strong> <span id="reference"></span></p>
+      <p><strong>Date:</strong> <span id="date"></span></p>
     </div>
 
     <div class="mt-4">
-      <a href="transactions.html" class="btn btn-outline-primary me-2">
-        View Transaction History
+      <a href="receipt.html" class="btn btn-outline-primary btn-sm">
+        View Full Receipt <i class="fas fa-file-invoice ms-1"></i>
       </a>
-      <button class="btn btn-success" onclick="printReceipt()">Print Receipt</button>
     </div>
   </div>
 
   <script>
     const tx = JSON.parse(localStorage.getItem('latestTransaction'));
-
-    if (tx) {
-      document.getElementById('receiptName').textContent = tx.recipientName || "N/A";
-      document.getElementById('receiptAccount').textContent = tx.recipientAccount || "N/A";
-      document.getElementById('receiptAmount').textContent = `$${parseFloat(tx.amount).toFixed(2)}`;
-      document.getElementById('receiptDate').textContent = tx.date;
-      document.getElementById('receiptDescription').textContent = tx.description || "Transfer";
-
-      // Generate fake reference ID
-      const ref = "TXN" + Math.floor(Math.random() * 900000000 + 100000000);
-      document.getElementById('receiptRef').textContent = ref;
-
-      // Save ref for receipt printing
-      tx.transactionId = ref;
-      localStorage.setItem('latestTransaction', JSON.stringify(tx));
-    }
-
-    function printReceipt() {
-      window.location.href = "receipt.html";
+    if (tx && tx.type === "Transfer") {
+      document.getElementById('fromAccount').textContent = tx.from || '-';
+      document.getElementById('recipientName').textContent = tx.to || '-';
+      document.getElementById('accountNumber').textContent = tx.accountNumber || '-';
+      document.getElementById('routingNumber').textContent = tx.routingNumber || '-';
+      document.getElementById('amount').textContent = parseFloat(tx.amount).toFixed(2);
+      document.getElementById('note').textContent = tx.note || '—';
+      document.getElementById('reference').textContent = tx.reference || '—';
+      document.getElementById('date').textContent = tx.date || '-';
+    } else {
+      window.location.href = "dashboard.html"; // fallback if no tx found
     }
   </script>
 
