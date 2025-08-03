@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <style>
     body { background-color: #f8f9fa; }
-    .container { max-width: 500px; margin-top: 80px; }
+    .deposit-container { max-width: 550px; margin: auto; margin-top: 80px; }
   </style>
 </head>
 <body>
@@ -26,29 +26,30 @@
     </div>
   </nav>
 
-  <div class="container bg-white p-4 shadow-sm rounded">
+  <div class="deposit-container bg-white p-4 shadow-sm rounded">
     <h4 class="mb-4">Deposit Funds</h4>
     <form id="depositForm">
       <div class="mb-3">
-        <label for="depositAccount" class="form-label">Deposit To</label>
-        <select class="form-select" id="depositAccount" required>
+        <label for="depositAccount" class="form-label">Select Account</label>
+        <select id="depositAccount" class="form-select" required>
+          <option value="">-- Choose Account --</option>
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
         </select>
       </div>
-
       <div class="mb-3">
         <label for="depositAmount" class="form-label">Amount ($)</label>
-        <input type="number" class="form-control" id="depositAmount" min="1" required />
+        <input type="number" class="form-control" id="depositAmount" required min="1" />
       </div>
-
       <div class="mb-3">
         <label for="depositNote" class="form-label">Note (optional)</label>
-        <input type="text" class="form-control" id="depositNote" placeholder="e.g. Paycheck, refund, etc." />
+        <input type="text" class="form-control" id="depositNote" placeholder="e.g. Paycheck, Bonus, etc." />
       </div>
-
-      <button type="submit" class="btn btn-primary w-100">Submit Deposit</button>
+      <button type="submit" class="btn btn-primary w-100">Make Deposit</button>
     </form>
+    <div id="depositSuccess" class="alert alert-success mt-3 d-none">
+      Deposit successful! Redirecting...
+    </div>
   </div>
 
   <script>
@@ -59,33 +60,40 @@
       const amount = parseFloat(document.getElementById('depositAmount').value);
       const note = document.getElementById('depositNote').value.trim();
       const date = new Date().toLocaleString();
+      const transactionId = "TX" + Math.floor(1000000 + Math.random() * 9000000);
 
-      const balanceKey = accountType === "checking" ? "checkingBalance" : "savingsBalance";
-      let currentBalance = parseFloat(localStorage.getItem(balanceKey) || "0");
+      if (!accountType || amount <= 0) {
+        alert("Please fill all required fields correctly.");
+        return;
+      }
 
-      // Update balance
-      currentBalance += amount;
-      localStorage.setItem(balanceKey, currentBalance.toFixed(2));
+      let balances = JSON.parse(localStorage.getItem('accountBalances')) || { checking: 0, savings: 0 };
+      balances[accountType] += amount;
+      localStorage.setItem('accountBalances', JSON.stringify(balances));
 
-      // Save transaction
       const transaction = {
         type: "Deposit",
-        account: accountType,
         amount: amount,
         date: date,
-        description: `Deposit to ${accountType} ${note ? `(${note})` : ""}`
+        account: accountType,
+        description: `Deposit to ${accountType} account ${note ? `(${note})` : ""}`,
+        transactionId: transactionId,
+        note: note
       };
 
-      let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+      const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
       transactions.push(transaction);
       localStorage.setItem('transactions', JSON.stringify(transactions));
       localStorage.setItem('latestTransaction', JSON.stringify(transaction));
 
-      // Redirect to confirmation
-      window.location.href = "confirmation.html";
+      document.getElementById('depositForm').reset();
+      document.getElementById('depositSuccess').classList.remove('d-none');
+
+      setTimeout(() => {
+        window.location.href = "confirmation.html";
+      }, 1500);
     });
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
