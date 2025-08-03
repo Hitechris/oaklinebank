@@ -31,15 +31,16 @@
     <h4 class="mb-4">All Transactions</h4>
     <div class="table-responsive">
       <table class="table table-bordered table-hover text-center align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Amount ($)</th>
-            <th>Balance After</th>
-          </tr>
-        </thead>
+<thead class="table-light">
+  <tr>
+    <th>Date</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Amount ($)</th>
+    <th>Balance After</th>
+    <th>Receipt</th> <!-- ✅ New column -->
+  </tr>
+</thead>
         <tbody id="transactionTableBody"></tbody>
       </table>
     </div>
@@ -48,39 +49,50 @@
     </div>
   </div>
 
-  <script>
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const tbody = document.getElementById('transactionTableBody');
-    const empty = document.getElementById('noTransactions');
-    let runningBalance = 0;
+<script>
+  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  const tbody = document.getElementById('transactionTableBody');
+  const empty = document.getElementById('noTransactions');
+  let runningBalance = 0;
 
-    if (transactions.length === 0) {
-      empty.classList.remove('d-none');
-    } else {
-      transactions.forEach((tx, index) => {
-        if (tx.type === "Deposit") {
-          runningBalance += parseFloat(tx.amount);
-        } else if (tx.type === "Withdrawal") {
-          runningBalance -= parseFloat(tx.amount);
-        } else if (tx.type === "Transfer") {
-          runningBalance -= parseFloat(tx.amount);
-        }
+  if (transactions.length === 0) {
+    empty.classList.remove('d-none');
+  } else {
+    transactions.forEach((tx, index) => {
+      if (tx.type === "Deposit") {
+        runningBalance += parseFloat(tx.amount);
+      } else if (tx.type === "Withdrawal" || tx.type === "Transfer") {
+        runningBalance -= parseFloat(tx.amount);
+      }
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${tx.date}</td>
-          <td>${tx.type}</td>
-          <td>${tx.description || '-'}</td>
-          <td class="${tx.type === 'Deposit' ? 'text-success' : 'text-danger'}">
-            ${tx.type === 'Deposit' ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}
-          </td>
-          <td>$${runningBalance.toFixed(2)}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-  </script>
+      const row = document.createElement('tr');
 
+      const receiptBtn = tx.type === "Transfer"
+        ? `<button class="btn btn-sm btn-outline-secondary" onclick="viewReceipt(${index})" title="View Receipt">
+             <i class="fas fa-receipt"></i>
+           </button>`
+        : "";
+
+      row.innerHTML = `
+        <td>${tx.date}</td>
+        <td>${tx.type}</td>
+        <td>${tx.description || '-'}</td>
+        <td class="${tx.type === 'Deposit' ? 'text-success' : 'text-danger'}">
+          ${tx.type === 'Deposit' ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}
+        </td>
+        <td>$${runningBalance.toFixed(2)}</td>
+        <td>${receiptBtn}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function viewReceipt(index) {
+    const tx = transactions[index];
+    localStorage.setItem('latestTransaction', JSON.stringify(tx));
+    window.location.href = "receipt.html";
+  }
+</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
