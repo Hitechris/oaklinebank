@@ -91,39 +91,57 @@
     </div>
   </div>
 
-  <script>
-    const tx = JSON.parse(localStorage.getItem('latestTransaction'));
+<script>
+  // Retrieve the latest transaction from localStorage
+  const tx = JSON.parse(localStorage.getItem('latestTransaction'));
 
-    if (!tx) {
-      alert("No transaction found.");
-      window.location.href = "dashboard.html";
-    }
-document.getElementById("txType").textContent = tx.type || "-";
-document.getElementById("txAmount").textContent = parseFloat(tx.amount).toFixed(2);
-document.getElementById("fromAccount").textContent = tx.from || tx.account || "Checking / Savings";
+  // Redirect to dashboard if no transaction found
+  if (!tx) {
+    alert("No transaction found.");
+    window.location.href = "dashboard.html";
+  }
 
-document.getElementById("txNote").textContent = tx.note || tx.description || "—";
-document.getElementById("txId").textContent = tx.reference || tx.transactionId || generateTransactionID(tx);
-document.getElementById("txDate").textContent = tx.date || new Date().toLocaleString();
+  // Helper function to capitalize first letter
+  function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
-const recipientSection = document.getElementById("recipientSection");
-if (tx.type === "Transfer") {
-  recipientSection.style.display = "block";
-  document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
-  document.getElementById("recipientAccount").textContent = tx.accountNumber || tx.recipientAccount || "-";
-  document.getElementById("routingNumber").textContent = tx.routingNumber || "-";
-} else {
-  recipientSection.style.display = "none";
-}
+  // Safely parse amount, fallback to 0.00 if invalid
+  const amount = parseFloat(tx.amount);
+  document.getElementById("txType").textContent = tx.type || "-";
+  document.getElementById("txAmount").textContent = isNaN(amount) ? "0.00" : amount.toFixed(2);
+  
+  // Display 'From Account' with capitalization fallback
+  document.getElementById("fromAccount").textContent = capitalize(tx.from) || capitalize(tx.account) || "Checking / Savings";
 
-function generateTransactionID(tx) {
-  return tx.type[0] + "-" + Date.now().toString().slice(-6);
-}
+  // Show note or description or dash if none
+  document.getElementById("txNote").textContent = tx.note || tx.description || "—";
 
-    function generateTransactionID(tx) {
-      return tx.type[0] + "-" + Date.now().toString().slice(-6);
-    }
-  </script>
+  // Transaction ID with fallback generator
+  document.getElementById("txId").textContent = tx.reference || tx.transactionId || generateTransactionID(tx);
+
+  // Display date or current date/time
+  document.getElementById("txDate").textContent = tx.date || new Date().toLocaleString();
+
+  // Recipient section element
+  const recipientSection = document.getElementById("recipientSection");
+
+  // Show recipient info only for Transfers
+  if (tx.type === "Transfer") {
+    recipientSection.style.display = "block";
+    document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
+    document.getElementById("recipientAccount").textContent = tx.recipientAccount || tx.accountNumber || "-";
+    document.getElementById("routingNumber").textContent = tx.routingNumber || "-";
+  } else {
+    recipientSection.style.display = "none";
+  }
+
+  // Generate a simple transaction ID if none exists
+  function generateTransactionID(tx) {
+    return tx.type[0] + "-" + Date.now().toString().slice(-6);
+  }
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
