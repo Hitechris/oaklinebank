@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,9 +7,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
+    /* Increase font size by ~5% from 14px to about 14.7px */
     body {
       font-family: 'Segoe UI', sans-serif;
-      font-size: 14px;
+      font-size: 14.7px;
       background-color: #f4f6f9;
       color: #333;
     }
@@ -24,6 +25,28 @@
       color: #fff;
     }
 
+    /* HEADER with bank name and logo space */
+    .header {
+      max-width: 960px;
+      margin: 1rem auto 1.5rem auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-placeholder {
+      width: 48px;
+      height: 48px;
+      background-color: #004080;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .bank-name {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #004080;
+      user-select: none;
+    }
+
     .hero {
       background: #004080;
       color: white;
@@ -33,11 +56,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .hero h5 {
       margin: 0;
-      font-size: 16px;
+      font-size: 16.8px; /* 5% increase */
     }
 
     .balances {
@@ -45,6 +71,9 @@
       gap: 1rem;
       flex-wrap: wrap;
       margin-bottom: 1.5rem;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .balance-card {
@@ -54,16 +83,17 @@
       padding: 1rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       text-align: center;
+      min-width: 140px;
     }
 
     .balance-card h6 {
-      font-size: 13px;
+      font-size: 13.65px; /* 5% up from 13px */
       margin-bottom: 0.25rem;
       color: #666;
     }
 
     .balance-card .amount {
-      font-size: 20px;
+      font-size: 21px; /* 5% up from 20px */
       font-weight: 600;
       color: #004080;
     }
@@ -83,28 +113,32 @@
 
   <!-- Dark Mode Toggle -->
   <div class="dark-toggle">
-    <button class="btn btn-sm btn-outline-dark" onclick="toggleDarkMode()">
+    <button class="btn btn-sm btn-outline-dark" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
       <i class="fas fa-moon"></i>
     </button>
   </div>
 
-  <!-- HERO SECTION -->
-  <div class="container mt-3">
-    <div class="hero">
-      <h5>Welcome, <span id="userWelcome">User</span></h5>
-      <small>Last login: <span id="lastLogin">Just now</span></small>
-    </div>
+  <!-- HEADER with logo and bank name -->
+  <div class="header" role="banner">
+    <div class="logo-placeholder" aria-label="Bank logo placeholder"></div>
+    <div class="bank-name">Oakline Bank</div>
+  </div>
 
-    <!-- BALANCE SECTION -->
-    <div class="balances">
-      <div class="balance-card">
-        <h6>Checking Account</h6>
-        <div id="checkingBalance" class="amount">$0.00</div>
-      </div>
-      <div class="balance-card">
-        <h6>Savings Account</h6>
-        <div id="savingsBalance" class="amount">$0.00</div>
-      </div>
+  <!-- HERO SECTION -->
+  <div class="hero" role="region" aria-labelledby="welcomeMsg">
+    <h5 id="welcomeMsg">Welcome, <span id="userWelcome">User</span></h5>
+    <small>Last login: <span id="lastLogin">Just now</span></small>
+  </div>
+
+  <!-- BALANCE SECTION -->
+  <div class="balances" role="region" aria-label="Account balances">
+    <div class="balance-card">
+      <h6>Checking Account</h6>
+      <div id="checkingBalance" class="amount">$0.00</div>
+    </div>
+    <div class="balance-card">
+      <h6>Savings Account</h6>
+      <div id="savingsBalance" class="amount">$0.00</div>
     </div>
   </div>
 
