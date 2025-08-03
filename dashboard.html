@@ -76,6 +76,14 @@
       text-decoration: none;
       color: inherit;
     }
+
+    .feature-card {
+  transition: all 0.2s ease-in-out;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
   </style>
 </head>
 <body>
@@ -86,75 +94,78 @@
     </button>
   </div>
 
-  <!-- HERO SECTION -->
-  <section class="hero-banner">
-    <h2>Welcome to Oakline Bank</h2>
-    <p id="userWelcome">Hello, User</p>
-  </section>
+<!-- HERO SECTION -->
+<section class="hero-banner text-white py-4 mb-4" style="background: linear-gradient(90deg, #0d6efd, #007bff);">
+  <div class="container text-center">
+    <h2 class="display-5 fw-bold">Welcome to Oakline Bank</h2>
+    <p class="lead" id="userWelcome">Hello, User</p>
+  </div>
+</section>
 
-  <!-- ACCOUNT BALANCES -->
-  <section class="balance-section container">
-    <div class="row g-4">
+<!-- ACCOUNT BALANCES IN ONE LINE -->
+<section class="container mb-5">
+  <div class="card shadow-sm p-4 text-center" style="border-left: 6px solid #0d6efd;">
+    <div class="row justify-content-center align-items-center">
       <div class="col-md-6">
-        <div class="card balance-card shadow-sm p-4">
-          <h5>Checking Account</h5>
-          <h2 id="checkingBalance" class="text-primary">$0.00</h2>
-        </div>
+        <h6 class="text-muted mb-1">Checking Account</h6>
+        <h2 id="checkingBalance" class="fw-bold">$0.00</h2>
       </div>
       <div class="col-md-6">
-        <div class="card balance-card shadow-sm p-4">
-          <h5>Savings Account</h5>
-          <h2 id="savingsBalance" class="text-success">$0.00</h2>
-        </div>
+        <h6 class="text-muted mb-1">Savings Account</h6>
+        <h2 id="savingsBalance" class="fw-bold">$0.00</h2>
       </div>
     </div>
-  </section>
-
-  <!-- FEATURE GRID SECTION -->
-  <section class="features-grid container mt-4">
-    <div class="row g-4">
-      <div class="col-md-4">
-        <a href="deposit.html" class="card-link">
-          <div class="card shadow-sm">
-            <i class="fas fa-piggy-bank fa-2x mb-2 text-primary"></i>
-            <h6>Deposit Funds</h6>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a href="withdrawal.html" class="card-link">
-          <div class="card shadow-sm">
-            <i class="fas fa-money-bill-wave fa-2x mb-2 text-danger"></i>
-            <h6>Withdraw Funds</h6>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a href="between-account.html" class="card-link">
-          <div class="card shadow-sm">
-            <i class="fas fa-random fa-2x mb-2 text-warning"></i>
-            <h6>Between Accounts</h6>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-6">
-        <a href="local-transfer.html" class="card-link">
-          <div class="card shadow-sm">
-            <i class="fas fa-university fa-2x mb-2 text-info"></i>
-            <h6>Local Transfer</h6>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-6">
-        <a href="international-transfer.html" class="card-link">
-          <div class="card shadow-sm">
-            <i class="fas fa-globe fa-2x mb-2 text-success"></i>
-            <h6>International Transfer</h6>
-          </div>
-        </a>
-      </div>
+  </div>
+</section>
+<!-- FEATURE CARDS SECTION -->
+<section class="container mb-5">
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <a href="deposit.html" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-4 feature-card border-start border-3 border-primary">
+          <i class="fas fa-piggy-bank fa-2x mb-2 text-primary"></i>
+          <h6 class="mt-2 fw-semibold">Deposit Funds</h6>
+        </div>
+      </a>
     </div>
-  </section>
+
+    <div class="col-md-4">
+      <a href="withdrawal.html" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-4 feature-card border-start border-3 border-danger">
+          <i class="fas fa-money-bill-wave fa-2x mb-2 text-danger"></i>
+          <h6 class="mt-2 fw-semibold">Withdraw Funds</h6>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4">
+      <a href="between-account.html" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-4 feature-card border-start border-3 border-warning">
+          <i class="fas fa-random fa-2x mb-2 text-warning"></i>
+          <h6 class="mt-2 fw-semibold">Between Accounts</h6>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6">
+      <a href="local-transfer.html" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-4 feature-card border-start border-3 border-info">
+          <i class="fas fa-university fa-2x mb-2 text-info"></i>
+          <h6 class="mt-2 fw-semibold">Local Transfer</h6>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6">
+      <a href="international-transfer.html" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-4 feature-card border-start border-3 border-success">
+          <i class="fas fa-globe fa-2x mb-2 text-success"></i>
+          <h6 class="mt-2 fw-semibold">International Transfer</h6>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
 
   <!-- SCRIPT LOGIC -->
   <script>
