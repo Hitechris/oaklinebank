@@ -9,74 +9,78 @@
   <style>
     body {
       background-color: #f8f9fa;
+      padding: 40px 15px;
       font-family: 'Segoe UI', sans-serif;
     }
+
     .receipt-container {
+      background: white;
       max-width: 700px;
-      margin: 50px auto;
-      background-color: #fff;
-      padding: 40px;
+      margin: auto;
+      padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
+
     .receipt-header {
-      border-bottom: 2px solid #dee2e6;
-      padding-bottom: 15px;
-      margin-bottom: 25px;
+      text-align: center;
+      margin-bottom: 30px;
     }
+
     .receipt-header h4 {
-      margin: 0;
+      margin-bottom: 0;
     }
+
     .receipt-details p {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
-    .btn-print {
-      margin-top: 30px;
-    }
+
     @media print {
-      .btn-print, nav {
+      .print-btn {
         display: none !important;
       }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light px-3">
-    <a href="index.html" class="navbar-brand">Oakline Bank</a>
-  </nav>
-
   <div class="receipt-container">
-    <div class="receipt-header text-center">
-      <h4>Transaction Receipt</h4>
-      <p class="text-muted mb-0" id="receiptDate">Date</p>
-      <p class="text-muted" id="receiptRef">Transaction ID</p>
+    <div class="receipt-header">
+      <h4>Oakline Bank</h4>
+      <p class="text-muted">Transaction Receipt</p>
     </div>
 
     <div class="receipt-details">
-      <p><strong>Recipient Name:</strong> <span id="receiptName"></span></p>
-      <p><strong>Recipient Account:</strong> <span id="receiptAccount"></span></p>
-      <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-      <p><strong>Description:</strong> <span id="receiptDescription"></span></p>
+      <p><strong>From Account:</strong> <span id="fromAccount">-</span></p>
+      <p><strong>Recipient Name:</strong> <span id="recipientName">-</span></p>
+      <p><strong>Account Number:</strong> <span id="accountNumber">-</span></p>
+      <p><strong>Routing Number:</strong> <span id="routingNumber">-</span></p>
+      <p><strong>Amount:</strong> $<span id="amount">0.00</span></p>
+      <p><strong>Note:</strong> <span id="note">—</span></p>
+      <p><strong>Transaction ID:</strong> <span id="reference">—</span></p>
+      <p><strong>Date:</strong> <span id="date">—</span></p>
     </div>
 
-    <div class="text-center btn-print">
-      <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print me-1"></i> Print Receipt</button>
+    <div class="text-end mt-4 print-btn">
+      <button class="btn btn-primary" onclick="window.print()">
+        <i class="fas fa-print me-1"></i> Print Receipt
+      </button>
     </div>
   </div>
 
   <script>
     const tx = JSON.parse(localStorage.getItem('latestTransaction'));
-
-    if (tx) {
-      document.getElementById('receiptName').textContent = tx.recipientName || "N/A";
-      document.getElementById('receiptAccount').textContent = tx.recipientAccount || "N/A";
-      document.getElementById('receiptAmount').textContent = `$${parseFloat(tx.amount).toFixed(2)}`;
-      document.getElementById('receiptDate').textContent = tx.date || "N/A";
-      document.getElementById('receiptDescription').textContent = tx.description || "Transfer";
-      document.getElementById('receiptRef').textContent = "Transaction ID: " + (tx.transactionId || "N/A");
+    if (tx && tx.type === "Transfer") {
+      document.getElementById('fromAccount').textContent = tx.from || '-';
+      document.getElementById('recipientName').textContent = tx.to || '-';
+      document.getElementById('accountNumber').textContent = tx.accountNumber || '-';
+      document.getElementById('routingNumber').textContent = tx.routingNumber || '-';
+      document.getElementById('amount').textContent = parseFloat(tx.amount).toFixed(2);
+      document.getElementById('note').textContent = tx.note || '—';
+      document.getElementById('reference').textContent = tx.reference || '—';
+      document.getElementById('date').textContent = tx.date || '-';
+    } else {
+      document.querySelector('.receipt-details').innerHTML = '<p class="text-danger">No transaction found.</p>';
     }
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
