@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Receipt | Oakline Bank</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .receipt-container {
+      max-width: 700px;
+      margin: 4rem auto;
+      background-color: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+    .bank-header {
+      text-align: center;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .bank-header h2 {
+      margin: 0;
+      font-weight: 600;
+    }
+    .receipt-details p {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+    .btn-print {
+      margin-top: 2rem;
+    }
+    .footer-note {
+      font-size: 0.875rem;
+      color: #6c757d;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 1px solid #dee2e6;
+      padding-top: 1rem;
+    }
+
+    /* Hide print button when printing */
+    @media print {
+      .btn-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt-container">
+    <div class="bank-header">
+      <h2>Oakline Bank</h2>
+      <p>Transaction Receipt</p>
+    </div>
+
+    <div class="receipt-details">
+      <p><strong>Recipient Name:</strong> <span id="receiptName">-</span></p>
+      <p><strong>Account Number:</strong> <span id="receiptAccount">-</span></p>
+      <p><strong>Amount:</strong> <span id="receiptAmount">-</span></p>
+      <p><strong>From Account:</strong> <span id="receiptFrom">-</span></p>
+      <p><strong>Transaction ID:</strong> <span id="receiptTransactionId">-</span></p>
+      <p><strong>Date:</strong> <span id="receiptDate">-</span></p>
+    </div>
+
+    <div class="text-center">
+      <button class="btn btn-success btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+    </div>
+
+    <div class="footer-note">
+      This receipt is generated electronically and does not require a physical signature.
+    </div>
+  </div>
+
+  <script>
+    // Load transaction data from localStorage
+    document.getElementById("receiptName").textContent = localStorage.getItem("receiptName") || "N/A";
+    document.getElementById("receiptAccount").textContent = localStorage.getItem("receiptAccount") || "N/A";
+    document.getElementById("receiptAmount").textContent = "$" + Number(localStorage.getItem("receiptAmount") || 0).toLocaleString();
+    document.getElementById("receiptFrom").textContent = localStorage.getItem("receiptFrom") || "N/A";
+    document.getElementById("receiptTransactionId").textContent = localStorage.getItem("receiptTransactionId") || "N/A";
+    document.getElementById("receiptDate").textContent = localStorage.getItem("receiptDate") || new Date().toLocaleString();
+  </script>
+
+</body>
+</html>
