@@ -2,259 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oakline Bank - Login</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Oakline Bank</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
     body {
+      background: linear-gradient(to right, #e3f2fd, #fff);
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: var(--bg-color, #f5f5f5);
-      color: var(--text-color, #333);
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.dark {
-      --bg-color: #121212;
-      --text-color: #e0e0e0;
-    }
-
-    nav {
-      background: #003366;
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav a {
-      color: white;
-      margin-left: 1rem;
-      text-decoration: none;
+      transition: background-color 0.3s ease;
     }
 
     .login-container {
-      max-width: 420px;
-      margin: 80px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      max-width: 450px;
+      margin: 5rem auto;
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    .dark .login-container {
-      background: #1e1e1e;
+    .form-control:focus {
+      box-shadow: 0 0 5px #0d6efd;
     }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    input[type="email"],
-    input[type="password"] {
+    .sticky-login-btn {
+      position: sticky;
+      bottom: 0;
+      left: 0;
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    label {
-      font-size: 14px;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .form-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-
-    .form-options label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      background: #ffffff;
+      padding: 1rem 0 0.5rem;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
     }
 
     .toggle-password {
       cursor: pointer;
-      font-size: 13px;
-      text-decoration: underline;
-      color: #003366;
-    }
-
-    .login-button {
-      width: 100%;
-      padding: 12px;
-      background: #003366;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .login-button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .spinner {
-      display: none;
       position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
+      right: 15px;
+      top: 10px;
+      color: #6c757d;
     }
 
-    .error,
-    .success {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 10px;
-      display: none;
+    .dark-mode {
+      background-color: #121212 !important;
+      color: #ffffff !important;
     }
 
-    .success {
-      color: green;
+    .dark-mode .login-container {
+      background-color: #1e1e1e;
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
     }
 
-    .bottom-link {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
+    .dark-mode input {
+      background-color: #2c2c2c;
+      color: #fff;
+      border-color: #444;
     }
 
-    .dark-mode-toggle {
-      background: none;
-      border: 1px solid white;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
+    .dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
       cursor: pointer;
-      font-size: 13px;
     }
 
-    @media (max-width: 500px) {
-      nav {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    .form-check-label {
+      user-select: none;
     }
   </style>
 </head>
 <body>
-  <nav>
-    <div>🌲 <strong>Oakline Bank</strong></div>
-    <div>
-      <a href="index.html">Home</a>
-      <a href="signup.html">Sign Up</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="contact.html">Contact</a>
-      <a href="about.html">About</a>
-      <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
-    </div>
-  </nav>
 
-  <div class="login-container">
-    <h2>Welcome Back</h2>
-
-    <div class="error" id="errorMsg"></div>
-    <div class="success" id="successMsg"></div>
-
-<label for="loginEmailOrUsername">Username or Email</label>
-<input type="text" id="loginEmailOrUsername" placeholder="you@example.com or username123" required />
-
-    <label for="loginPassword">Password</label>
-    <input type="password" id="loginPassword" placeholder="Enter password" required />
-    <span class="toggle-password" onclick="togglePassword()">Show password</span>
-
-    <div class="form-options">
-      <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-      <a href="#" onclick="alert('Redirecting to password recovery...')">Forgot password?</a>
-    </div>
-
-    <button class="login-button" id="loginBtn" onclick="handleLogin()">
-      Log In
-      <span class="spinner" id="spinner">⏳</span>
+  <div class="dark-toggle">
+    <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()">
+      <i class="fas fa-moon"></i>
     </button>
+  </div>
 
-    <div class="bottom-link">
-      Don't have an account? <a href="signup.html">Create one</a>
+  <div class="login-container shadow-lg">
+    <h3 class="text-center mb-4">Oakline Bank Login</h3>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="mb-3 position-relative">
+        <label for="username" class="form-label">Username or Email</label>
+        <input type="text" id="username" class="form-control" required placeholder="Enter username or email">
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" required placeholder="Enter password">
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="rememberMe">
+          <label class="form-check-label" for="rememberMe">Remember Me</label>
+        </div>
+        <a href="forgot-password.html">Forgot Password?</a>
+      </div>
+
+      <div class="sticky-login-btn">
+        <button type="submit" class="btn btn-primary w-75">Login</button>
+      </div>
+    </form>
+
+    <div class="text-center mt-4">
+      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+      <a href="index.html" class="text-decoration-none">&larr; Back to Home</a>
     </div>
   </div>
 
-<script>
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-  }
+  <script>
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
 
-  function togglePassword() {
-    const pwd = document.getElementById("loginPassword");
-    pwd.type = pwd.type === "password" ? "text" : "password";
-  }
+    // Show/hide password
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const pwd = document.getElementById("password");
+      const type = pwd.getAttribute("type") === "password" ? "text" : "password";
+      pwd.setAttribute("type", type);
+      this.classList.toggle("fa-eye-slash");
+    });
 
-  function handleLogin() {
-    const loginInput = document.getElementById('loginEmailOrUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    const remember = document.getElementById('rememberMe').checked;
-    const errorMsg = document.getElementById('errorMsg');
-    const successMsg = document.getElementById('successMsg');
-    const spinner = document.getElementById('spinner');
-    const loginBtn = document.getElementById('loginBtn');
+    // Form validation and simulated login
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-    errorMsg.style.display = "none";
-    successMsg.style.display = "none";
-    spinner.style.display = "inline-block";
-    loginBtn.disabled = true;
-
-    setTimeout(() => {
-      spinner.style.display = "none";
-      loginBtn.disabled = false;
-
-      if (!loginInput || !password) {
-        errorMsg.innerText = "Please enter your username/email and password.";
-        errorMsg.style.display = "block";
-        return;
-      }
-
-      // If input looks like an email, validate format
-if (loginInput.includes("@")) {
-  const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailFormat.test(loginInput)) {
-    errorMsg.innerText = "Enter a valid email address.";
-    errorMsg.style.display = "block";
-    return;
-  }
-}
-
-      // Validate username/email (case-insensitive)
-      const validUsername = loginInput.toLowerCase() === "chris23".toLowerCase();
-      const validEmail = loginInput.toLowerCase() === "chris@example.com"; // optional
-      const validPassword = password === "Oakline"; // case-sensitive for security
-
-      if ((validUsername || validEmail) && validPassword) {
-        // Save to localStorage
-        localStorage.setItem("oakline_user", loginInput);
-        if (remember) localStorage.setItem("oakline_remember", "true");
-
-        successMsg.innerText = "Login successful!";
-        successMsg.style.display = "block";
-
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1000);
+      if (username && password) {
+        localStorage.setItem("loggedInUser", username);
+        window.location.href = "dashboard.html";
       } else {
-        errorMsg.innerText = "Invalid username/email or password.";
-        errorMsg.style.display = "block";
+        alert("Please enter valid credentials.");
       }
-    }, 1500);
-  }
-</script>
+    });
+  </script>
+
+</body>
+</html>
