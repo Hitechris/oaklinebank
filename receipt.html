@@ -9,54 +9,79 @@
   <style>
     body {
       background-color: #f8f9fa;
-      padding: 20px;
     }
     .receipt-container {
-      max-width: 650px;
-      margin: auto;
+      max-width: 600px;
+      margin: 80px auto;
       background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .receipt-header {
-      text-align: center;
-      margin-bottom: 30px;
+    .receipt-icon {
+      font-size: 48px;
+      color: #198754;
     }
-    .receipt-header h4 {
-      margin-top: 10px;
+    .receipt-heading {
+      font-weight: 600;
+      font-size: 24px;
     }
-    .receipt-details p {
-      margin-bottom: 8px;
+    .receipt-section {
+      margin-bottom: 1rem;
     }
-    .field-label {
+    .d-label {
       font-weight: 500;
-    }
-    @media print {
-      .btn, nav { display: none !important; }
-      body { background: white; }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light px-3 mb-4">
+
+  <nav class="navbar navbar-light bg-light px-3">
     <a href="index.html" class="navbar-brand">Oakline Bank</a>
-    <a href="dashboard.html" class="btn btn-outline-primary btn-sm">Back to Dashboard</a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-bars me-1"></i> Menu
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+        <li><a class="dropdown-item" href="transactions.html">Transaction History</a></li>
+        <li><a class="dropdown-item" href="index.html">Logout</a></li>
+      </ul>
+    </div>
   </nav>
 
-  <div class="receipt-container">
-    <div class="receipt-header">
-      <i class="fas fa-receipt fa-3x text-primary"></i>
-      <h4 class="mt-3">Transaction Receipt</h4>
-      <p class="text-muted">Thank you for banking with Oakline Bank.</p>
+  <div class="receipt-container text-center">
+    <i class="fas fa-check-circle receipt-icon mb-3"></i>
+    <div class="receipt-heading mb-3">Transaction Receipt</div>
+
+    <div class="text-start">
+      <div class="receipt-section">
+        <span class="d-label">Transaction Type:</span> <span id="txType">-</span>
+      </div>
+      <div class="receipt-section">
+        <span class="d-label">Amount:</span> $<span id="txAmount">0.00</span>
+      </div>
+      <div class="receipt-section">
+        <span class="d-label">From Account:</span> <span id="fromAccount">-</span>
+      </div>
+      <div class="receipt-section" id="recipientSection">
+        <span class="d-label">Recipient Name:</span> <span id="recipientName">-</span><br />
+        <span class="d-label">Account Number:</span> <span id="recipientAccount">-</span><br />
+        <span class="d-label">Routing Number:</span> <span id="routingNumber">-</span>
+      </div>
+      <div class="receipt-section">
+        <span class="d-label">Description / Note:</span> <span id="txNote">—</span>
+      </div>
+      <div class="receipt-section">
+        <span class="d-label">Transaction ID:</span> <span id="txId">-</span>
+      </div>
+      <div class="receipt-section">
+        <span class="d-label">Date:</span> <span id="txDate">-</span>
+      </div>
     </div>
 
-    <div class="receipt-details" id="receiptDetails">
-      <!-- Transaction details will be injected here -->
-    </div>
-
-    <div class="text-center mt-4">
-      <button onclick="window.print()" class="btn btn-outline-secondary">
+    <div class="mt-4">
+      <button class="btn btn-outline-primary btn-sm" onclick="window.print()">
         <i class="fas fa-print me-1"></i> Print Receipt
       </button>
     </div>
@@ -64,40 +89,32 @@
 
   <script>
     const tx = JSON.parse(localStorage.getItem('latestTransaction'));
-    const receipt = document.getElementById('receiptDetails');
 
     if (!tx) {
-      receipt.innerHTML = `<p class="text-danger">No transaction data found.</p>`;
+      alert("No transaction found.");
+      window.location.href = "dashboard.html";
+    }
+
+    document.getElementById("txType").textContent = tx.type || "-";
+    document.getElementById("txAmount").textContent = parseFloat(tx.amount).toFixed(2);
+    document.getElementById("fromAccount").textContent = tx.from || "Checking / Savings";
+
+    document.getElementById("txNote").textContent = tx.note || tx.description || "—";
+    document.getElementById("txId").textContent = tx.reference || generateTransactionID(tx);
+    document.getElementById("txDate").textContent = tx.date || new Date().toLocaleString();
+
+    // Transfer-specific recipient section
+    const recipientSection = document.getElementById("recipientSection");
+    if (tx.type === "Transfer") {
+      document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
+      document.getElementById("recipientAccount").textContent = tx.recipientAccount || "-";
+      document.getElementById("routingNumber").textContent = tx.routingNumber || "-";
     } else {
-      const isDeposit = tx.type === "Deposit";
-      const isTransfer = tx.type === "Transfer";
+      recipientSection.style.display = "none";
+    }
 
-      let html = `
-        <p><span class="field-label">Transaction Type:</span> ${tx.type}</p>
-        <p><span class="field-label">Amount:</span> $${parseFloat(tx.amount).toFixed(2)}</p>
-      `;
-
-      if (isTransfer) {
-        html += `
-          <p><span class="field-label">Recipient Name:</span> ${tx.recipientName || '-'}</p>
-          <p><span class="field-label">Recipient Account:</span> ${tx.recipientAccount || '-'}</p>
-          <p><span class="field-label">Routing Number:</span> ${tx.routingNumber || '-'}</p>
-          <p><span class="field-label">Note:</span> ${tx.note || '-'}</p>
-        `;
-      }
-
-      if (isDeposit) {
-        html += `
-          <p><span class="field-label">Description:</span> ${tx.description || '-'}</p>
-        `;
-      }
-
-      html += `
-        <p><span class="field-label">Reference:</span> ${tx.reference || '—'}</p>
-        <p><span class="field-label">Date:</span> ${tx.date || '-'}</p>
-      `;
-
-      receipt.innerHTML = html;
+    function generateTransactionID(tx) {
+      return tx.type[0] + "-" + Date.now().toString().slice(-6);
     }
   </script>
 
