@@ -4,15 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Oakline Bank Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    /* Increase font size by ~5% from 14px to about 14.7px */
+    /* Increase font size by another ~5% from 14.7px to about 15.4px */
     body {
       font-family: 'Segoe UI', sans-serif;
-      font-size: 14.7px;
+      font-size: 15.4px;
       background-color: #f4f6f9;
       color: #333;
+      margin: 0;
+      padding-bottom: 40px;
     }
 
     .dark-mode {
@@ -25,26 +27,56 @@
       color: #fff;
     }
 
-    /* HEADER with bank name and logo space */
-    .header {
+    /* HEADER with centered bank name and logo */
+    .header-container {
       max-width: 960px;
       margin: 1rem auto 1.5rem auto;
       display: flex;
+      justify-content: center;
       align-items: center;
       gap: 1rem;
+      position: relative; /* to position controls */
     }
     .logo-placeholder {
-      width: 48px;
-      height: 48px;
+      width: 50px; /* 5% up from 48 */
+      height: 50px;
       background-color: #004080;
       border-radius: 8px;
       flex-shrink: 0;
     }
     .bank-name {
       font-weight: 700;
-      font-size: 1.5rem;
+      font-size: 1.575rem; /* 5% up from 1.5rem */
       color: #004080;
       user-select: none;
+    }
+
+    /* Controls container top-right */
+    .top-controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .top-controls button {
+      font-size: 1rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .top-controls .btn-logout {
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    .top-controls .btn-logout:hover {
+      background-color: #b02a37;
+      color: white;
     }
 
     .hero {
@@ -59,11 +91,7 @@
       max-width: 960px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    .hero h5 {
-      margin: 0;
-      font-size: 16.8px; /* 5% increase */
+      font-size: 17.64px; /* 5% up from 16.8px */
     }
 
     .balances {
@@ -87,13 +115,13 @@
     }
 
     .balance-card h6 {
-      font-size: 13.65px; /* 5% up from 13px */
+      font-size: 14.3px; /* 5% up from 13.65px */
       margin-bottom: 0.25rem;
       color: #666;
     }
 
     .balance-card .amount {
-      font-size: 21px; /* 5% up from 20px */
+      font-size: 22.05px; /* 5% up from 21px */
       font-weight: 600;
       color: #004080;
     }
@@ -101,25 +129,22 @@
     .dark-mode .balance-card {
       background-color: #1e1e1e;
     }
-
-    .dark-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Dark Mode Toggle -->
-  <div class="dark-toggle">
-    <button class="btn btn-sm btn-outline-dark" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+  <!-- Top controls: dark mode toggle + logout -->
+  <div class="top-controls" role="region" aria-label="User controls">
+    <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
       <i class="fas fa-moon"></i>
+    </button>
+    <button class="btn btn-logout btn-sm" onclick="logout()" aria-label="Logout">
+      Logout
     </button>
   </div>
 
-  <!-- HEADER with logo and bank name -->
-  <div class="header" role="banner">
+  <!-- HEADER with centered bank name and logo -->
+  <div class="header-container" role="banner">
     <div class="logo-placeholder" aria-label="Bank logo placeholder"></div>
     <div class="bank-name">Oakline Bank</div>
   </div>
@@ -168,6 +193,13 @@
 
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
+    }
+
+    function logout() {
+      // Clear user data or tokens here as needed
+      localStorage.removeItem('loggedInUser');
+      alert('You have been logged out.');
+      window.location.href = 'index.html'; // redirect to homepage or login
     }
 
     window.addEventListener('storage', (e) => {
