@@ -213,17 +213,35 @@
           <small>Last login: <span id="lastLogin">Just now</span></small>
         </div>
 
-        <!-- Dropdown Button -->
-        <div class="dropdown ms-2">
-          <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-bars me-1"></i> Menu
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="profile.html">View Profile</a></li>
-            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
-            <li><a class="dropdown-item" href="main-menu.html">Main Menu</a></li>
-          </ul>
-        </div>
+       <!-- Dropdown Button -->
+<div class="dropdown ms-2">
+  <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-bars me-1"></i> Menu
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+    <!-- Essentials -->
+    <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
+    <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
+    <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
+
+    <li><hr class="dropdown-divider"></li>
+
+    <!-- Daily Actions -->
+    <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
+    <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
+    <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
+    <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
+    <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
+
+    <li><hr class="dropdown-divider"></li>
+
+    <!-- Smart Tools -->
+    <li><a class="dropdown-item" href="budget.html"><i class="fas fa-wallet me-2 text-secondary"></i> Budget Planner</a></li>
+    <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
+    <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
+  </ul>
+</div>
       </div>
 
     </div>
