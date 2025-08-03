@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    /* Increase font size by another ~5% from 14.7px to about 15.4px */
     body {
       font-family: 'Segoe UI', sans-serif;
       font-size: 15.4px;
@@ -34,25 +33,34 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 1rem;
-      position: relative; /* to position controls */
+      gap: 1.5rem;
+      position: relative;
     }
     .logo-placeholder {
-      width: 50px; /* 5% up from 48 */
-      height: 50px;
+      width: 70px; /* increased size */
+      height: 70px;
       background-color: #004080;
-      border-radius: 8px;
+      border-radius: 12px;
       flex-shrink: 0;
     }
     .bank-name {
-      font-weight: 700;
-      font-size: 1.575rem; /* 5% up from 1.5rem */
+      font-weight: 800;
+      font-size: 2.5rem; /* increased font size */
       color: #004080;
       user-select: none;
     }
 
-    /* Controls container top-right */
-    .top-controls {
+    /* Controls container */
+    .top-controls-left {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      z-index: 1000;
+    }
+    .top-controls-right {
       position: fixed;
       top: 10px;
       right: 10px;
@@ -62,36 +70,40 @@
       z-index: 1000;
     }
 
-    .top-controls button {
+    .top-controls-left button,
+    .top-controls-right button {
       font-size: 1rem;
       padding: 0.3rem 0.6rem;
       border-radius: 4px;
+      cursor: pointer;
     }
 
-    .top-controls .btn-logout {
-      background-color: #dc3545;
+    .btn-logout {
+      background-color: #0d6efd;
       border: none;
       color: white;
       transition: background-color 0.3s ease;
     }
-    .top-controls .btn-logout:hover {
-      background-color: #b02a37;
+    .btn-logout:hover {
+      background-color: #084cbc;
       color: white;
     }
 
+    /* HERO SECTION */
     .hero {
       background: #004080;
       color: white;
-      padding: 1rem 1.5rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
+      padding: 2rem 2.5rem; /* increased padding */
+      margin-bottom: 1.5rem;
+      border-radius: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       max-width: 960px;
       margin-left: auto;
       margin-right: auto;
-      font-size: 17.64px; /* 5% up from 16.8px */
+      font-size: 22px; /* increased font size */
+      font-weight: 600;
     }
 
     .balances {
@@ -115,13 +127,13 @@
     }
 
     .balance-card h6 {
-      font-size: 14.3px; /* 5% up from 13.65px */
+      font-size: 14.3px;
       margin-bottom: 0.25rem;
       color: #666;
     }
 
     .balance-card .amount {
-      font-size: 22.05px; /* 5% up from 21px */
+      font-size: 22.05px;
       font-weight: 600;
       color: #004080;
     }
@@ -133,11 +145,15 @@
 </head>
 <body>
 
-  <!-- Top controls: dark mode toggle + logout -->
-  <div class="top-controls" role="region" aria-label="User controls">
+  <!-- Dark Mode Toggle Left -->
+  <div class="top-controls-left" role="region" aria-label="Dark mode toggle">
     <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
       <i class="fas fa-moon"></i>
     </button>
+  </div>
+
+  <!-- Logout Button Right -->
+  <div class="top-controls-right" role="region" aria-label="Logout">
     <button class="btn btn-logout btn-sm" onclick="logout()" aria-label="Logout">
       Logout
     </button>
