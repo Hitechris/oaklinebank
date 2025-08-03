@@ -96,12 +96,14 @@
       border-radius: 4px;
       cursor: pointer;
     }
-
-    .btn-logout {
-      background-color: #0d6efd;
-      border: none;
-      color: white;
-    }
+.btn-logout {
+  background-color: #004080;
+  border: none;
+  color: white;
+}
+.btn-logout:hover {
+  background-color: #002f66;
+}
 
     .btn-logout:hover {
       background-color: #084cbc;
@@ -188,11 +190,18 @@
     </div>
   </div>
 
-  <!-- Hero: Welcome & Last Login -->
-  <div class="hero" aria-labelledby="welcomeMsg">
-    <h5 id="welcomeMsg">Welcome, <span id="userWelcome">User</span></h5>
-    <small>Last login: <span id="lastLogin">Just now</span></small>
+<!-- Hero: Welcome & Last Login -->
+<div class="hero" aria-labelledby="welcomeMsg">
+  <div style="display: flex; align-items: center; gap: 1rem;">
+    <!-- Profile Image Placeholder -->
+    <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+    
+    <div>
+      <h5 id="welcomeMsg" style="margin: 0;">Welcome, <span id="userWelcome">User</span></h5>
+      <small>Last login: <span id="lastLogin">Just now</span></small>
+    </div>
   </div>
+</div>
 
   <!-- Balance Display -->
   <div class="balances" aria-label="Account balances">
