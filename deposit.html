@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Oakline Bank - Deposit Funds</title>
+  <title>Oakline Bank - Deposit</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
@@ -11,144 +11,184 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f6f9;
       color: #333;
+      margin: 0;
       padding-bottom: 40px;
     }
     .dark-mode {
       background-color: #121212;
       color: #eee;
     }
-    .dark-mode .form-control, .dark-mode .btn {
+    .dark-mode .card {
       background-color: #1e1e1e;
       color: #fff;
-      border-color: #444;
     }
-    .dark-mode .btn-primary {
+    .header-container {
+      max-width: 960px;
+      margin: 1rem auto 1rem auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bank-name {
+      font-weight: 800;
+      font-size: 2rem;
+      color: #004080;
+      text-decoration: none;
+    }
+    .btn-logout {
       background-color: #004080;
-      border-color: #002f66;
+      border: none;
+      color: white;
+    }
+    .btn-logout:hover {
+      background-color: #002f66;
+    }
+    .form-container {
+      max-width: 480px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+    .dark-mode .form-container {
+      background-color: #1e1e1e;
+      box-shadow: none;
     }
   </style>
 </head>
 <body>
-  <div class="container py-4" style="max-width:480px;">
-    <h3 class="mb-4 text-center text-primary">Deposit Funds</h3>
+
+  <div class="header-container">
+    <a href="dashboard.html" class="bank-name">Oakline Bank</a>
+    <button id="logoutBtn" class="btn btn-logout btn-sm" aria-label="Logout">
+      Logout
+    </button>
+  </div>
+
+  <main class="form-container">
+    <h3 class="mb-4">Deposit Funds</h3>
+
     <form id="depositForm" novalidate>
       <div class="mb-3">
         <label for="accountType" class="form-label">Select Account</label>
-        <select id="accountType" class="form-select" required>
-          <option value="" disabled selected>Choose account</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
+        <select class="form-select" id="accountType" required>
+          <option value="" disabled selected>Select Checking or Savings</option>
+          <option value="checking">Checking Account</option>
+          <option value="savings">Savings Account</option>
         </select>
         <div class="invalid-feedback">Please select an account type.</div>
       </div>
+
       <div class="mb-3">
-        <label for="depositAmount" class="form-label">Deposit Amount ($)</label>
-        <input type="number" step="0.01" min="0.01" id="depositAmount" class="form-control" placeholder="0.00" required />
-        <div class="invalid-feedback">Please enter a valid amount greater than zero.</div>
+        <label for="depositAmount" class="form-label">Amount to Deposit ($)</label>
+        <input type="number" class="form-control" id="depositAmount" placeholder="0.00" min="0.01" step="0.01" required />
+        <div class="invalid-feedback">Please enter a valid amount greater than 0.</div>
       </div>
-      <button type="submit" class="btn btn-primary w-100">
-        <i class="fas fa-arrow-down me-2"></i> Deposit
-      </button>
+
+      <button type="submit" class="btn btn-primary w-100">Deposit</button>
     </form>
+
     <div id="message" class="mt-3"></div>
-    <div class="mt-4 text-center">
-      <a href="dashboard.html" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-      </a>
-    </div>
-  </div>
+  </main>
 
-<script>
-  // Load user data from localStorage or initialize
-  function loadUserData(username) {
-    const raw = localStorage.getItem("user_" + username);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
-  }
-
-  function saveUserData(username, data) {
-    localStorage.setItem("user_" + username, JSON.stringify(data));
-  }
-
-  function formatCurrency(amount) {
-    return "$" + amount.toFixed(2);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const username = localStorage.getItem("loggedInUser");
-    const form = document.getElementById("depositForm");
-    const messageDiv = document.getElementById("message");
-
-    if (!username) {
-      alert("You must be logged in to deposit funds.");
-      window.location.href = "index.html";
-      return;
+  <script>
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
     }
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      messageDiv.textContent = "";
-      form.classList.remove("was-validated");
+    function saveUserData(username, data) {
+      localStorage.setItem("user_" + username, JSON.stringify(data));
+    }
 
-      const accountType = form.accountType.value;
-      const amount = parseFloat(form.depositAmount.value);
+    function getFormattedDateTime() {
+      const now = new Date();
+      return now.toLocaleString();
+    }
 
-      // Simple validation
-      if (!accountType) {
-        form.accountType.classList.add("is-invalid");
-        form.classList.add("was-validated");
+    document.addEventListener("DOMContentLoaded", () => {
+      const username = localStorage.getItem("loggedInUser");
+      if (!username) {
+        alert("You must be logged in to access this page.");
+        location.href = "index.html";
         return;
-      } else {
-        form.accountType.classList.remove("is-invalid");
       }
 
-      if (isNaN(amount) || amount <= 0) {
-        form.depositAmount.classList.add("is-invalid");
-        form.classList.add("was-validated");
-        return;
-      } else {
-        form.depositAmount.classList.remove("is-invalid");
-      }
-
-      // Load user data
       const userData = loadUserData(username);
       if (!userData) {
-        alert("User data not found or corrupted.");
+        alert("User data not found. Please log in again.");
+        localStorage.removeItem("loggedInUser");
+        location.href = "index.html";
         return;
       }
 
-      // Update balance
-      userData.balances[accountType] = (userData.balances[accountType] || 0) + amount;
+      const form = document.getElementById("depositForm");
+      const messageDiv = document.getElementById("message");
+      const logoutBtn = document.getElementById("logoutBtn");
 
-      // Add transaction record
-      const now = new Date();
-      userData.transactions.push({
-        type: "credit",
-        amount: amount,
-        date: now.toLocaleString(),
-        description: `Deposit to ${accountType} account`
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("loggedInUser");
+        location.href = "index.html";
       });
 
-      // Save updated data
-      saveUserData(username, userData);
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-      // Show success message
-      messageDiv.innerHTML = `
-        <div class="alert alert-success" role="alert">
-          Successfully deposited ${formatCurrency(amount)} to your ${accountType} account.
-        </div>
-      `;
+        messageDiv.textContent = "";
+        messageDiv.className = "";
 
-      // Reset form
-      form.reset();
+        const accountType = document.getElementById("accountType").value;
+        const amountInput = document.getElementById("depositAmount");
+        const amount = parseFloat(amountInput.value);
+
+        let valid = true;
+
+        if (!accountType) {
+          document.getElementById("accountType").classList.add("is-invalid");
+          valid = false;
+        } else {
+          document.getElementById("accountType").classList.remove("is-invalid");
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+          amountInput.classList.add("is-invalid");
+          valid = false;
+        } else {
+          amountInput.classList.remove("is-invalid");
+        }
+
+        if (!valid) return;
+
+        // Update balance
+        userData.balances[accountType] += amount;
+
+        // Add transaction record
+        const transaction = {
+          type: "credit",
+          account: accountType,
+          amount: amount,
+          date: getFormattedDateTime(),
+          description: `Deposit to ${accountType} account`
+        };
+
+        userData.transactions.push(transaction);
+
+        saveUserData(username, userData);
+
+        messageDiv.textContent = `Successfully deposited $${amount.toFixed(2)} to your ${accountType} account.`;
+        messageDiv.className = "alert alert-success";
+
+        form.reset();
+      });
     });
-  });
-</script>
+  </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
