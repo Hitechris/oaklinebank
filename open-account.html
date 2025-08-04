@@ -100,7 +100,22 @@
     </a>
   </div>
 
-<script>
+
+  <script>
+  // Check if user is logged in
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) {
+    alert("Please log in to open an account.");
+    window.location.href = "login.html";
+  }
+
+  const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+  const userData = allUsers.find(u => u.username === loggedInUser);
+
+  if (!userData) {
+    alert("User not found.");
+    window.location.href = "login.html";
+  }
   // Get logged in user username string (not object)
   const loggedInUsername = localStorage.getItem("loggedInUser");
   if (!loggedInUsername) {
