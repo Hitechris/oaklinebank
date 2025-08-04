@@ -3,109 +3,421 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Transfer Funds - Oakline Bank</title>
+  <title>Oakline Bank - Transfer Funds</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    body { background-color: #f8f9fa; }
-    .transfer-container { max-width: 550px; margin: auto; margin-top: 80px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .bank-name {
+      font-weight: 800;
+      font-size: 2rem;
+      color: #004080;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .form-section {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    .result-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .result-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .result-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light px-3">
-    <a href="index.html" class="navbar-brand">Oakline Bank</a>
-    <div class="dropdown">
-      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="fas fa-bars me-1"></i> Menu
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
-        <li><a class="dropdown-item" href="transactions.html">Transaction History</a></li>
-        <li><a class="dropdown-item" href="index.html">Logout</a></li>
-      </ul>
-    </div>
-  </nav>
+  <a href="dashboard.html" class="bank-name"><i class="fas fa-arrow-left"></i> Oakline Bank</a>
+  <h2 class="text-center mb-4">Transfer Funds</h2>
 
-  <div class="transfer-container bg-white p-4 shadow-sm rounded">
-    <h4 class="mb-4">Transfer Funds</h4>
-    <form id="transferForm">
-      <div class="mb-3">
-        <label for="fromAccount" class="form-label">From Account</label>
-        <select class="form-select" id="fromAccount" required>
-          <option value="Checking">Checking</option>
-          <option value="Savings">Savings</option>
-        </select>
+  <div class="form-section">
+    <ul class="nav nav-tabs mb-3" id="transferTypeTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button" role="tab" aria-controls="local" aria-selected="true">Local Transfer</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="between-tab" data-bs-toggle="tab" data-bs-target="#between" type="button" role="tab" aria-controls="between" aria-selected="false">Between Accounts</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab" aria-controls="international" aria-selected="false">International Transfer</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="transferTypeTabsContent">
+      <!-- Local Transfer -->
+      <div class="tab-pane fade show active" id="local" role="tabpanel" aria-labelledby="local-tab">
+        <form id="localTransferForm">
+          <div class="mb-3">
+            <label for="localRecipientName" class="form-label">Recipient Full Name</label>
+            <input type="text" class="form-control" id="localRecipientName" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientAccountNumber" class="form-label">Recipient Account Number</label>
+            <input type="text" class="form-control" id="localRecipientAccountNumber" pattern="\d{10}" title="10 digit account number" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientRoutingNumber" class="form-label">Recipient Routing Number</label>
+            <input type="text" class="form-control" id="localRecipientRoutingNumber" pattern="\d{9}" title="9 digit routing number" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientAccountType" class="form-label">Recipient Account Type</label>
+            <select class="form-select" id="localRecipientAccountType" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="localAmount" class="form-label">Amount ($)</label>
+            <input type="number" class="form-control" id="localAmount" min="0.01" step="0.01" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Send Local Transfer</button>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="recipientName" class="form-label">Recipient Name</label>
-        <input type="text" class="form-control" id="recipientName" required />
+
+      <!-- Between Accounts -->
+      <div class="tab-pane fade" id="between" role="tabpanel" aria-labelledby="between-tab">
+        <form id="betweenAccountsForm">
+          <div class="mb-3">
+            <label for="betweenFromAccount" class="form-label">From Account</label>
+            <select class="form-select" id="betweenFromAccount" required>
+              <option value="">Select account</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="betweenToAccount" class="form-label">To Account</label>
+            <select class="form-select" id="betweenToAccount" required>
+              <option value="">Select account</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="betweenAmount" class="form-label">Amount ($)</label>
+            <input type="number" class="form-control" id="betweenAmount" min="0.01" step="0.01" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Transfer Between Accounts</button>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="accountNumber" class="form-label">Recipient Account Number</label>
-        <input type="text" class="form-control" id="accountNumber" required />
+
+      <!-- International Transfer -->
+      <div class="tab-pane fade" id="international" role="tabpanel" aria-labelledby="international-tab">
+        <form id="internationalTransferForm">
+          <div class="mb-3">
+            <label for="intRecipientName" class="form-label">Recipient Full Name</label>
+            <input type="text" class="form-control" id="intRecipientName" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientAccountNumber" class="form-label">Recipient Account Number</label>
+            <input type="text" class="form-control" id="intRecipientAccountNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientRoutingNumber" class="form-label">Recipient Routing Number (or SWIFT/BIC)</label>
+            <input type="text" class="form-control" id="intRecipientRoutingNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientAccountType" class="form-label">Recipient Account Type</label>
+            <select class="form-select" id="intRecipientAccountType" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="intAmount" class="form-label">Amount ($ USD)</label>
+            <input type="number" class="form-control" id="intAmount" min="0.01" step="0.01" required />
+          </div>
+          <div class="mb-3">
+            <label for="intCurrency" class="form-label">Currency</label>
+            <input type="text" class="form-control" id="intCurrency" placeholder="e.g. EUR, GBP" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Send International Transfer</button>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="routingNumber" class="form-label">Recipient Routing Number</label>
-        <input type="text" class="form-control" id="routingNumber" required />
-      </div>
-      <div class="mb-3">
-        <label for="transferAmount" class="form-label">Amount ($)</label>
-        <input type="number" class="form-control" id="transferAmount" required min="1" />
-      </div>
-      <div class="mb-3">
-        <label for="transferNote" class="form-label">Note (optional)</label>
-        <input type="text" class="form-control" id="transferNote" />
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Send Transfer</button>
-    </form>
+    </div>
+
+    <div id="resultMessage" class="result-message"></div>
   </div>
 
-<script>
-  document.getElementById('transferForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const fromAccount = document.getElementById('fromAccount').value;
-    const recipientName = document.getElementById('recipientName').value.trim();
-    const accountNumber = document.getElementById('accountNumber').value.trim();
-    const routingNumber = document.getElementById('routingNumber').value.trim();
-    const amount = parseFloat(document.getElementById('transferAmount').value);
-    const note = document.getElementById('transferNote').value.trim();
-    const date = new Date().toLocaleString();
-    const reference = 'TX' + Date.now();
-
-    let balances = JSON.parse(localStorage.getItem('accountBalances')) || { checking: 0, savings: 0 };
-    const selected = fromAccount.toLowerCase();
-
-    if (amount > balances[selected]) {
-      alert("Insufficient balance in " + fromAccount + " account.");
-      return;
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Utility: load user data from localStorage or initialize if missing
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return initializeUser(username);
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return initializeUser(username);
+      }
     }
 
-    balances[selected] -= amount;
-    localStorage.setItem('accountBalances', JSON.stringify(balances));
+    // Initialize default user data
+    function initializeUser(username) {
+      const defaultData = {
+        balances: { checking: 1000, savings: 5000 },
+        transactions: [],
+        accountInfo: {
+          checking: {
+            accountNumber: generateRandomAccountNumber(),
+            routingNumber: generateRandomRoutingNumber(),
+          },
+          savings: {
+            accountNumber: generateRandomAccountNumber(),
+            routingNumber: generateRandomRoutingNumber(),
+          },
+        },
+      };
+      saveUserData(username, defaultData);
+      return defaultData;
+    }
 
-    const transaction = {
-      type: "Transfer",
-      from: fromAccount,
-      recipientName: recipientName,
-      recipientAccount: accountNumber,
-      routingNumber: routingNumber,
-      amount: amount,
-      note: note,
-      date: date,
-      reference: reference,
-      description: `Transfer to ${recipientName} (${accountNumber})`
-    };
+    function saveUserData(username, data) {
+      localStorage.setItem("user_" + username, JSON.stringify(data));
+    }
 
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    transactions.push(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    localStorage.setItem('latestTransaction', JSON.stringify(transaction));
+    // Generate fake account and routing numbers (10 and 9 digits)
+    function generateRandomAccountNumber() {
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    }
+    function generateRandomRoutingNumber() {
+      return Math.floor(100000000 + Math.random() * 900000000).toString();
+    }
 
-    window.location.href = "confirmation.html";
-  });
-</script>
+    // Get logged in user
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (!loggedInUser) {
+      alert("You are not logged in. Redirecting to login.");
+      location.href = "index.html";
+    }
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    // Show result message helper
+    function showResultMessage(msg, isSuccess = true) {
+      const el = document.getElementById("resultMessage");
+      el.textContent = msg;
+      el.className = "result-message " + (isSuccess ? "result-success" : "result-error");
+      el.style.display = "block";
+    }
+
+    // Validate 10-digit account number format
+    function validateAccountNumber(num) {
+      return /^\d{10}$/.test(num);
+    }
+    // Validate 9-digit routing number format
+    function validateRoutingNumber(num) {
+      return /^\d{9}$/.test(num);
+    }
+
+    // Add transaction record
+    function addTransaction(username, tx) {
+      const data = loadUserData(username);
+      data.transactions.push(tx);
+      saveUserData(username, data);
+    }
+
+    // Find user by account number and routing number (local transfer recipient search)
+    function findUserByAccount(accountNumber, routingNumber, accountType) {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith("user_")) continue;
+        const username = key.slice(5);
+        const userData = loadUserData(username);
+        const acctInfo = userData.accountInfo[accountType];
+        if (!acctInfo) continue;
+        if (acctInfo.accountNumber === accountNumber && acctInfo.routingNumber === routingNumber) {
+          return username;
+        }
+      }
+      return null;
+    }
+
+    // Update balances helper
+    function updateBalance(username, accountType, amountChange) {
+      const data = loadUserData(username);
+      if (!data.balances[accountType]) return false;
+      data.balances[accountType] += amountChange;
+      if (data.balances[accountType] < 0) return false; // no overdraft allowed
+      saveUserData(username, data);
+      return true;
+    }
+
+    // Format date/time string
+    function formatDateTime() {
+      return new Date().toLocaleString();
+    }
+
+    // ---- Local Transfer ----
+    document.getElementById("localTransferForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const sender = loggedInUser;
+      const recipientName = document.getElementById("localRecipientName").value.trim();
+      const recipientAccountNumber = document.getElementById("localRecipientAccountNumber").value.trim();
+      const recipientRoutingNumber = document.getElementById("localRecipientRoutingNumber").value.trim();
+      const recipientAccountType = document.getElementById("localRecipientAccountType").value;
+      const amount = parseFloat(document.getElementById("localAmount").value);
+
+      if (!recipientName || !validateAccountNumber(recipientAccountNumber) || !validateRoutingNumber(recipientRoutingNumber) || !recipientAccountType || isNaN(amount) || amount <= 0) {
+        showResultMessage("Please fill all fields correctly.", false);
+        return;
+      }
+
+      if (recipientAccountNumber === "" || recipientRoutingNumber === "") {
+        showResultMessage("Recipient account and routing numbers are required.", false);
+        return;
+      }
+
+      if (sender === null) {
+        showResultMessage("You are not logged in.", false);
+        return;
+      }
+
+      if (!updateBalance(sender, "checking", -amount)) {
+        showResultMessage("Insufficient funds in your checking account.", false);
+        return;
+      }
+
+      // Find recipient username by account/routing/accountType
+      const recipientUsername = findUserByAccount(recipientAccountNumber, recipientRoutingNumber, recipientAccountType);
+      if (!recipientUsername) {
+        showResultMessage("Recipient account not found in our system. Transfer canceled.", false);
+        // Refund sender
+        updateBalance(sender, "checking", amount);
+        return;
+      }
+
+      // Credit recipient balance
+      updateBalance(recipientUsername, recipientAccountType, amount);
+
+      // Record transactions for sender and recipient
+      const txDate = formatDateTime();
+      const senderTx = {
+        type: "debit",
+        amount: amount,
+        description: `Local transfer to ${recipientName} (${recipientAccountType} acct)`,
+        date: txDate,
+        recipientAccountNumber,
+        recipientRoutingNumber,
+        recipientAccountType,
+      };
+      addTransaction(sender, senderTx);
+
+      const recipientTx = {
+        type: "credit",
+        amount: amount,
+        description: `Local transfer received from ${sender} (checking acct)`,
+        date: txDate,
+        senderUsername: sender,
+      };
+      addTransaction(recipientUsername, recipientTx);
+
+      showResultMessage(`Successfully sent $${amount.toFixed(2)} to ${recipientName} (${recipientAccountType}).`);
+      e.target.reset();
+    });
+
+    // ---- Between Accounts ----
+    document.getElementById("betweenAccountsForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const sender = loggedInUser;
+      const fromAcct = document.getElementById("betweenFromAccount").value;
+      const toAcct = document.getElementById("betweenToAccount").value;
+      const amount = parseFloat(document.getElementById("betweenAmount").value);
+
+      if (!fromAcct || !toAcct || fromAcct === toAcct || isNaN(amount) || amount <= 0) {
+        showResultMessage("Please fill all fields correctly and select different accounts.", false);
+        return;
+      }
+
+      if (!updateBalance(sender, fromAcct, -amount)) {
+        showResultMessage(`Insufficient funds in your ${fromAcct} account.`, false);
+        return;
+      }
+
+      updateBalance(sender, toAcct, amount);
+
+      const txDate = formatDateTime();
+      const txDesc = `Transfer between accounts: ${fromAcct} -> ${toAcct}`;
+
+      addTransaction(sender, {
+        type: "debit",
+        amount: amount,
+        description: txDesc,
+        date: txDate,
+        fromAccount: fromAcct,
+        toAccount: toAcct,
+      });
+
+      addTransaction(sender, {
+        type: "credit",
+        amount: amount,
+        description: txDesc,
+        date: txDate,
+        fromAccount: fromAcct,
+        toAccount: toAcct,
+      });
+
+      showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${fromAcct} to ${toAcct}.`);
+      e.target.reset();
+    });
+
+    // ---- International Transfer ----
+    document.getElementById("internationalTransferForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const sender = loggedInUser;
+      const recipientName = document.getElementById("intRecipientName").value.trim();
+      const recipientAccountNumber = document.getElementById("intRecipientAccountNumber").value.trim();
+      const recipientRoutingNumber = document.getElementById("intRecipientRoutingNumber").value.trim();
+      const recipientAccountType = document.getElementById("intRecipientAccountType").value;
+      const amount = parseFloat(document.getElementById("intAmount").value);
+      const currency = document.getElementById("intCurrency").value.trim().toUpperCase();
+
+      if (!recipientName || !recipientAccountNumber || !recipientRoutingNumber || !recipientAccountType || isNaN(amount) || amount <= 0 || !currency) {
+        showResultMessage("Please fill all fields correctly.", false);
+        return;
+      }
+
+      if (!updateBalance(sender, "checking", -amount)) {
+        showResultMessage("Insufficient funds in your checking account.", false);
+        return;
+      }
+
+      // Log international transfer (recipient may not be local user)
+      const txDate = formatDateTime();
+      addTransaction(sender, {
+        type: "debit",
+        amount: amount,
+        description: `International transfer to ${recipientName} (${recipientAccountType}) in ${currency}`,
+        date: txDate,
+        recipientAccountNumber,
+        recipientRoutingNumber,
+        recipientAccountType,
+        currency,
+      });
+
+      showResultMessage(`International transfer of $${amount.toFixed(2)} (${currency}) sent to ${recipientName}.`);
+      e.target.reset();
+    });
+
+  </script>
 </body>
 </html>
