@@ -2,147 +2,139 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Oakline Bank</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank - Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      background: linear-gradient(to right, #e3f2fd, #fff);
       font-family: 'Segoe UI', sans-serif;
-      transition: background-color 0.3s ease;
+      background-color: #f4f6f9;
+      color: #333;
+      padding: 40px 15px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
     .login-container {
-      max-width: 450px;
-      margin: 5rem auto;
-      background-color: #ffffff;
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .form-control:focus {
-      box-shadow: 0 0 5px #0d6efd;
-    }
-
-    .sticky-login-btn {
-      position: sticky;
-      bottom: 0;
-      left: 0;
+      background: #fff;
+      max-width: 400px;
       width: 100%;
-      background: #ffffff;
-      padding: 1rem 0 0.5rem;
-      border-top: 1px solid #dee2e6;
+      padding: 30px 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgb(0 0 0 / 0.1);
+    }
+    h2 {
+      color: #004080;
+      font-weight: 700;
+      margin-bottom: 20px;
       text-align: center;
     }
-
-    .toggle-password {
-      cursor: pointer;
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      color: #6c757d;
+    label {
+      font-weight: 600;
     }
-
-    .dark-mode {
-      background-color: #121212 !important;
-      color: #ffffff !important;
+    .btn-primary {
+      background-color: #004080;
+      border: none;
     }
-
-    .dark-mode .login-container {
-      background-color: #1e1e1e;
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+    .btn-primary:hover {
+      background-color: #002f66;
     }
-
-    .dark-mode input {
-      background-color: #2c2c2c;
-      color: #fff;
-      border-color: #444;
+    .error-message {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      text-align: center;
     }
-
-    .dark-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      cursor: pointer;
+    .link-text {
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 15px;
     }
-
-    .form-check-label {
-      user-select: none;
+    .link-text a {
+      color: #004080;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-text a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-
-  <div class="dark-toggle">
-    <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()">
-      <i class="fas fa-moon"></i>
-    </button>
-  </div>
-
-  <div class="login-container shadow-lg">
-    <h3 class="text-center mb-4">Oakline Bank Login</h3>
-
-    <form id="loginForm" autocomplete="off">
-      <div class="mb-3 position-relative">
-        <label for="username" class="form-label">Username or Email</label>
-        <input type="text" id="username" class="form-control" required placeholder="Enter username or email">
+  <div class="login-container">
+    <h2>Oakline Bank Login</h2>
+    <form id="loginForm" novalidate>
+      <div class="mb-3">
+        <label for="userInput" class="form-label">Username or Email</label>
+        <input type="text" class="form-control" id="userInput" required placeholder="Enter username or email" />
       </div>
-
-      <div class="mb-3 position-relative">
+      <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" class="form-control" required placeholder="Enter password">
-        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+        <input type="password" class="form-control" id="password" required placeholder="Enter password" />
       </div>
-
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="rememberMe">
-          <label class="form-check-label" for="rememberMe">Remember Me</label>
-        </div>
-        <a href="forgot-password.html">Forgot Password?</a>
-      </div>
-
-      <div class="sticky-login-btn">
-        <button type="submit" class="btn btn-primary w-75">Login</button>
-      </div>
+      <div id="errorMsg" class="error-message"></div>
+      <button type="submit" class="btn btn-primary w-100">Log In</button>
     </form>
-
-    <div class="text-center mt-4">
-      <p>Don't have an account? <a href="signup.html">Sign up</a></p>
-      <a href="index.html" class="text-decoration-none">&larr; Back to Home</a>
+    <div class="link-text">
+      Don't have an account? <a href="signup.html">Sign up here</a>
     </div>
   </div>
 
-  <script>
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
+<script>
+  const form = document.getElementById('loginForm');
+  const userInput = document.getElementById('userInput');
+  const passwordInput = document.getElementById('password');
+  const errorMsg = document.getElementById('errorMsg');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    errorMsg.textContent = '';
+
+    const userVal = userInput.value.trim();
+    const passwordVal = passwordInput.value;
+
+    if (!userVal || !passwordVal) {
+      errorMsg.textContent = 'Please enter both username/email and password.';
+      return;
     }
 
-    // Show/hide password
-    document.getElementById("togglePassword").addEventListener("click", function () {
-      const pwd = document.getElementById("password");
-      const type = pwd.getAttribute("type") === "password" ? "text" : "password";
-      pwd.setAttribute("type", type);
-      this.classList.toggle("fa-eye-slash");
-    });
+    // Search all users in localStorage for match
+    let foundUserKey = null;
+    let foundUserData = null;
 
-    // Form validation and simulated login
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith('user_')) continue;
 
-      if (username && password) {
-        localStorage.setItem("loggedInUser", username);
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Please enter valid credentials.");
-      }
-    });
-  </script>
+      try {
+        const userData = JSON.parse(localStorage.getItem(key));
+        if (
+          userData.username.toLowerCase() === userVal.toLowerCase() ||
+          userData.email.toLowerCase() === userVal.toLowerCase()
+        ) {
+          foundUserKey = key;
+          foundUserData = userData;
+          break;
+        }
+      } catch {}
+    }
 
+    if (!foundUserData) {
+      errorMsg.textContent = 'Username or email not found.';
+      return;
+    }
+
+    if (foundUserData.password !== passwordVal) {
+      errorMsg.textContent = 'Incorrect password.';
+      return;
+    }
+
+    // Login success
+    localStorage.setItem('loggedInUser', foundUserData.username);
+    location.href = 'dashboard.html';
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
