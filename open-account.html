@@ -7,18 +7,9 @@
 </head>
 <body>
   <div class="container">
-    <h2>Open a New Bank Account</h2>
+    <h2>Open a New Account</h2>
 
     <form id="openAccountForm">
-      <label for="fullName">Full Name:</label>
-      <input type="text" id="fullName" required />
-
-      <label for="phoneNumber">Phone Number:</label>
-      <input type="tel" id="phoneNumber" required pattern="[0-9]{10,15}" />
-
-      <label for="address">Address:</label>
-      <textarea id="address" rows="2" required></textarea>
-
       <label for="accountType">Account Type:</label>
       <select id="accountType" required>
         <option value="">Select account type</option>
@@ -27,89 +18,88 @@
       </select>
 
       <label for="initialDeposit">Initial Deposit ($):</label>
-      <input type="number" id="initialDeposit" min="1" required />
+      <input type="number" id="initialDeposit" min="0" required />
+
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" required />
+
+      <label for="dob">Date of Birth:</label>
+      <input type="date" id="dob" required />
+
+      <label for="address">Address:</label>
+      <input type="text" id="address" required />
 
       <button type="submit">Create Account</button>
     </form>
 
     <div id="accountResult" class="result-box" style="display:none;">
-      <h3>✅ Account Created Successfully</h3>
+      <h3>✅ Account Created</h3>
       <p><strong>Account Number:</strong> <span id="accNum"></span></p>
       <p><strong>Routing Number:</strong> <span id="routeNum"></span></p>
-      <p><a href="dashboard.html">← Return to Dashboard</a></p>
     </div>
+
+    <a href="dashboard.html">← Back to Dashboard</a>
   </div>
 
   <script>
-    const loggedInUser = localStorage.getItem("loggedInUser");
-    if (!loggedInUser) {
+    // Load logged-in user info
+    const loggedInUser = JSON.parse(localStorage.getItem("oakline_loggedInUser"));
+    const allUsers = JSON.parse(localStorage.getItem("oakline_users")) || {};
+
+    if (!loggedInUser || !allUsers[loggedInUser.username]) {
       alert("You must be logged in to open an account.");
       window.location.href = "login.html";
     }
+
+    const userData = allUsers[loggedInUser.username];
 
     const form = document.getElementById("openAccountForm");
     const accNumDisplay = document.getElementById("accNum");
     const routeNumDisplay = document.getElementById("routeNum");
     const resultBox = document.getElementById("accountResult");
 
-    function generateAccountNumber() {
-      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    }
-
-    function generateRoutingNumber() {
-      return "021000021"; // Example routing number
-    }
-
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const phoneNumber = document.getElementById("phoneNumber").value.trim();
-      const address = document.getElementById("address").value.trim();
       const accountType = document.getElementById("accountType").value;
       const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+      const fullName = document.getElementById("fullName").value.trim();
+      const dob = document.getElementById("dob").value;
+      const address = document.getElementById("address").value.trim();
 
-      if (!fullName || !phoneNumber || !address || !accountType || isNaN(initialDeposit) || initialDeposit <= 0) {
-        alert("Please fill out all fields correctly.");
+      if (!accountType || isNaN(initialDeposit) || !fullName || !dob || !address) {
+        alert("Please fill out all required fields.");
         return;
       }
+
+      const accountNumber = "5" + Math.floor(1000000000 + Math.random() * 9000000000);
+      const routingNumber = "031100209";
 
       const newAccount = {
-        fullName,
-        phoneNumber,
-        address,
         type: accountType,
         balance: initialDeposit,
-        accountNumber: generateAccountNumber(),
-        routingNumber: generateRoutingNumber(),
+        accountNumber,
+        routingNumber,
+        holderInfo: {
+          fullName,
+          dob,
+          address
+        },
         transactions: [{
-          type: "credit",
-          description: "Initial Deposit",
+          type: "Initial Deposit",
           amount: initialDeposit,
-          date: new Date().toLocaleString()
+          date: new Date().toLocaleString(),
         }]
       };
-
-      const allUsersRaw = localStorage.getItem("users");
-      const allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : {};
-
-      const userData = allUsers[loggedInUser];
-
-      if (!userData) {
-        alert("User not found. Please log in again.");
-        localStorage.removeItem("loggedInUser");
-        window.location.href = "login.html";
-        return;
-      }
 
       userData.accounts = userData.accounts || [];
       userData.accounts.push(newAccount);
 
-      allUsers[loggedInUser] = userData;
-      localStorage.setItem("users", JSON.stringify(allUsers));
+      allUsers[loggedInUser.username] = userData;
+      localStorage.setItem("oakline_users", JSON.stringify(allUsers));
 
-      accNumDisplay.textContent = newAccount.accountNumber;
-      routeNumDisplay.textContent = newAccount.routingNumber;
+      accNumDisplay.textContent = accountNumber;
+      routeNumDisplay.textContent = routingNumber;
       resultBox.style.display = "block";
 
       form.reset();
