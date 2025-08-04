@@ -26,7 +26,6 @@
       color: #fff;
     }
 
-    /* Header: logo and bank name */
     .header-container {
       max-width: 960px;
       margin: 1rem auto 0.5rem auto;
@@ -49,7 +48,6 @@
       color: #004080;
     }
 
-    /* Scrolling Banner */
     .marquee-banner {
       background: #004080;
       color: white;
@@ -81,33 +79,19 @@
       z-index: 1000;
     }
 
-    .top-controls-left {
-      left: 10px;
-    }
-
-    .top-controls-right {
-      right: 10px;
-    }
-
-    .top-controls-left button,
-    .top-controls-right button {
-      font-size: 1rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    .top-controls-left { left: 10px; }
+    .top-controls-right { right: 10px; }
 
     .btn-logout {
-      background-color: #0d6efd;
+      background-color: #004080;
       border: none;
       color: white;
     }
 
     .btn-logout:hover {
-      background-color: #084cbc;
+      background-color: #002f66;
     }
 
-    /* Hero / Welcome Section */
     .hero {
       background: #004080;
       color: white;
@@ -157,159 +141,113 @@
     .dark-mode .balance-card {
       background-color: #1e1e1e;
     }
-.btn-logout {
-  background-color: #004080;
-  border: none;
-  color: white;
-}
-.btn-logout:hover {
-  background-color: #002f66;
-}
-    
+
+    .animated-balance {
+      transition: all 0.4s ease-in-out;
+      transform: scale(1.05);
+      color: #28a745;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Left: Dark Mode Toggle -->
-  <div class="top-controls-left" aria-label="Dark mode toggle">
+  <!-- Top Left -->
+  <div class="top-controls-left">
     <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
       <i class="fas fa-moon"></i>
     </button>
   </div>
 
-  <!-- Top Right: Logout -->
-  <div class="top-controls-right" aria-label="Logout">
+  <!-- Top Right -->
+  <div class="top-controls-right">
     <button class="btn btn-logout btn-sm" onclick="logout()" aria-label="Logout">
       Logout
     </button>
   </div>
 
-  <!-- Header: Logo & Bank Name -->
+  <!-- Header -->
   <div class="header-container">
     <div class="logo-placeholder" aria-label="Bank Logo"></div>
     <a href="index.html" class="bank-name text-decoration-none">Oakline Bank</a>
   </div>
 
-  <!-- Scrolling Marquee Banner -->
+  <!-- Scrolling Banner -->
   <div class="marquee-banner">
     <div class="marquee-text">
       🔐 Welcome to Oakline Bank — The Most Secure and Trusted Digital Bank. Your Finances. Our Priority. 💼
     </div>
   </div>
 
-<!-- Hero: Welcome & Dropdown -->
-<div class="hero" aria-labelledby="welcomeMsg">
-  <div class="container-fluid px-0">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-      
-      <!-- Left: Profile Info -->
-      <div class="d-flex align-items-center gap-3">
-        <!-- Profile Image Placeholder -->
-        <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-        
-        <!-- Name & Login -->
-        <div>
-          <h5 id="welcomeMsg" class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
-          <small>Last login: <span id="lastLogin">Just now</span></small>
-        </div>
-
-       <!-- Dropdown Button -->
-<div class="dropdown ms-2">
-  <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fas fa-bars me-1"></i> Menu
-  </button>
-
-  <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-    <!-- Essentials -->
-    <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
-    <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
-    <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
-
-    <li><hr class="dropdown-divider"></li>
-
-    <!-- Daily Actions -->
-    <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
-    <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
-    <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
-    <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
-    <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
-
-    <li><hr class="dropdown-divider"></li>
-
-    <!-- Smart Tools -->
-    <li><a class="dropdown-item" href="budget.html"><i class="fas fa-wallet me-2 text-secondary"></i> Budget Planner</a></li>
-    <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
-    <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
-  </ul>
-</div>
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="d-flex align-items-center gap-3">
+      <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+      <div>
+        <h5 class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
+        <small>Last login: <span id="lastLogin">Just now</span></small>
       </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Balance Display -->
-<div class="balances" aria-label="Account balances">
-  <!-- Checking Account -->
-  <div class="balance-card">
-    <h6>Checking Account</h6>
-    <div id="checkingBalance" class="amount">$0.00</div>
-    <div class="mt-2">
-      <small>
-        Account #: 
-        <span id="checkingAccountNumber">****1023</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('checking')" data-bs-toggle="tooltip" title="Show/Hide">
-          <i class="fas fa-eye"></i>
+      <div class="dropdown ms-2">
+        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bars me-1"></i> Menu
         </button>
-      </small><br>
-      <small>
-        Routing #: 
-        <span id="checkingRoutingNumber">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
-          <i class="fas fa-copy"></i>
-        </button>
-      </small>
-    </div>
-    <div class="mt-3 d-flex justify-content-center gap-2">
-      <button class="btn btn-outline-primary btn-sm" onclick="copyText('1234567890')" data-bs-toggle="tooltip" title="Copy Account Number">
-        <i class="fas fa-copy"></i>
-      </button>
-      <a href="checking-details.html" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="View Details">
-        <i class="fas fa-eye"></i>
-      </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
+          <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
+          <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
+          <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
+          <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
+          <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="budget.html"><i class="fas fa-wallet me-2 text-secondary"></i> Budget Planner</a></li>
+          <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
+          <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <!-- Savings Account -->
-  <div class="balance-card">
-    <h6>Savings Account</h6>
-    <div id="savingsBalance" class="amount">$0.00</div>
-    <div class="mt-2">
-      <small>
-        Account #: 
-        <span id="savingsAccountNumber">****2045</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('savings')" data-bs-toggle="tooltip" title="Show/Hide">
-          <i class="fas fa-eye"></i>
-        </button>
-      </small><br>
-      <small>
-        Routing #: 
-        <span id="savingsRoutingNumber">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
-          <i class="fas fa-copy"></i>
-        </button>
-      </small>
+  <!-- Balances -->
+  <div class="balances">
+    <div class="balance-card">
+      <h6>Checking Account</h6>
+      <div id="checkingBalance" class="amount">$0.00</div>
+      <div class="mt-2">
+        <small>Account #: <span id="checkingAccountNumber">****1023</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('checking')" data-bs-toggle="tooltip" title="Show/Hide">
+            <i class="fas fa-eye"></i>
+          </button></small><br>
+        <small>Routing #: <span>021000021</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
+            <i class="fas fa-copy"></i>
+          </button></small>
+      </div>
     </div>
-    <div class="mt-3 d-flex justify-content-center gap-2">
-      <button class="btn btn-outline-primary btn-sm" onclick="copyText('0987654321')" data-bs-toggle="tooltip" title="Copy Account Number">
-        <i class="fas fa-copy"></i>
-      </button>
-      <a href="savings-details.html" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="View Details">
-        <i class="fas fa-eye"></i>
-      </a>
+
+    <div class="balance-card">
+      <h6>Savings Account</h6>
+      <div id="savingsBalance" class="amount">$0.00</div>
+      <div class="mt-2">
+        <small>Account #: <span id="savingsAccountNumber">****2045</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('savings')" data-bs-toggle="tooltip" title="Show/Hide">
+            <i class="fas fa-eye"></i>
+          </button></small><br>
+        <small>Routing #: <span>021000021</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText('021000021')" data-bs-toggle="tooltip" title="Copy Routing">
+            <i class="fas fa-copy"></i>
+          </button></small>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Recent Transactions -->
+  <div class="container mt-4" aria-label="Recent transactions">
+    <h5 class="mb-3">Recent Transactions</h5>
+    <ul id="recentTransactions" class="list-group"></ul>
+  </div>
+
   <script>
     function formatCurrency(amount) {
       return amount.toLocaleString('en-US', {
@@ -319,14 +257,49 @@
       });
     }
 
+    function animateBalance(id, newValue) {
+      const el = document.getElementById(id);
+      el.classList.add('animated-balance');
+      el.textContent = formatCurrency(newValue);
+      setTimeout(() => el.classList.remove('animated-balance'), 500);
+    }
+
     function loadBalances() {
       let balances = JSON.parse(localStorage.getItem('accountBalances'));
       if (!balances) {
         balances = { checking: 10250.75, savings: 20250.45 };
         localStorage.setItem('accountBalances', JSON.stringify(balances));
       }
-      document.getElementById('checkingBalance').textContent = formatCurrency(balances.checking);
-      document.getElementById('savingsBalance').textContent = formatCurrency(balances.savings);
+      animateBalance('checkingBalance', balances.checking);
+      animateBalance('savingsBalance', balances.savings);
+      loadRecentTransactions();
+    }
+
+    function loadRecentTransactions() {
+      const container = document.getElementById('recentTransactions');
+      container.innerHTML = '';
+      const txns = JSON.parse(localStorage.getItem('transactions')) || [];
+      const recent = txns.slice(-5).reverse();
+
+      if (recent.length === 0) {
+        container.innerHTML = '<li class="list-group-item text-muted">No recent transactions.</li>';
+        return;
+      }
+
+      recent.forEach(tx => {
+        const item = document.createElement('li');
+        item.className = 'list-group-item d-flex justify-content-between align-items-center';
+        item.innerHTML = `
+          <div>
+            <strong>${tx.type}</strong> - ${tx.account}<br />
+            <small class="text-muted">${tx.date}</small>
+          </div>
+          <span class="badge bg-${tx.type === 'Deposit' ? 'success' : tx.type === 'Withdrawal' ? 'danger' : 'secondary'}">
+            ${formatCurrency(tx.amount)}
+          </span>
+        `;
+        container.appendChild(item);
+      });
     }
 
     function loadUsername() {
@@ -344,43 +317,70 @@
       window.location.href = 'index.html';
     }
 
+    function toggleAccount(type) {
+      const el = document.getElementById(`${type}AccountNumber`);
+      const masked = type === 'checking' ? '****1023' : '****2045';
+      const full = type === 'checking' ? '1234567890' : '0987654321';
+      el.textContent = (el.textContent === masked) ? full : masked;
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(`Copied: ${text}`);
+      }).catch(err => {
+        console.error('Failed to copy text:', err);
+      });
+    }
+
     window.addEventListener('storage', (e) => {
       if (e.key === 'accountBalances') loadBalances();
     });
 
-    loadUsername();
-    loadBalances();
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    alert(`Copied: ${text}`);
-  }).catch(err => {
-    console.error('Failed to copy!', err);
-  });
-}
-
-const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-tooltips.forEach(t => new bootstrap.Tooltip(t));
-
-    function toggleAccount(type) {
-  const el = document.getElementById(`${type}AccountNumber`);
-  const masked = type === 'checking' ? '****1023' : '****2045';
-  const full = type === 'checking' ? '1234567890' : '0987654321';
-
-  el.textContent = (el.textContent === masked) ? full : masked;
-}
-
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    alert(`Copied: ${text}`);
-  }).catch(err => {
-    console.error('Failed to copy text: ', err);
-  });
-}
-
-// Initialize tooltips
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-tooltipTriggerList.forEach(tt => new bootstrap.Tooltip(tt));
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUsername();
+      loadBalances();
+      const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltips.forEach(t => new bootstrap.Tooltip(t));
+    });
   </script>
+<footer class="bg-dark text-light pt-4 mt-5">
+  <div class="container">
+    <div class="row">
+
+      <!-- About Oakline -->
+      <div class="col-md-4 mb-3">
+        <h5>Oakline Bank</h5>
+        <p>Trusted digital banking. Secure, reliable, and personalized financial solutions just for you.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4 mb-3">
+        <h6>Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="about.html" class="text-decoration-none text-light">About Us</a></li>
+          <li><a href="support.html" class="text-decoration-none text-light">Support</a></li>
+          <li><a href="privacy.html" class="text-decoration-none text-light">Privacy Policy</a></li>
+          <li><a href="terms.html" class="text-decoration-none text-light">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Media -->
+      <div class="col-md-4 mb-3">
+        <h6>Follow Us</h6>
+        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-light me-3"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+      </div>
+
+    </div>
+
+    <div class="text-center border-top border-secondary pt-3 mt-3 small">
+      &copy; 2025 Oakline Bank. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
