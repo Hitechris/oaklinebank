@@ -3,126 +3,207 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Withdrawal - Oakline Bank</title>
+  <title>Oakline Bank - Withdrawal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
     body {
-      background-color: #f8f9fa;
-      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding-bottom: 40px;
     }
-    .form-section {
-      max-width: 600px;
-      margin: auto;
+    .dark-mode {
+      background-color: #121212;
+      color: #eee;
+    }
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+    .header-container {
+      max-width: 960px;
+      margin: 1rem auto 1rem auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bank-name {
+      font-weight: 800;
+      font-size: 2rem;
+      color: #004080;
+      text-decoration: none;
+    }
+    .btn-logout {
+      background-color: #004080;
+      border: none;
+      color: white;
+    }
+    .btn-logout:hover {
+      background-color: #002f66;
+    }
+    .form-container {
+      max-width: 480px;
+      margin: 2rem auto;
       background: white;
       padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
     }
-    .hidden {
-      display: none;
+    .dark-mode .form-container {
+      background-color: #1e1e1e;
+      box-shadow: none;
     }
   </style>
 </head>
 <body>
-  <div class="form-section">
-    <h2 class="mb-4 text-center">Withdraw Funds</h2>
-    <form id="withdrawForm">
+
+  <div class="header-container">
+    <a href="dashboard.html" class="bank-name">Oakline Bank</a>
+    <button id="logoutBtn" class="btn btn-logout btn-sm" aria-label="Logout">
+      Logout
+    </button>
+  </div>
+
+  <main class="form-container">
+    <h3 class="mb-4">Withdraw Funds</h3>
+
+    <form id="withdrawalForm" novalidate>
       <div class="mb-3">
         <label for="accountType" class="form-label">Select Account</label>
         <select class="form-select" id="accountType" required>
-          <option value="">Choose...</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
+          <option value="" disabled selected>Select Checking or Savings</option>
+          <option value="checking">Checking Account</option>
+          <option value="savings">Savings Account</option>
         </select>
+        <div class="invalid-feedback">Please select an account type.</div>
       </div>
 
       <div class="mb-3">
-        <label for="withdrawAmount" class="form-label">Amount ($)</label>
-        <input type="number" class="form-control" id="withdrawAmount" min="1" required />
+        <label for="withdrawAmount" class="form-label">Amount to Withdraw ($)</label>
+        <input type="number" class="form-control" id="withdrawAmount" placeholder="0.00" min="0.01" step="0.01" required />
+        <div class="invalid-feedback">Please enter a valid amount greater than 0.</div>
       </div>
 
-      <div class="mb-3">
-        <label for="withdrawMethod" class="form-label">Withdrawal Method</label>
-        <select class="form-select" id="withdrawMethod" required>
-          <option value="">Select method...</option>
-          <option value="ATM">ATM</option>
-          <option value="Bank Transfer">Bank Transfer</option>
-          <option value="Cash Pickup">Cash Pickup</option>
-          <option value="Mobile Money">Mobile Money</option>
-        </select>
-      </div>
-
-      <div id="recipientFields" class="hidden">
-        <div class="mb-3">
-          <label for="recipientName" class="form-label">Recipient Name</label>
-          <input type="text" class="form-control" id="recipientName" />
-        </div>
-        <div class="mb-3">
-          <label for="recipientAccount" class="form-label">Recipient Account Number</label>
-          <input type="text" class="form-control" id="recipientAccount" />
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-danger w-100">Withdraw</button>
+      <button type="submit" class="btn btn-primary w-100">Withdraw</button>
     </form>
-  </div>
+
+    <div id="message" class="mt-3"></div>
+  </main>
 
   <script>
-    const withdrawForm = document.getElementById("withdrawForm");
-    const methodSelect = document.getElementById("withdrawMethod");
-    const recipientFields = document.getElementById("recipientFields");
-
-    // Show/hide recipient info based on method
-    methodSelect.addEventListener("change", () => {
-      const method = methodSelect.value;
-      if (method === "Bank Transfer" || method === "Mobile Money" || method === "Cash Pickup") {
-        recipientFields.classList.remove("hidden");
-      } else {
-        recipientFields.classList.add("hidden");
+    // Helper: load user data from localStorage
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
       }
-    });
+    }
 
-    withdrawForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+    // Helper: save user data to localStorage
+    function saveUserData(username, data) {
+      localStorage.setItem("user_" + username, JSON.stringify(data));
+    }
 
-      const accountType = document.getElementById("accountType").value;
-      const amount = parseFloat(document.getElementById("withdrawAmount").value);
-      const method = document.getElementById("withdrawMethod").value;
-      const recipientName = document.getElementById("recipientName").value.trim();
-      const recipientAccount = document.getElementById("recipientAccount").value.trim();
+    // Format date and time
+    function getFormattedDateTime() {
+      const now = new Date();
+      return now.toLocaleString();
+    }
 
-      if (!accountType || isNaN(amount) || amount <= 0 || !method) {
-        alert("Please fill all required fields.");
+    document.addEventListener("DOMContentLoaded", () => {
+      const username = localStorage.getItem("loggedInUser");
+      if (!username) {
+        alert("You must be logged in to access this page.");
+        location.href = "index.html";
         return;
       }
 
-      let balances = JSON.parse(localStorage.getItem("accountBalances")) || {
-        checking: 1000,
-        savings: 1000,
-      };
-
-      if (balances[accountType] < amount) {
-        alert("Insufficient funds.");
+      const userData = loadUserData(username);
+      if (!userData) {
+        alert("User data not found. Please log in again.");
+        localStorage.removeItem("loggedInUser");
+        location.href = "index.html";
         return;
       }
 
-      balances[accountType] -= amount;
-      localStorage.setItem("accountBalances", JSON.stringify(balances));
+      const form = document.getElementById("withdrawalForm");
+      const messageDiv = document.getElementById("message");
+      const logoutBtn = document.getElementById("logoutBtn");
 
-      const transaction = {
-        type: "Withdrawal",
-        method: method,
-        accountType: accountType,
-        amount: amount.toFixed(2),
-        recipientName: recipientName || "",
-        recipientAccount: recipientAccount || "",
-        transactionId: "TX" + Date.now(),
-        date: new Date().toLocaleString()
-      };
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("loggedInUser");
+        location.href = "index.html";
+      });
 
-      localStorage.setItem("latestTransaction", JSON.stringify(transaction));
-      window.location.href = "receipt.html";
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // Reset messages
+        messageDiv.textContent = "";
+        messageDiv.className = "";
+
+        // Validate form
+        const accountType = document.getElementById("accountType").value;
+        const amountInput = document.getElementById("withdrawAmount");
+        const amount = parseFloat(amountInput.value);
+
+        let valid = true;
+
+        if (!accountType) {
+          document.getElementById("accountType").classList.add("is-invalid");
+          valid = false;
+        } else {
+          document.getElementById("accountType").classList.remove("is-invalid");
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+          amountInput.classList.add("is-invalid");
+          valid = false;
+        } else {
+          amountInput.classList.remove("is-invalid");
+        }
+
+        if (!valid) return;
+
+        // Check if balance sufficient
+        if (userData.balances[accountType] < amount) {
+          messageDiv.textContent = "Insufficient funds in " + accountType + " account.";
+          messageDiv.className = "alert alert-danger";
+          return;
+        }
+
+        // Update balance
+        userData.balances[accountType] -= amount;
+
+        // Add transaction record
+        const transaction = {
+          type: "debit",
+          account: accountType,
+          amount: amount,
+          date: getFormattedDateTime(),
+          description: `Withdrawal from ${accountType} account`
+        };
+
+        userData.transactions.push(transaction);
+
+        // Save updated data
+        saveUserData(username, userData);
+
+        // Show success message
+        messageDiv.textContent = `Successfully withdrew $${amount.toFixed(2)} from your ${accountType} account.`;
+        messageDiv.className = "alert alert-success";
+
+        // Reset form
+        form.reset();
+      });
     });
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
