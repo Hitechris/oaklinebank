@@ -33,60 +33,59 @@
         <button type="button" class="btn btn-success w-100" onclick="openNewAccount()">Open Account</button>
       </div>
     </div>
-  </div>
-
-  <script>
-    function openNewAccount() {
-      const loggedInUser = localStorage.getItem("loggedInUser");
-      if (!loggedInUser) {
-        alert("You must be logged in to open an account.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-      const userIndex = allUsers.findIndex(u => u.username === loggedInUser);
-
-      if (userIndex === -1) {
-        alert("User not found.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      const accountType = document.getElementById("accountType").value;
-      const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
-
-      if (!accountType || isNaN(initialDeposit)) {
-        alert("Please fill in all fields correctly.");
-        return;
-      }
-
-      const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
-
-      if (!allUsers[userIndex].accountInfo) {
-        allUsers[userIndex].accountInfo = { checking: null, savings: null };
-      }
-
-      if (accountType === "checking") {
-        allUsers[userIndex].accountInfo.checking = {
-          balance: initialDeposit,
-          accountNumber: accountNumber,
-          transactions: []
-        };
-      } else {
-        allUsers[userIndex].accountInfo.savings = {
-          balance: initialDeposit,
-          accountNumber: accountNumber,
-          transactions: []
-        };
-      }
-
-      localStorage.setItem("users", JSON.stringify(allUsers));
-      alert("Account created successfully!");
-      window.location.href = "dashboard.html";
+<script>
+  function openNewAccount() {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (!loggedInUser) {
+      alert("You must be logged in to open an account.");
+      window.location.href = "login.html";
+      return;
     }
-  </script>
 
+    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const userIndex = allUsers.findIndex(
+      u => u.username === loggedInUser || u.email === loggedInUser
+    );
+
+    if (userIndex === -1) {
+      alert("User not found.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const accountType = document.getElementById("accountType").value;
+    const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+
+    if (!accountType || isNaN(initialDeposit) || initialDeposit < 0) {
+      alert("Please select an account type and enter a valid deposit.");
+      return;
+    }
+
+    const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
+
+    // Ensure accountInfo structure exists
+    if (!allUsers[userIndex].accountInfo) {
+      allUsers[userIndex].accountInfo = { checking: null, savings: null };
+    }
+
+    // Prevent overwriting an already-opened account
+    if (allUsers[userIndex].accountInfo[accountType]?.isOpen) {
+      alert(`You already have a ${accountType} account.`);
+      return;
+    }
+
+    allUsers[userIndex].accountInfo[accountType] = {
+      balance: parseFloat(initialDeposit.toFixed(2)),
+      accountNumber: accountNumber,
+      transactions: [],
+      isOpen: true
+    };
+
+    localStorage.setItem("users", JSON.stringify(allUsers));
+    alert(`${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account created successfully!`);
+    window.location.href = "dashboard.html";
+  }
+</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
