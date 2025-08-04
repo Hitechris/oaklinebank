@@ -5,203 +5,199 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Transaction History - Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    body { background-color: #f8f9fa; }
-    table th, table td { vertical-align: middle; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding-bottom: 40px;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #eee;
+    }
+    .dark-mode .table {
+      color: #eee;
+    }
+    .dark-mode .btn {
+      border-color: #eee;
+      color: #eee;
+    }
+    .btn-toggle-dark {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    .btn-logout {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background-color: #004080;
+      border: none;
+      color: white;
+    }
+    .btn-logout:hover {
+      background-color: #002f66;
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light px-3">
-    <a href="index.html" class="navbar-brand">Oakline Bank</a>
-    <div class="dropdown">
-      <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="fas fa-bars me-1"></i> Menu
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
-        <li><a class="dropdown-item" href="deposit.html">Deposit Funds</a></li>
-        <li><a class="dropdown-item" href="withdrawal.html">Withdraw Funds</a></li>
-        <li><a class="dropdown-item" href="index.html">Logout</a></li>
-      </ul>
-    </div>
-  </nav>
+  <button class="btn btn-outline-dark btn-sm btn-toggle-dark" aria-label="Toggle dark mode" onclick="toggleDarkMode()">
+    <i class="fas fa-moon"></i>
+  </button>
+  <button id="logoutBtn" class="btn btn-logout btn-sm" aria-label="Logout">Logout</button>
 
   <div class="container mt-5">
-    <h4 class="mb-4">All Transactions</h4>
+    <h2>Transaction History</h2>
+    <p id="welcomeUser"></p>
 
-    <div class="d-flex justify-content-between align-items-center my-3 flex-wrap">
-  <div class="mb-2">
-    <label for="filterType" class="form-label me-2">Filter by Type:</label>
-    <select id="filterType" class="form-select form-select-sm d-inline-block w-auto">
-      <option value="All">All</option>
-      <option value="Deposit">Deposit</option>
-      <option value="Withdrawal">Withdrawal</option>
-      <option value="Transfer">Transfer</option>
-    </select>
-  </div>
-  <button class="btn btn-outline-primary btn-sm mb-2" onclick="exportToCSV()">
-    <i class="fas fa-file-export me-1"></i> Export to CSV
-  </button>
-</div>
-    <!-- FILTER & EXPORT CONTROLS -->
-<div class="row mb-3">
-  <div class="col-md-4 mb-2">
-    <label for="filterType" class="form-label">Filter by Type:</label>
-    <select id="filterType" class="form-select form-select-sm">
-      <option value="All">All</option>
-      <option value="Deposit">Deposit</option>
-      <option value="Withdrawal">Withdrawal</option>
-      <option value="Transfer">Transfer</option>
-    </select>
-  </div>
-  <div class="col-md-3 mb-2">
-    <label for="startDate" class="form-label">From:</label>
-    <input type="date" id="startDate" class="form-control form-control-sm" />
-  </div>
-  <div class="col-md-3 mb-2">
-    <label for="endDate" class="form-label">To:</label>
-    <input type="date" id="endDate" class="form-control form-control-sm" />
-  </div>
-  <div class="col-md-2 d-flex align-items-end">
-    <button class="btn btn-outline-primary btn-sm w-100" onclick="exportToCSV()">
-      <i class="fas fa-file-export me-1"></i> Export CSV
-    </button>
-  </div>
-</div>
+    <div class="mb-3 row">
+      <label for="filterType" class="col-sm-2 col-form-label">Filter by Type:</label>
+      <div class="col-sm-4">
+        <select id="filterType" class="form-select">
+          <option value="all">All</option>
+          <option value="debit">Debit</option>
+          <option value="credit">Credit</option>
+        </select>
+      </div>
+
+      <label for="filterAccount" class="col-sm-2 col-form-label">Filter by Account:</label>
+      <div class="col-sm-4">
+        <select id="filterAccount" class="form-select">
+          <option value="all">All</option>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table table-bordered table-hover text-center align-middle">
-<thead class="table-light">
-  <tr>
-    <th>Date</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Amount ($)</th>
-    <th>Balance After</th>
-    <th>Receipt</th> <!-- ✅ New column -->
-  </tr>
-</thead>
-        <tbody id="transactionTableBody"></tbody>
+      <table class="table table-striped table-hover" aria-label="Transaction table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTableBody">
+          <!-- Transactions will load here -->
+        </tbody>
       </table>
     </div>
-    <div id="noTransactions" class="text-muted text-center mt-4 d-none">
-      No transactions yet.
-    </div>
   </div>
 
-<script>
-  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-  const tbody = document.getElementById('transactionTableBody');
-  const empty = document.getElementById('noTransactions');
-
-  const filterSelect = document.getElementById('filterType');
-  const startDateInput = document.getElementById('startDate');
-  const endDateInput = document.getElementById('endDate');
-
-  function parseDate(dateStr) {
-    return new Date(dateStr + 'T00:00:00');
-  }
-
-  function renderTransactions() {
-    tbody.innerHTML = '';
-    empty.classList.add('d-none');
-    let runningBalance = 0;
-
-    const typeFilter = filterSelect.value;
-    const startDate = startDateInput.value ? parseDate(startDateInput.value) : null;
-    const endDate = endDateInput.value ? parseDate(endDateInput.value) : null;
-
-    // Newest-first
-    const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    const filtered = sorted.filter(tx => {
-      const txDate = new Date(tx.date);
-      const matchesType = typeFilter === "All" || tx.type === typeFilter;
-      const matchesStart = !startDate || txDate >= startDate;
-      const matchesEnd = !endDate || txDate <= endDate;
-      return matchesType && matchesStart && matchesEnd;
-    });
-
-    if (filtered.length === 0) {
-      empty.classList.remove('d-none');
-      return;
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.btn-toggle-dark i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
     }
 
-    filtered.forEach((tx, index) => {
-      if (tx.type && tx.type.toLowerCase() === "deposit") {
-        runningBalance += parseFloat(tx.amount);
-      } else if (tx.type && (tx.type.toLowerCase() === "withdrawal" || tx.type.toLowerCase() === "transfer")) {
-        runningBalance -= parseFloat(tx.amount);
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString);
+      return d.toLocaleString();
+    }
+
+    function createDetailsLink(index) {
+      return `<a href="receipt.html?tx=${index}" class="btn btn-sm btn-primary" aria-label="View receipt for transaction ${index}">View Receipt</a>`;
+    }
+
+    function renderTransactions(userData, filterType, filterAccount) {
+      const tbody = document.getElementById('transactionTableBody');
+      tbody.innerHTML = '';
+
+      if (!userData || !userData.transactions || userData.transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No transactions found.</td></tr>`;
+        return;
       }
 
-      const row = document.createElement('tr');
+      let filtered = userData.transactions;
 
-      const receiptBtn = tx.type && tx.type.toLowerCase() === "transfer"
-        ? `<button class="btn btn-sm btn-outline-secondary" onclick="viewReceipt(${transactions.indexOf(tx)})" title="View Receipt">
-             <i class="fas fa-receipt"></i>
-           </button>`
-        : "";
+      if (filterType && filterType !== 'all') {
+        filtered = filtered.filter(tx => tx.type === filterType);
+      }
 
-      const isDeposit = tx.type && tx.type.toLowerCase() === 'deposit';
-      const amountClass = isDeposit ? 'text-success' : 'text-danger';
-      const sign = isDeposit ? '+' : '-';
+      if (filterAccount && filterAccount !== 'all') {
+        filtered = filtered.filter(tx => tx.account === filterAccount);
+      }
 
-      row.innerHTML = `
-        <td>${tx.date}</td>
-        <td>${tx.type}</td>
-        <td>${tx.description || '-'}</td>
-        <td class="${amountClass}">
-          ${sign}$${parseFloat(tx.amount).toFixed(2)}
-        </td>
-        <td>$${runningBalance.toFixed(2)}</td>
-        <td>${receiptBtn}</td>
-      `;
-      tbody.appendChild(row);
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No transactions match the filter criteria.</td></tr>`;
+        return;
+      }
+
+      filtered.slice().reverse().forEach((tx, idx) => {
+        // idx here is filtered index, but receipt.html expects real index in transactions array
+        // We need to find actual index of tx in original array
+        const originalIndex = userData.transactions.indexOf(tx);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formatDate(tx.date)}</td>
+          <td>${tx.description}</td>
+          <td>${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</td>
+          <td>${tx.account.charAt(0).toUpperCase() + tx.account.slice(1)}</td>
+          <td style="color:${tx.type === 'debit' ? '#dc3545' : '#28a745'};">${tx.type === 'debit' ? '-' : '+'}$${Math.abs(tx.amount).toFixed(2)}</td>
+          <td>${createDetailsLink(originalIndex)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('loggedInUser');
+      if (!username) {
+        alert('Not logged in');
+        window.location.href = 'index.html';
+        return;
+      }
+      document.getElementById('welcomeUser').textContent = `Welcome, ${username}!`;
+
+      const userData = loadUserData(username);
+      if (!userData) {
+        alert('User data not found or corrupted.');
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const filterTypeSelect = document.getElementById('filterType');
+      const filterAccountSelect = document.getElementById('filterAccount');
+
+      function updateTable() {
+        renderTransactions(userData, filterTypeSelect.value, filterAccountSelect.value);
+      }
+
+      filterTypeSelect.addEventListener('change', updateTable);
+      filterAccountSelect.addEventListener('change', updateTable);
+
+      updateTable();
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+      });
+
+      window.toggleDarkMode = toggleDarkMode;
     });
-  }
-
-  function viewReceipt(index) {
-    const tx = transactions[index];
-    localStorage.setItem('latestTransaction', JSON.stringify(tx));
-    window.location.href = "receipt.html";
-  }
-
-  function exportToCSV() {
-    if (transactions.length === 0) return alert("No transactions to export.");
-
-    const csvRows = [["Date", "Type", "Description", "Amount", "Balance"]];
-    let runningBalance = 0;
-
-    const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    sorted.forEach(tx => {
-      if (tx.type && tx.type.toLowerCase() === "deposit") runningBalance += parseFloat(tx.amount);
-      else if (tx.type && (tx.type.toLowerCase() === "withdrawal" || tx.type.toLowerCase() === "transfer")) runningBalance -= parseFloat(tx.amount);
-
-      csvRows.push([
-        tx.date,
-        tx.type,
-        tx.description || '',
-        (tx.type && tx.type.toLowerCase() === "deposit" ? '+' : '-') + parseFloat(tx.amount).toFixed(2),
-        runningBalance.toFixed(2)
-      ]);
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(r => r.join(",")).join("\n");
-    const link = document.createElement("a");
-    link.href = encodeURI(csvContent);
-    link.download = "oakline-transactions.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  filterSelect.addEventListener('change', renderTransactions);
-  startDateInput.addEventListener('change', renderTransactions);
-  endDateInput.addEventListener('change', renderTransactions);
-
-  renderTransactions();
-</script>
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
