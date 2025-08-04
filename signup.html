@@ -2,238 +2,250 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up | Oakline Bank</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank - Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #e3f2fd, #ffffff);
-      transition: background-color 0.3s ease;
+      background-color: #f4f6f9;
+      color: #333;
+      padding: 40px 15px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
     .signup-container {
-      max-width: 800px;
-      margin: 4rem auto;
-      background: #ffffff;
-      padding: 2.5rem;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      background: #fff;
+      max-width: 450px;
+      width: 100%;
+      padding: 30px 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgb(0 0 0 / 0.1);
     }
-
-    .form-label small {
-      color: #6c757d;
-      font-weight: normal;
+    h2 {
+      color: #004080;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
     }
-
-    .toggle-password {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      cursor: pointer;
+    label {
+      font-weight: 600;
     }
-
-    .dark-mode {
-      background-color: #121212 !important;
-      color: #ffffff !important;
+    .btn-primary {
+      background-color: #004080;
+      border: none;
     }
-
-    .dark-mode .signup-container {
-      background-color: #1e1e1e;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    .btn-primary:hover {
+      background-color: #002f66;
     }
-
-    .dark-mode input,
-    .dark-mode select {
-      background-color: #2c2c2c;
-      color: #fff;
-      border-color: #444;
+    .form-text {
+      font-size: 0.85rem;
+      color: #666;
     }
-
-    .dark-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 10;
-    }
-
-    .strength-bar {
-      height: 5px;
-      background-color: #ddd;
-      border-radius: 5px;
+    .error-message {
+      color: #dc3545;
+      font-size: 0.9rem;
       margin-top: 5px;
     }
-
-    .strength-bar.active {
-      background-color: green;
-    }
-
-    .captcha-placeholder {
-      background: #f1f1f1;
-      border: 1px dashed #ccc;
-      padding: 1rem;
+    .success-message {
+      color: #28a745;
+      font-size: 1rem;
       text-align: center;
-      font-style: italic;
-      color: #555;
-      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .link-text {
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .link-text a {
+      color: #004080;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link-text a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-
-  <!-- Dark mode toggle -->
-  <div class="dark-toggle">
-    <button class="btn btn-outline-secondary btn-sm" onclick="toggleDarkMode()">
-      <i class="fas fa-moon"></i>
-    </button>
-  </div>
-
   <div class="signup-container">
-    <h2 class="text-center mb-4">Open an Account with Oakline Bank</h2>
-
-    <form id="signupForm" autocomplete="off">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">First Name</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Middle Name</label>
-          <input type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Last Name</label>
-          <input type="text" class="form-control" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Date of Birth</label>
-          <input type="date" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Social Security Number (SSN)</label>
-          <input type="text" class="form-control" maxlength="11" required placeholder="123-45-6789">
-        </div>
-
-        <div class="col-md-12">
-          <label class="form-label">Address</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">City</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">State</label>
-          <input type="text" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Country</label>
-          <input type="text" class="form-control" value="USA" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Account Type <small>(Choose one)</small></label>
-          <select class="form-select" required>
-            <option value="">Select</option>
-            <option>Savings – Great for personal savings with interest</option>
-            <option>Checking – Everyday transactions made easy</option>
-            <option>Business – Tailored for small businesses</option>
-          </select>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Email Address</label>
-          <input type="email" class="form-control" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Username</label>
-          <input type="text" class="form-control" required>
-        </div>
-
-        <div class="col-md-6 position-relative">
-          <label class="form-label">Password</label>
-          <input type="password" id="password" class="form-control" required>
-          <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
-          <div class="strength-bar" id="strengthBar"></div>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Security Question</label>
-          <select class="form-select" required>
-            <option>What's your mother's maiden name?</option>
-            <option>What's the name of your first pet?</option>
-            <option>What city were you born in?</option>
-          </select>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Security Answer</label>
-          <input type="text" class="form-control" required>
-        </div>
-
-        <div class="col-md-12">
-          <label class="form-label">CAPTCHA Verification</label>
-          <div class="captcha-placeholder">[ CAPTCHA Placeholder ]</div>
-        </div>
-
-        <div class="col-md-12">
-          <label class="form-label">Two-Factor Authentication</label>
-          <div class="captcha-placeholder">[ 2FA Code Placeholder ]</div>
-        </div>
-
-        <div class="col-md-12 form-check mt-2">
-          <input type="checkbox" class="form-check-input" id="agreeTerms" required>
-          <label for="agreeTerms" class="form-check-label">I agree to the <a href="#">Terms & Conditions</a>.</label>
-        </div>
-
-        <div class="col-12 text-center mt-4">
-          <button type="submit" class="btn btn-success px-5">Create Account</button>
-        </div>
-
-        <div class="col-12 text-center mt-3">
-          <a href="index.html">&larr; Back to Home</a>
-        </div>
+    <h2>Create Your Oakline Bank Account</h2>
+    <div id="successMsg" class="success-message" style="display:none;"></div>
+    <form id="signupForm" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username <span style="color:#dc3545">*</span></label>
+        <input type="text" class="form-control" id="username" required minlength="3" maxlength="20" placeholder="Choose a username" />
+        <div class="error-message" id="usernameError"></div>
       </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address <span style="color:#dc3545">*</span></label>
+        <input type="email" class="form-control" id="email" required placeholder="you@example.com" />
+        <div class="error-message" id="emailError"></div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password <span style="color:#dc3545">*</span></label>
+        <input type="password" class="form-control" id="password" required minlength="6" placeholder="Create a password" />
+        <div class="form-text">At least 6 characters</div>
+        <div class="error-message" id="passwordError"></div>
+      </div>
+      <div class="mb-3">
+        <label for="dob" class="form-label">Date of Birth <span style="color:#dc3545">*</span></label>
+        <input type="date" class="form-control" id="dob" required max="" />
+        <div class="error-message" id="dobError"></div>
+      </div>
+      <div class="mb-3">
+        <label for="ssn" class="form-label">Social Security Number (SSN) <span style="color:#dc3545">*</span></label>
+        <input type="text" class="form-control" id="ssn" maxlength="11" placeholder="XXX-XX-XXXX" required pattern="^\d{3}-\d{2}-\d{4}$" />
+        <div class="form-text">Format: XXX-XX-XXXX</div>
+        <div class="error-message" id="ssnError"></div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Sign Up</button>
     </form>
+    <div class="link-text">
+      Already have an account? <a href="login.html">Log in here</a>
+    </div>
   </div>
 
-  <script>
-    // Dark mode toggle
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
+<script>
+  // Set max date for DOB as today - 18 years (minimum age 18)
+  const dobInput = document.getElementById('dob');
+  const today = new Date();
+  const yyyy = today.getFullYear() - 18;
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  dobInput.max = `${yyyy}-${mm}-${dd}`;
+
+  const form = document.getElementById('signupForm');
+  const usernameInput = document.getElementById('username');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const dob = document.getElementById('dob');
+  const ssn = document.getElementById('ssn');
+
+  const usernameError = document.getElementById('usernameError');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+  const dobError = document.getElementById('dobError');
+  const ssnError = document.getElementById('ssnError');
+  const successMsg = document.getElementById('successMsg');
+
+  function validateEmail(email) {
+    // Basic email regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateSSN(value) {
+    return /^\d{3}-\d{2}-\d{4}$/.test(value);
+  }
+
+  function clearErrors() {
+    usernameError.textContent = '';
+    emailError.textContent = '';
+    passwordError.textContent = '';
+    dobError.textContent = '';
+    ssnError.textContent = '';
+    successMsg.style.display = 'none';
+    successMsg.textContent = '';
+  }
+
+  function userExists(username, email) {
+    // Check localStorage for existing username or email (case insensitive)
+    const keys = Object.keys(localStorage);
+    for (const key of keys) {
+      if (key.startsWith('user_')) {
+        try {
+          const userData = JSON.parse(localStorage.getItem(key));
+          if (
+            userData.username.toLowerCase() === username.toLowerCase() ||
+            userData.email.toLowerCase() === email.toLowerCase()
+          ) {
+            return true;
+          }
+        } catch {}
+      }
+    }
+    return false;
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    clearErrors();
+
+    let valid = true;
+    const usernameVal = usernameInput.value.trim();
+    const emailVal = emailInput.value.trim();
+    const passwordVal = passwordInput.value;
+    const dobVal = dob.value;
+    const ssnVal = ssn.value.trim();
+
+    if (usernameVal.length < 3 || usernameVal.length > 20) {
+      usernameError.textContent = 'Username must be 3-20 characters long.';
+      valid = false;
     }
 
-    // Show/hide password
-    document.getElementById("togglePassword").addEventListener("click", function () {
-      const pwd = document.getElementById("password");
-      const type = pwd.getAttribute("type") === "password" ? "text" : "password";
-      pwd.setAttribute("type", type);
-      this.classList.toggle("fa-eye-slash");
-    });
+    if (!validateEmail(emailVal)) {
+      emailError.textContent = 'Please enter a valid email address.';
+      valid = false;
+    }
 
-    // Password strength meter
-    document.getElementById("password").addEventListener("input", function () {
-      const strengthBar = document.getElementById("strengthBar");
-      const val = this.value;
-      let strength = 0;
-      if (val.length >= 8) strength++;
-      if (/[A-Z]/.test(val)) strength++;
-      if (/[0-9]/.test(val)) strength++;
-      if (/[^A-Za-z0-9]/.test(val)) strength++;
+    if (passwordVal.length < 6) {
+      passwordError.textContent = 'Password must be at least 6 characters.';
+      valid = false;
+    }
 
-      strengthBar.classList.toggle("active", strength >= 3);
-    });
+    if (!dobVal) {
+      dobError.textContent = 'Date of birth is required.';
+      valid = false;
+    } else {
+      const dobDate = new Date(dobVal);
+      const ageDiff = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+      if (dobDate > ageDiff) {
+        dobError.textContent = 'You must be at least 18 years old.';
+        valid = false;
+      }
+    }
 
-    // Submit handler (demo only)
-    document.getElementById("signupForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      alert("Account created successfully!");
-      window.location.href = "login.html";
-    });
-  </script>
+    if (!validateSSN(ssnVal)) {
+      ssnError.textContent = 'SSN format must be XXX-XX-XXXX.';
+      valid = false;
+    }
 
+    if (valid) {
+      // Check if username or email already exists
+      if (userExists(usernameVal, emailVal)) {
+        emailError.textContent = 'Username or email already registered.';
+        usernameError.textContent = 'Username or email already registered.';
+        return;
+      }
+
+      // Save user data in localStorage with key user_username (all lowercase)
+      const userKey = 'user_' + usernameVal.toLowerCase();
+
+      const userData = {
+        username: usernameVal,
+        email: emailVal,
+        password: passwordVal,
+        dob: dobVal,
+        ssn: ssnVal,
+        balances: { checking: 0, savings: 0 },
+        transactions: [],
+        accountInfo: null // will be set when user opens account
+      };
+
+      localStorage.setItem(userKey, JSON.stringify(userData));
+
+      successMsg.textContent = 'Registration successful! You can now log in.';
+      successMsg.style.display = 'block';
+
+      // Reset form
+      form.reset();
+    }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
