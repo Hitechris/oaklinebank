@@ -204,7 +204,8 @@
     <div class="d-flex align-items-center gap-3">
       <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
       <div>
-        <h5 class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
+        
+      <h5 class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
         <small>Last login: <span id="lastLogin">Just now</span></small>
       </div>
       <div class="dropdown ms-2">
@@ -229,7 +230,12 @@
       </div>
     </div>
   </div>
-
+<!-- Manual Refresh -->
+<div class="text-center my-3">
+  <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboardData()">
+    <i class="fas fa-sync-alt me-1"></i> Refresh Dashboard
+  </button>
+</div>
 <!-- Balances -->
 <div class="balances">
   <!-- Checking Account -->
@@ -300,7 +306,7 @@
     try {
       return JSON.parse(raw);
     } catch {
-      return initializeUser(username); // corrupted
+      return initializeUser(username); // corrupted data fallback
     }
   }
 
@@ -371,17 +377,30 @@
     const checkingEl = document.getElementById("checkingBalance");
     const savingsEl = document.getElementById("savingsBalance");
 
-    checkingEl.textContent = "$" + data.balances.checking.toFixed(2);
-    savingsEl.textContent = "$" + data.balances.savings.toFixed(2);
+    const currentChecking = parseFloat(checkingEl.textContent.replace(/[^0-9.-]+/g,"")) || 0;
+const currentSavings = parseFloat(savingsEl.textContent.replace(/[^0-9.-]+/g,"")) || 0;
 
-    // Optional animation class
-    checkingEl.classList.add("animated-balance");
-    savingsEl.classList.add("animated-balance");
+if (currentChecking !== data.balances.checking) {
+  checkingEl.textContent = "$" + data.balances.checking.toFixed(2);
+  checkingEl.classList.add("animated-balance");
+}
 
-    setTimeout(() => {
-      checkingEl.classList.remove("animated-balance");
-      savingsEl.classList.remove("animated-balance");
-    }, 1000);
+if (currentSavings !== data.balances.savings) {
+  savingsEl.textContent = "$" + data.balances.savings.toFixed(2);
+  savingsEl.classList.add("animated-balance");
+}
+
+setTimeout(() => {
+  checkingEl.classList.remove("animated-balance");
+  savingsEl.classList.remove("animated-balance");
+}, 1000);
+  function refreshDashboardData() {
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) return;
+
+    const userData = loadUserData(username);
+    updateBalancesUI(userData);
+    renderTransactions(userData.transactions);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -397,14 +416,11 @@
 
     const userData = loadUserData(username);
 
-    // Remove loading effects
     placeholders.forEach(el => el.style.display = "none");
 
-    // Update welcome + balances
     document.getElementById("userWelcome").textContent = username;
     updateBalancesUI(userData);
 
-    // Account numbers
     document.getElementById("checkingAccountNumber").textContent =
       "****" + userData.accountInfo.checking.accountNumber.slice(-4);
     document.getElementById("savingsAccountNumber").textContent =
@@ -420,11 +436,9 @@
       location.href = "index.html";
     });
 
-    // Tooltips
     const tooltipList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipList.map(t => new bootstrap.Tooltip(t));
 
-    // Toggle account number display
     window.toggleAccount = function (type) {
       const el = document.getElementById(type + "AccountNumber");
       const full = userData.accountInfo[type].accountNumber;
@@ -435,17 +449,20 @@
     window.copyText = copyText;
     window.toggleDarkMode = toggleDarkMode;
 
-    // Last login
     const lastLoginKey = "lastLogin_" + username;
     const prevLogin = localStorage.getItem(lastLoginKey) || new Date().toLocaleString();
     document.getElementById("lastLogin").textContent = prevLogin;
     localStorage.setItem(lastLoginKey, new Date().toLocaleString());
 
-    // Transactions
     renderTransactions(userData.transactions);
   });
+
+  // Auto-refresh dashboard every 30 seconds
+  setInterval(refreshDashboardData, 30000);
+  
 </script>
-<footer class="bg-dark text-light pt-4 mt-5">
+  
+  <footer class="bg-dark text-light pt-4 mt-5">
   <div class="container">
     <div class="row">
 
