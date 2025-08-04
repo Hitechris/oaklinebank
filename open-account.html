@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Open Account - Oakline Bank</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Open a New Account</h2>
+
+    <form id="openAccountForm">
+      <label for="accountType">Account Type:</label>
+      <select id="accountType" required>
+        <option value="">Select account type</option>
+        <option value="Checking">Checking</option>
+        <option value="Savings">Savings</option>
+      </select>
+
+      <label for="initialDeposit">Initial Deposit ($):</label>
+      <input type="number" id="initialDeposit" min="0" required />
+
+      <button type="submit">Create Account</button>
+    </form>
+
+    <div id="accountResult" class="result-box" style="display:none;">
+      <h3>Account Created</h3>
+      <p><strong>Account Number:</strong> <span id="accNum"></span></p>
+      <p><strong>Routing Number:</strong> <span id="routeNum"></span></p>
+    </div>
+
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    const loggedInUser = JSON.parse(localStorage.getItem("oakline_loggedInUser"));
+    if (!loggedInUser) {
+      alert("You must be logged in to open an account.");
+      window.location.href = "login.html";
+    }
+
+    const form = document.getElementById("openAccountForm");
+    const accNumDisplay = document.getElementById("accNum");
+    const routeNumDisplay = document.getElementById("routeNum");
+    const resultBox = document.getElementById("accountResult");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const accountType = document.getElementById("accountType").value;
+      const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+
+      if (!accountType || isNaN(initialDeposit)) {
+        alert("Please complete the form.");
+        return;
+      }
+
+      // Generate account & routing numbers
+      const accountNumber = "5" + Math.floor(1000000000 + Math.random() * 9000000000);
+      const routingNumber = "031100209"; // Example routing number
+
+      const newAccount = {
+        type: accountType,
+        balance: initialDeposit,
+        accountNumber,
+        routingNumber,
+        transactions: [{
+          type: "Initial Deposit",
+          amount: initialDeposit,
+          date: new Date().toLocaleString(),
+        }]
+      };
+
+      const allUsers = JSON.parse(localStorage.getItem("oakline_users")) || {};
+      const userData = allUsers[loggedInUser.username];
+
+      if (!userData) {
+        alert("User not found. Please log in again.");
+        localStorage.removeItem("oakline_loggedInUser");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Save account under user
+      userData.accounts = userData.accounts || [];
+      userData.accounts.push(newAccount);
+
+      allUsers[loggedInUser.username] = userData;
+      localStorage.setItem("oakline_users", JSON.stringify(allUsers));
+
+      accNumDisplay.textContent = accountNumber;
+      routeNumDisplay.textContent = routingNumber;
+      resultBox.style.display = "block";
+
+      form.reset();
+    });
+  </script>
+</body>
+</html>
