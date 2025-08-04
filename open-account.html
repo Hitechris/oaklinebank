@@ -1,192 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Open Account - Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f9;
-      color: #333;
-      margin: 0;
-      padding-bottom: 40px;
-    }
-    .container {
-      max-width: 600px;
-      margin: 2rem auto;
-      background: white;
-      padding: 2rem 2.5rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #004080;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-    }
-    label {
-      font-weight: 600;
-    }
-    .result-box {
-      background-color: #e6ffe6;
-      border: 1px solid #28a745;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      margin-top: 1.5rem;
-    }
-    a.back-link {
-      display: inline-block;
-      margin-top: 1.5rem;
-      color: #004080;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    a.back-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open Account | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2e0f1f985.js" crossorigin="anonymous"></script>
 </head>
-<body>
+<body class="bg-light">
 
-  <div class="container" role="main" aria-label="Open New Account Form">
-    <h2>Open a New Account</h2>
-
-    <form id="openAccountForm" novalidate>
-      <div class="mb-3">
-        <label for="accountType" class="form-label">Account Type:</label>
-        <select id="accountType" class="form-select" required>
-          <option value="" disabled selected>Select account type</option>
-          <option value="Checking">Checking</option>
-          <option value="Savings">Savings</option>
-        </select>
+  <div class="container mt-5">
+    <div class="card shadow">
+      <div class="card-header text-center bg-primary text-white">
+        <h3>Open a New Account</h3>
       </div>
+      <div class="card-body">
 
-      <div class="mb-3">
-        <label for="initialDeposit" class="form-label">Initial Deposit ($):</label>
-        <input type="number" id="initialDeposit" class="form-control" min="0" step="0.01" required />
+        <div class="mb-3">
+          <label for="accountType" class="form-label">Account Type</label>
+          <select id="accountType" class="form-select">
+            <option value="">-- Select Account Type --</option>
+            <option value="checking">Checking</option>
+            <option value="savings">Savings</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
+          <input type="number" id="initialDeposit" class="form-control" placeholder="Enter amount">
+        </div>
+
+        <button type="button" class="btn btn-success w-100" onclick="openNewAccount()">Open Account</button>
       </div>
-
-      <div class="mb-3">
-        <label for="fullName" class="form-label">Full Name:</label>
-        <input type="text" id="fullName" class="form-control" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="dob" class="form-label">Date of Birth:</label>
-        <input type="date" id="dob" class="form-control" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="address" class="form-label">Address:</label>
-        <input type="text" id="address" class="form-control" required />
-      </div>
-
-      <button type="submit" class="btn btn-primary w-100">
-        <i class="fas fa-file-signature me-2"></i> Create Account
-      </button>
-    </form>
-
-    <div id="accountResult" class="result-box" style="display:none;" aria-live="polite" aria-atomic="true">
-      <h3>✅ Account Created</h3>
-      <p><strong>Account Number:</strong> <span id="accNum"></span></p>
-      <p><strong>Routing Number:</strong> <span id="routeNum"></span></p>
     </div>
-
-    <a href="dashboard.html" class="back-link">
-      <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-    </a>
   </div>
 
-
   <script>
-  // Check if user is logged in
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (!loggedInUser) {
-    alert("Please log in to open an account.");
-    window.location.href = "login.html";
-  }
+    function openNewAccount() {
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      if (!loggedInUser) {
+        alert("You must be logged in to open an account.");
+        window.location.href = "login.html";
+        return;
+      }
 
-  const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-  const userData = allUsers.find(u => u.username === loggedInUser);
+      const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+      const userIndex = allUsers.findIndex(u => u.username === loggedInUser);
 
-  if (!userData) {
-    alert("User not found.");
-    window.location.href = "login.html";
-  }
-  // Get logged in user username string (not object)
-  const loggedInUsername = localStorage.getItem("loggedInUser");
-  if (!loggedInUsername) {
-    alert("You must be logged in to open an account.");
-    window.location.href = "login.html";
-  }
+      if (userIndex === -1) {
+        alert("User not found.");
+        window.location.href = "login.html";
+        return;
+      }
 
-  // Load all users object
-  let allUsers = JSON.parse(localStorage.getItem("oakline_users") || "{}");
-  if (!allUsers || !allUsers[loggedInUsername]) {
-    alert("User data not found. Please login again.");
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-  }
+      const accountType = document.getElementById("accountType").value;
+      const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
 
-  const userData = allUsers[loggedInUsername];
+      if (!accountType || isNaN(initialDeposit)) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
 
-  const form = document.getElementById("openAccountForm");
-  const accNumDisplay = document.getElementById("accNum");
-  const routeNumDisplay = document.getElementById("routeNum");
-  const resultBox = document.getElementById("accountResult");
+      const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+      if (!allUsers[userIndex].accountInfo) {
+        allUsers[userIndex].accountInfo = { checking: null, savings: null };
+      }
 
-    const accountType = document.getElementById("accountType").value;
-    const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
-    const fullName = document.getElementById("fullName").value.trim();
-    const dob = document.getElementById("dob").value;
-    const address = document.getElementById("address").value.trim();
+      if (accountType === "checking") {
+        allUsers[userIndex].accountInfo.checking = {
+          balance: initialDeposit,
+          accountNumber: accountNumber,
+          transactions: []
+        };
+      } else {
+        allUsers[userIndex].accountInfo.savings = {
+          balance: initialDeposit,
+          accountNumber: accountNumber,
+          transactions: []
+        };
+      }
 
-    if (!accountType || isNaN(initialDeposit) || initialDeposit < 0 || !fullName || !dob || !address) {
-      alert("Please fill out all fields correctly.");
-      return;
+      localStorage.setItem("users", JSON.stringify(allUsers));
+      alert("Account created successfully!");
+      window.location.href = "dashboard.html";
     }
+  </script>
 
-    // Generate account number (10 digits starting with 5)
-    const accountNumber = "5" + Math.floor(1000000000 + Math.random() * 9000000000);
-    const routingNumber = "031100209";
-
-    const newAccount = {
-      type: accountType,
-      balance: initialDeposit,
-      accountNumber,
-      routingNumber,
-      holderInfo: {
-        fullName,
-        dob,
-        address
-      },
-      transactions: [{
-        type: "Initial Deposit",
-        amount: initialDeposit,
-        date: new Date().toLocaleString()
-      }]
-    };
-
-    userData.accounts = userData.accounts || [];
-    userData.accounts.push(newAccount);
-
-    allUsers[loggedInUsername] = userData;
-    localStorage.setItem("oakline_users", JSON.stringify(allUsers));
-
-    accNumDisplay.textContent = accountNumber;
-    routeNumDisplay.textContent = routingNumber;
-    resultBox.style.display = "block";
-
-    form.reset();
-  });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
