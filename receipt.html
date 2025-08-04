@@ -5,113 +5,136 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Transaction Receipt - Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
       background-color: #f4f6f9;
-      padding: 2rem;
+      margin: 0;
+      padding-bottom: 40px;
     }
-    .receipt-container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    .dark-mode {
+      background-color: #121212;
+      color: #eee;
     }
-    .receipt-header {
-      text-align: center;
-      margin-bottom: 2rem;
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      color: #fff;
     }
-    .receipt-header h2 {
-      color: #198754;
-      font-weight: bold;
+    .btn-toggle-dark {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
     }
-    .receipt-item {
-      margin-bottom: 1rem;
+    .btn-back {
+      position: fixed;
+      top: 10px;
+      right: 90px;
+      z-index: 1000;
     }
-    .receipt-label {
-      font-weight: 600;
+    .btn-logout {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background-color: #004080;
+      border: none;
+      color: white;
     }
-    .btn-group {
-      text-align: center;
-      margin-top: 2rem;
+    .btn-logout:hover {
+      background-color: #002f66;
     }
   </style>
 </head>
 <body>
-  <div class="receipt-container">
-    <div class="receipt-header">
-      <h2>Transaction Successful</h2>
-      <p class="text-muted">Your transaction has been completed.</p>
-    </div>
+  <button class="btn btn-outline-dark btn-sm btn-toggle-dark" aria-label="Toggle dark mode" onclick="toggleDarkMode()">
+    <i class="fas fa-moon"></i>
+  </button>
+  <button class="btn btn-secondary btn-sm btn-back" onclick="history.back()" aria-label="Go back">← Back</button>
+  <button id="logoutBtn" class="btn btn-logout btn-sm" aria-label="Logout">Logout</button>
 
-    <div id="receiptDetails">
-      <!-- Populated by JS -->
-    </div>
-
-    <div class="btn-group">
-      <button onclick="window.print()" class="btn btn-outline-primary">Print Receipt</button>
-      <a href="dashboard.html" class="btn btn-primary">Return to Dashboard</a>
+  <div class="container mt-5">
+    <h2>Transaction Receipt</h2>
+    <div id="receiptContainer" class="card p-4 mt-3">
+      <!-- Receipt details go here -->
     </div>
   </div>
-<script>
-  const receiptDetails = document.getElementById("receiptDetails");
 
-  const currentUser = localStorage.getItem("currentUser");
-
-  if (!currentUser) {
-    alert("No user logged in. Redirecting to login...");
-    window.location.href = "login.html";
-  } else {
-    const userData = JSON.parse(localStorage.getItem(currentUser)) || {};
-    const transaction = userData.latestTransaction;
-
-    if (!transaction) {
-      receiptDetails.innerHTML = "<p>No transaction found.</p>";
-    } else {
-      const {
-        type,
-        amount,
-        accountType,
-        method,
-        recipientName,
-        recipientAccount,
-        transactionId,
-        date
-      } = transaction;
-
-      const detailHTML = `
-        <div class="receipt-item">
-          <span class="receipt-label">Transaction Type:</span> ${type}
-        </div>
-        <div class="receipt-item">
-          <span class="receipt-label">Account Type:</span> ${accountType.charAt(0).toUpperCase() + accountType.slice(1)}
-        </div>
-        <div class="receipt-item">
-          <span class="receipt-label">Amount:</span> $${parseFloat(amount).toFixed(2)}
-        </div>
-        ${method ? `
-        <div class="receipt-item">
-          <span class="receipt-label">Withdrawal Method:</span> ${method}
-        </div>` : ""}
-        ${recipientName ? `
-        <div class="receipt-item">
-          <span class="receipt-label">Recipient Name:</span> ${recipientName}
-        </div>` : ""}
-        ${recipientAccount ? `
-        <div class="receipt-item">
-          <span class="receipt-label">Recipient Account:</span> ${recipientAccount}
-        </div>` : ""}
-        <div class="receipt-item">
-          <span class="receipt-label">Transaction ID:</span> ${transactionId}
-        </div>
-        <div class="receipt-item">
-          <span class="receipt-label">Date:</span> ${date}
-        </div>
-      `;
-      receiptDetails.innerHTML = detailHTML;
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.btn-toggle-dark i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
     }
-  }
-</script>
+
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString);
+      return d.toLocaleString();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('loggedInUser');
+      if (!username) {
+        alert('Not logged in');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const txIndex = parseInt(getQueryParam('tx'));
+      if (isNaN(txIndex)) {
+        alert('Transaction not specified');
+        window.location.href = 'transactions.html';
+        return;
+      }
+
+      const userData = loadUserData(username);
+      if (!userData || !userData.transactions || txIndex < 0 || txIndex >= userData.transactions.length) {
+        alert('Transaction not found');
+        window.location.href = 'transactions.html';
+        return;
+      }
+
+      const tx = userData.transactions[txIndex];
+
+      const receiptDiv = document.getElementById('receiptContainer');
+      receiptDiv.innerHTML = `
+        <h4>${tx.description}</h4>
+        <p><strong>Date & Time:</strong> ${formatDate(tx.date)}</p>
+        <p><strong>Type:</strong> ${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</p>
+        <p><strong>Account:</strong> ${tx.account.charAt(0).toUpperCase() + tx.account.slice(1)}</p>
+        <p><strong>Amount:</strong> $${Math.abs(tx.amount).toFixed(2)}</p>
+        ${tx.recipient ? `<p><strong>Recipient:</strong> ${tx.recipient.name} (${tx.recipient.accountType} Account)</p>
+        <p><strong>Recipient Account Number:</strong> ****${tx.recipient.accountNumber.slice(-4)}</p>` : ''}
+        ${tx.sender ? `<p><strong>Sender:</strong> ${tx.sender.name} (${tx.sender.accountType} Account)</p>
+        <p><strong>Sender Account Number:</strong> ****${tx.sender.accountNumber.slice(-4)}</p>` : ''}
+        ${tx.note ? `<p><strong>Note:</strong> ${tx.note}</p>` : ''}
+      `;
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+      });
+
+      window.toggleDarkMode = toggleDarkMode;
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
