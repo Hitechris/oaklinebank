@@ -38,13 +38,15 @@
 <script>
   function openNewAccount() {
     const loggedInUser = localStorage.getItem("loggedInUser");
+    console.log("Logged in user:", loggedInUser);
+    console.log("User data raw:", localStorage.getItem("user_" + loggedInUser));
+
     if (!loggedInUser) {
       alert("You must be logged in to open an account.");
       window.location.href = "login.html";
       return;
     }
 
-    // Load current user's data
     let userDataRaw = localStorage.getItem("user_" + loggedInUser);
     if (!userDataRaw) {
       alert("User data not found.");
@@ -62,7 +64,6 @@
       return;
     }
 
-    // Initialize accountInfo if missing
     if (!userData.accountInfo) {
       userData.accountInfo = { checking: null, savings: null };
     }
@@ -73,7 +74,7 @@
     }
 
     const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
-    const routingNumber = "021000021"; // fixed routing number for demo
+    const routingNumber = "021000021";
 
     userData.accountInfo[accountType] = {
       balance: parseFloat(initialDeposit.toFixed(2)),
@@ -88,7 +89,6 @@
       isOpen: true
     };
 
-    // Update balances object for quick reference
     if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
     userData.balances[accountType] = initialDeposit;
 
