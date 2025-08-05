@@ -5,110 +5,245 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open New Account | Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      padding-bottom: 40px;
+      margin: 0;
+    }
+    .header-container {
+      max-width: 960px;
+      margin: 1rem auto 1rem auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-placeholder {
+      width: 70px;
+      height: 70px;
+      background-color: #004080;
+      border-radius: 12px;
+    }
+    .bank-name {
+      font-weight: 800;
+      font-size: 2.5rem;
+      color: #004080;
+      text-decoration: none;
+    }
+    .card {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background-color: #fff;
+    }
+    h3 {
+      color: #004080;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    label {
+      font-weight: 600;
+    }
+    .btn-primary {
+      background-color: #004080;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #002f66;
+    }
+    .readonly-input {
+      background-color: #e9ecef;
+    }
+    .alert-success {
+      margin-top: 1rem;
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <h2>Open New Account</h2>
-    <form id="openAccountForm" class="mt-4">
+<body>
 
+  <div class="header-container">
+    <div class="logo-placeholder" aria-label="Bank Logo"></div>
+    <a href="dashboard.html" class="bank-name">Oakline Bank</a>
+  </div>
+
+  <div class="card shadow">
+    <h3>Open New Account</h3>
+
+    <form id="openAccountForm" novalidate>
       <div class="mb-3">
         <label for="fullName" class="form-label">Full Name</label>
-        <input type="text" id="fullName" class="form-control" readonly />
+        <input type="text" id="fullName" class="form-control readonly-input" readonly />
       </div>
 
       <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" class="form-control" readonly />
+        <label for="email" class="form-label">Email Address</label>
+        <input type="email" id="email" class="form-control readonly-input" readonly />
       </div>
 
       <div class="mb-3">
-        <label for="passwordConfirm" class="form-label">Enter Password to Confirm</label>
-        <input type="password" id="passwordConfirm" class="form-control" placeholder="Your password" required />
+        <label for="passwordConfirm" class="form-label">Confirm Password</label>
+        <input type="password" id="passwordConfirm" class="form-control" required placeholder="Enter your password" />
+        <div class="invalid-feedback">Please enter your password to confirm.</div>
       </div>
 
       <div class="mb-3">
         <label for="accountType" class="form-label">Select Account Type</label>
         <select id="accountType" class="form-select" required>
-          <option value="" disabled selected>Select an account</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
+          <option value="" disabled selected>-- Choose account type --</option>
+          <option value="checking">Checking Account</option>
+          <option value="savings">Savings Account</option>
         </select>
+        <div class="invalid-feedback">Please select an account type.</div>
       </div>
 
       <div class="mb-3">
-        <label for="initialDeposit" class="form-label">Initial Deposit</label>
-        <input type="number" id="initialDeposit" class="form-control" min="0" step="0.01" placeholder="100.00" required />
+        <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
+        <input type="number" id="initialDeposit" class="form-control" required min="0" step="0.01" placeholder="Enter amount" />
+        <div class="invalid-feedback">Please enter a valid deposit amount (0 or more).</div>
       </div>
 
-      <button type="submit" class="btn btn-primary">Open Account</button>
+      <button type="submit" class="btn btn-primary w-100">Create Account</button>
     </form>
+
+    <div id="resultMessage" class="alert alert-success d-none" role="alert"></div>
   </div>
 
   <script>
+    function generateRandomAccountNumber() {
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    }
+
+    function generateRandomRoutingNumber() {
+      return Math.floor(100000000 + Math.random() * 900000000).toString();
+    }
+
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function saveUserData(username, data) {
+      localStorage.setItem("user_" + username, JSON.stringify(data));
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const username = localStorage.getItem("loggedInUser");
       if (!username) {
-        alert("Please log in first.");
+        alert("You must be logged in to open an account.");
         window.location.href = "login.html";
         return;
       }
 
-      const userKey = "user_" + username;
-      const userData = JSON.parse(localStorage.getItem(userKey)) || {};
+      const userData = loadUserData(username);
+      if (!userData) {
+        alert("User data not found. Please log in again.");
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "login.html";
+        return;
+      }
 
-      // Adjust this to your userData structure for full name
-      document.getElementById("fullName").value = userData.fullName || userData.username || "";
+      // Fill readonly fields
+      document.getElementById("fullName").value = userData.fullName || username;
       document.getElementById("email").value = userData.email || "";
 
-      document.getElementById("openAccountForm").addEventListener("submit", function (e) {
+      const form = document.getElementById("openAccountForm");
+      const resultMessage = document.getElementById("resultMessage");
+
+      form.addEventListener("submit", e => {
         e.preventDefault();
 
-        const passwordConfirm = document.getElementById("passwordConfirm").value;
-        const accountType = document.getElementById("accountType").value;
-        const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+        // Clear previous message
+        resultMessage.classList.add("d-none");
+        resultMessage.textContent = "";
 
-        if (passwordConfirm !== userData.password) {
-          alert("Password is incorrect. Please try again.");
+        // Basic validation
+        const passwordInput = document.getElementById("passwordConfirm");
+        const accountTypeSelect = document.getElementById("accountType");
+        const depositInput = document.getElementById("initialDeposit");
+
+        let valid = true;
+
+        if (!passwordInput.value) {
+          passwordInput.classList.add("is-invalid");
+          valid = false;
+        } else if (passwordInput.value !== userData.password) {
+          passwordInput.classList.add("is-invalid");
+          passwordInput.nextElementSibling.textContent = "Incorrect password.";
+          valid = false;
+        } else {
+          passwordInput.classList.remove("is-invalid");
+        }
+
+        if (!accountTypeSelect.value) {
+          accountTypeSelect.classList.add("is-invalid");
+          valid = false;
+        } else {
+          accountTypeSelect.classList.remove("is-invalid");
+        }
+
+        if (!depositInput.value || Number(depositInput.value) < 0) {
+          depositInput.classList.add("is-invalid");
+          valid = false;
+        } else {
+          depositInput.classList.remove("is-invalid");
+        }
+
+        if (!valid) return;
+
+        // Check if account already exists
+        if (userData.accountInfo && userData.accountInfo[accountTypeSelect.value] && userData.accountInfo[accountTypeSelect.value].accountNumber) {
+          alert(`You already have a ${accountTypeSelect.value} account.`);
           return;
         }
 
-        if (!accountType) {
-          alert("Please select an account type.");
-          return;
-        }
+        // Create new account info
+        const newAccountNumber = generateRandomAccountNumber();
+        const newRoutingNumber = generateRandomRoutingNumber();
 
-        if (isNaN(initialDeposit) || initialDeposit < 0) {
-          alert("Please enter a valid initial deposit.");
-          return;
-        }
-
-        // Initialize account info & balances if missing
         if (!userData.accountInfo) userData.accountInfo = {};
-        if (!userData.balances) userData.balances = {};
-
-        if (userData.accountInfo[accountType]) {
-          alert(`You already have a ${accountType} account.`);
-          return;
-        }
-
-        function generateRandomAccountNumber() {
-          return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-        }
-        function generateRandomRoutingNumber() {
-          return Math.floor(100000000 + Math.random() * 900000000).toString();
-        }
-
-        userData.accountInfo[accountType] = {
-          accountNumber: generateRandomAccountNumber(),
-          routingNumber: generateRandomRoutingNumber(),
+        if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
+        userData.accountInfo[accountTypeSelect.value] = {
+          accountNumber: newAccountNumber,
+          routingNumber: newRoutingNumber
         };
-        userData.balances[accountType] = initialDeposit;
 
-        localStorage.setItem(userKey, JSON.stringify(userData));
+        // Add initial deposit to balance
+        userData.balances[accountTypeSelect.value] = Number(depositInput.value);
 
-        alert(`Your new ${accountType} account has been opened with an initial deposit of $${initialDeposit.toFixed(2)}.`);
+        // Add initial deposit as transaction
+        if (!userData.transactions) userData.transactions = [];
+        userData.transactions.push({
+          type: "credit",
+          amount: Number(depositInput.value),
+          date: new Date().toLocaleDateString(),
+          description: `Initial deposit for ${accountTypeSelect.value} account`
+        });
 
-        window.location.href = "dashboard.html";
+        // Save updated user data
+        saveUserData(username, userData);
+
+        // Show success message
+        resultMessage.textContent = `Your ${accountTypeSelect.value} account has been successfully created! Redirecting to dashboard...`;
+        resultMessage.classList.remove("d-none");
+
+        // Disable form to prevent resubmission
+        form.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 3000);
       });
     });
   </script>
