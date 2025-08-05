@@ -449,7 +449,8 @@
     const userData = loadUserData(username);
 
     document.getElementById("userWelcome").textContent = username;
-
+const profileImgEl = document.querySelector(".hero img.rounded-circle");
+profileImgEl.src = userData.profileImage || "https://via.placeholder.com/48";
     document.getElementById("checkingAccountNumber").textContent =
       "****" + userData.accountInfo.checking.accountNumber.slice(-4);
     document.getElementById("savingsAccountNumber").textContent =
