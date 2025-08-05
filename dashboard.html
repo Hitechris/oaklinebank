@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 15.4px;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding-bottom: 40px;
+    }
+
+    .loading-placeholder {
+      display: inline-block;
+      width: 120px;
+      height: 1em;
+      background: linear-gradient(90deg, #e0e0e0 25%, #cfcfcf 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: loadingShine 1.2s ease-in-out infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loadingShine {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .header-container {
+      max-width: 960px;
+      margin: 1rem auto 0.5rem auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo-placeholder {
+      width: 70px;
+      height: 70px;
+      background-color: #004080;
+      border-radius: 12px;
+    }
+
+    .bank-name {
+      font-weight: 800;
+      font-size: 2.5rem;
+      color: #004080;
+    }
+
+    .marquee-banner {
+      background: #004080;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 6px 0;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 15s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .top-controls-left, .top-controls-right {
+      position: fixed;
+      top: 10px;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .top-controls-left { left: 10px; }
+    .top-controls-right { right: 10px; }
+
+    .btn-logout {
+      background-color: #004080;
+      border: none;
+      color: white;
+    }
+
+    .btn-logout:hover {
+      background-color: #002f66;
+    }
+
+    .hero {
+      background: #004080;
+      color: white;
+      padding: 2rem;
+      margin: 1.5rem auto;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 960px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .balances {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .balance-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .balance-card h6 {
+      font-size: 14.3px;
+      margin-bottom: 0.25rem;
+      color: #666;
+    }
+
+    .balance-card .amount {
+      font-size: 22.05px;
+      font-weight: 600;
+      color: #004080;
+    }
+
+    .dark-mode .balance-card {
+      background-color: #1e1e1e;
+    }
+
+    .animated-balance {
+      transition: all 0.4s ease-in-out;
+      transform: scale(1.05);
+      color: #28a745;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Left -->
+  <div class="top-controls-left">
+    <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
+
+  <!-- Top Right -->
+  <div class="top-controls-right">
+    <button id="logoutBtn" class="btn btn-logout btn-sm" aria-label="Logout">
+      Logout
+    </button>
+  </div>
+
+  <!-- Header -->
+  <div class="header-container">
+    <div class="logo-placeholder" aria-label="Bank Logo"></div>
+    <a href="index.html" class="bank-name text-decoration-none">Oakline Bank</a>
+  </div>
+
+  <!-- Scrolling Banner -->
+  <div class="marquee-banner">
+    <div class="marquee-text">
+      🔐 Welcome to Oakline Bank — The Most Secure and Trusted Digital Bank. Your Finances. Our Priority. 💼
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="d-flex align-items-center gap-3">
+      <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+      <div>
+        <h5 class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
+        <small>Last login: <span id="lastLogin">Just now</span></small>
+      </div>
+      <div class="dropdown ms-2">
+        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bars me-1"></i> Menu
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
+          <li><a class="dropdown-item" href="open-account.html"><i class="fas fa-file-signature me-2 text-secondary"></i> Open New Account</a></li>
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
+          <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
+          <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
+          <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
+          <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
+          <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="budget.html"><i class="fas fa-wallet me-2 text-secondary"></i> Budget Planner</a></li>
+          <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
+          <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Refresh -->
+  <div class="text-center my-3">
+    <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboardData()">
+      <i class="fas fa-sync-alt me-1"></i> Refresh Dashboard
+    </button>
+  </div>
+
+  <div class="text-center mb-4">
+    <a href="open-account.html" class="btn btn-primary">
+      <i class="fas fa-plus-circle me-1"></i> Open a New Account
+    </a>
+  </div>
+
+  <!-- Balances -->
+  <div class="balances">
+    <!-- Checking Account -->
+    <div class="balance-card">
+      <h6>Checking Account</h6>
+      <div id="checkingBalance" class="amount loading-placeholder">$0.00</div>
+      <div class="mt-2">
+        <small>
+          Account #: <span id="checkingAccountNumber" class="loading-placeholder">****1023</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('checking')" data-bs-toggle="tooltip" title="Show/Hide">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText(userData.accountInfo.checking.accountNumber)" data-bs-toggle="tooltip" title="Copy Account Number">
+            <i class="fas fa-copy"></i>
+          </button>
+        </small><br />
+        Routing #: <span id="checkingRoutingNumber" class="loading-placeholder">021000021</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Savings Account -->
+    <div class="balance-card">
+      <h6>Savings Account</h6>
+      <div id="savingsBalance" class="amount loading-placeholder">$0.00</div>
+      <div class="mt-2">
+        <small>
+          Savings Account #: <span id="savingsAccountNumber" class="loading-placeholder">****7854</span>
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccount('savings')" data-bs-toggle="tooltip" title="Show/Hide">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText(userData.accountInfo.savings.accountNumber)" data-bs-toggle="tooltip" title="Copy Account Number">
+            <i class="fas fa-copy"></i>
+          </button>
+        </small><br />
+        Routing #: <span id="savingsRoutingNumber" class="loading-placeholder">021000021</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="container mt-4" aria-label="Recent transactions">
+    <h5 class="mb-3">Recent Transactions</h5>
+    <ul id="recentTransactions" class="list-group">
+      <li class="list-group-item loading-placeholder" style="height: 20px; margin-bottom: 8px;"></li>
+      <li class="list-group-item loading-placeholder" style="height: 20px; margin-bottom: 8px;"></li>
+      <li class="list-group-item loading-placeholder" style="height: 20px; margin-bottom: 8px;"></li>
+    </ul>
+  </div>
+
+  <!-- JavaScript code -->
+<!-- ... keep everything the same ABOVE this line ... -->
+
+<!-- JavaScript code -->
+<script>
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) {
+    alert("You must be logged in to access this page.");
+    window.location.href = "login.html";
+  }
+
+  function generateRandomAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  }
+
+  function generateRandomRoutingNumber() {
+    return Math.floor(100000000 + Math.random() * 900000000).toString();
+  }
+
+  function loadUserData(username) {
+    const raw = localStorage.getItem("user_" + username);
+    if (!raw) return initializeUser(username);
+
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return initializeUser(username);
+    }
+  }
+
+  function initializeUser(username) {
+    const defaultData = {
+      balances: { checking: 0, savings: 0 },
+      transactions: [],
+      accountInfo: {
+        checking: {
+          accountNumber: generateRandomAccountNumber(),
+          routingNumber: generateRandomRoutingNumber(),
+        },
+        savings: {
+          accountNumber: generateRandomAccountNumber(),
+          routingNumber: generateRandomRoutingNumber(),
+        },
+      },
+    };
+    saveUserData(username, defaultData);
+    return defaultData;
+  }
+
+  function saveUserData(username, data) {
+    localStorage.setItem("user_" + username, JSON.stringify(data));
+  }
+
+  function copyText(text) {
+    if (!text || text === "N/A") {
+      alert("Account info not available.");
+      return;
+    }
+    navigator.clipboard.writeText(text)
+      .then(() => alert('Copied: ' + text))
+      .catch(() => alert('Failed to copy'));
+  }
+
+  function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    const icon = document.querySelector('.top-controls-left button i');
+    icon.classList.toggle('fa-moon');
+    icon.classList.toggle('fa-sun');
+  }
+
+  function renderTransactions(transactions) {
+    const list = document.getElementById("recentTransactions");
+    list.innerHTML = "";
+
+    if (!transactions || transactions.length === 0) {
+      list.innerHTML = `<li class="list-group-item text-muted">No recent transactions available.</li>`;
+      return;
+    }
+
+    transactions.slice().reverse().forEach(tx => {
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+      const formattedAmount = "$" + Math.abs(tx.amount).toLocaleString(undefined, { 
+        minimumFractionDigits: 2, maximumFractionDigits: 2 
+      });
+
+      li.innerHTML = `
+        <div>
+          <strong>${tx.description}</strong><br>
+          <small>${tx.date}</small>
+        </div>
+        <span style="color: ${tx.type === "debit" ? "#dc3545" : "#28a745"};">
+          ${(tx.type === "debit" ? "-" : "+") + formattedAmount}
+        </span>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  // ✅ FIXED: Update UI balances with commas
+  function updateBalancesUI(data) {
+    const checkingEl = document.getElementById("checkingBalance");
+    const savingsEl = document.getElementById("savingsBalance");
+
+    const formattedChecking = "$" + data.balances.checking.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const formattedSavings = "$" + data.balances.savings.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    if (checkingEl.textContent !== formattedChecking) {
+      checkingEl.textContent = formattedChecking;
+      checkingEl.classList.add("animated-balance");
+    }
+
+    if (savingsEl.textContent !== formattedSavings) {
+      savingsEl.textContent = formattedSavings;
+      savingsEl.classList.add("animated-balance");
+    }
+
+    setTimeout(() => {
+      checkingEl.classList.remove("animated-balance");
+      savingsEl.classList.remove("animated-balance");
+    }, 1000);
+  }
+
+  function refreshDashboardData() {
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) return;
+
+    const userData = loadUserData(username);
+    updateBalancesUI(userData);
+    renderTransactions(userData.transactions);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) {
+      alert("Not logged in");
+      location.href = "login.html";
+      return;
+    }
+
+    const userData = loadUserData(username);
+
+    document.getElementById("userWelcome").textContent = username;
+
+    document.getElementById("checkingAccountNumber").textContent =
+      "****" + userData.accountInfo.checking.accountNumber.slice(-4);
+    document.getElementById("savingsAccountNumber").textContent =
+      "****" + userData.accountInfo.savings.accountNumber.slice(-4);
+
+    document.getElementById("checkingRoutingNumber").textContent =
+      userData.accountInfo.checking.routingNumber;
+    document.getElementById("savingsRoutingNumber").textContent =
+      userData.accountInfo.savings.routingNumber;
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      location.href = "login.html";
+    });
+
+    const tooltipList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipList.map(t => new bootstrap.Tooltip(t));
+
+    window.toggleAccount = function (type) {
+      const el = document.getElementById(type + "AccountNumber");
+      const full = userData.accountInfo[type].accountNumber;
+      const masked = "****" + full.slice(-4);
+      el.textContent = el.textContent === masked ? full : masked;
+    };
+
+    window.copyText = copyText;
+    window.toggleDarkMode = toggleDarkMode;
+
+    const lastLoginKey = "lastLogin_" + username;
+    const prevLogin = localStorage.getItem(lastLoginKey) || new Date().toLocaleString();
+    document.getElementById("lastLogin").textContent = prevLogin;
+    localStorage.setItem(lastLoginKey, new Date().toLocaleString());
+
+    updateBalancesUI(userData);
+    renderTransactions(userData.transactions);
+  });
+
+  setInterval(refreshDashboardData, 30000);
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
