@@ -66,6 +66,28 @@
           <a href="dashboard.html" class="btn btn-outline-secondary">Back to Dashboard</a>
         </div>
       </form>
+
+      <hr class="my-4">
+      <h5 class="text-center">Change Password</h5>
+      <form id="passwordForm" class="mt-3">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <input type="password" id="currentPassword" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" id="newPassword" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="form-control" required>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-warning">Update Password</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -80,12 +102,10 @@
   const userKey = "user_" + loggedInUser;
   let userData = JSON.parse(localStorage.getItem(userKey)) || {};
 
-  // Populate form
   function populateForm() {
     if (userData.profileImage) {
       document.getElementById("profileImage").src = userData.profileImage;
     }
-
     document.getElementById("username").value = userData.username || loggedInUser;
     document.getElementById("email").value = userData.email || "";
     document.getElementById("dob").value = userData.dob || "";
@@ -95,7 +115,6 @@
     document.getElementById("state").value = userData.state || "";
   }
 
-  // Save profile image
   document.getElementById("uploadPic").addEventListener("change", function () {
     const file = this.files[0];
     if (!file) return;
@@ -109,10 +128,8 @@
     reader.readAsDataURL(file);
   });
 
-  // Save form data
   document.getElementById("profileForm").addEventListener("submit", function (e) {
     e.preventDefault();
-
     userData.username = document.getElementById("username").value;
     userData.email = document.getElementById("email").value;
     userData.dob = document.getElementById("dob").value;
@@ -120,12 +137,34 @@
     userData.address = document.getElementById("address").value;
     userData.city = document.getElementById("city").value;
     userData.state = document.getElementById("state").value;
-
     localStorage.setItem(userKey, JSON.stringify(userData));
     alert("Profile updated successfully!");
   });
 
-  // Initialize
+  document.getElementById("passwordForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const current = document.getElementById("currentPassword").value;
+    const newPass = document.getElementById("newPassword").value;
+    const confirm = document.getElementById("confirmPassword").value;
+
+    if (current !== userData.password) {
+      alert("Current password is incorrect.");
+      return;
+    }
+    if (newPass.length < 6) {
+      alert("New password must be at least 6 characters.");
+      return;
+    }
+    if (newPass !== confirm) {
+      alert("New passwords do not match.");
+      return;
+    }
+    userData.password = newPass;
+    localStorage.setItem(userKey, JSON.stringify(userData));
+    alert("Password updated successfully!");
+    document.getElementById("passwordForm").reset();
+  });
+
   populateForm();
 </script>
 
