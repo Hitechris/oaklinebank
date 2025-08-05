@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open Account | Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <script src="https://kit.fontawesome.com/a2e0f1f985.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-light">
@@ -27,12 +27,14 @@
 
         <div class="mb-3">
           <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
-          <input type="number" id="initialDeposit" class="form-control" placeholder="Enter amount">
+          <input type="number" id="initialDeposit" class="form-control" placeholder="Enter amount" min="0" step="0.01" />
         </div>
 
         <button type="button" class="btn btn-success w-100" onclick="openNewAccount()">Open Account</button>
       </div>
     </div>
+  </div>
+
 <script>
   function openNewAccount() {
     const loggedInUser = localStorage.getItem("loggedInUser");
@@ -42,16 +44,15 @@
       return;
     }
 
-    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const userIndex = allUsers.findIndex(
-      u => u.username === loggedInUser || u.email === loggedInUser
-    );
-
-    if (userIndex === -1) {
-      alert("User not found.");
+    // Load current user's data
+    let userDataRaw = localStorage.getItem("user_" + loggedInUser);
+    if (!userDataRaw) {
+      alert("User data not found.");
       window.location.href = "login.html";
       return;
     }
+
+    let userData = JSON.parse(userDataRaw);
 
     const accountType = document.getElementById("accountType").value;
     const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
@@ -61,31 +62,43 @@
       return;
     }
 
-    const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
-
-    // Ensure accountInfo structure exists
-    if (!allUsers[userIndex].accountInfo) {
-      allUsers[userIndex].accountInfo = { checking: null, savings: null };
+    // Initialize accountInfo if missing
+    if (!userData.accountInfo) {
+      userData.accountInfo = { checking: null, savings: null };
     }
 
-    // Prevent overwriting an already-opened account
-    if (allUsers[userIndex].accountInfo[accountType]?.isOpen) {
+    if (userData.accountInfo[accountType]?.isOpen) {
       alert(`You already have a ${accountType} account.`);
       return;
     }
 
-    allUsers[userIndex].accountInfo[accountType] = {
+    const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
+    const routingNumber = "021000021"; // fixed routing number for demo
+
+    userData.accountInfo[accountType] = {
       balance: parseFloat(initialDeposit.toFixed(2)),
       accountNumber: accountNumber,
-      transactions: [],
+      routingNumber: routingNumber,
+      transactions: [{
+        type: "credit",
+        amount: initialDeposit,
+        description: "Initial deposit",
+        date: new Date().toLocaleString()
+      }],
       isOpen: true
     };
 
-    localStorage.setItem("users", JSON.stringify(allUsers));
+    // Update balances object for quick reference
+    if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
+    userData.balances[accountType] = initialDeposit;
+
+    localStorage.setItem("user_" + loggedInUser, JSON.stringify(userData));
+
     alert(`${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account created successfully!`);
     window.location.href = "dashboard.html";
   }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
