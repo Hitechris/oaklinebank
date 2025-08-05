@@ -3,102 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Open Account | Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a2e0f1f985.js" crossorigin="anonymous"></script>
+  <title>Open New Account | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body class="bg-light">
-
   <div class="container mt-5">
-    <div class="card shadow">
-      <div class="card-header text-center bg-primary text-white">
-        <h3>Open a New Account</h3>
+    <h2>Open New Account</h2>
+    <form id="openAccountForm" class="mt-4">
+
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Full Name</label>
+        <input type="text" id="fullName" class="form-control" readonly />
       </div>
-      <div class="card-body">
 
-        <div class="mb-3">
-          <label for="accountType" class="form-label">Account Type</label>
-          <select id="accountType" class="form-select">
-            <option value="">-- Select Account Type --</option>
-            <option value="checking">Checking</option>
-            <option value="savings">Savings</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
-          <input type="number" id="initialDeposit" class="form-control" placeholder="Enter amount" min="0" step="0.01" />
-        </div>
-
-        <button type="button" class="btn btn-success w-100" onclick="openNewAccount()">Open Account</button>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" readonly />
       </div>
-    </div>
+
+      <div class="mb-3">
+        <label for="passwordConfirm" class="form-label">Enter Password to Confirm</label>
+        <input type="password" id="passwordConfirm" class="form-control" placeholder="Your password" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="accountType" class="form-label">Select Account Type</label>
+        <select id="accountType" class="form-select" required>
+          <option value="" disabled selected>Select an account</option>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="initialDeposit" class="form-label">Initial Deposit</label>
+        <input type="number" id="initialDeposit" class="form-control" min="0" step="0.01" placeholder="100.00" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Open Account</button>
+    </form>
   </div>
 
-<script>
-  function openNewAccount() {
-    const loggedInUser = localStorage.getItem("loggedInUser");
-    console.log("Logged in user:", loggedInUser);
-    console.log("User data raw:", localStorage.getItem("user_" + loggedInUser));
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const username = localStorage.getItem("loggedInUser");
+      if (!username) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+        return;
+      }
 
-    if (!loggedInUser) {
-      alert("You must be logged in to open an account.");
-      window.location.href = "login.html";
-      return;
-    }
+      const userKey = "user_" + username;
+      const userData = JSON.parse(localStorage.getItem(userKey)) || {};
 
-    let userDataRaw = localStorage.getItem("user_" + loggedInUser);
-    if (!userDataRaw) {
-      alert("User data not found.");
-      window.location.href = "login.html";
-      return;
-    }
+      // Adjust this to your userData structure for full name
+      document.getElementById("fullName").value = userData.fullName || userData.username || "";
+      document.getElementById("email").value = userData.email || "";
 
-    let userData = JSON.parse(userDataRaw);
+      document.getElementById("openAccountForm").addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    const accountType = document.getElementById("accountType").value;
-    const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+        const passwordConfirm = document.getElementById("passwordConfirm").value;
+        const accountType = document.getElementById("accountType").value;
+        const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
 
-    if (!accountType || isNaN(initialDeposit) || initialDeposit < 0) {
-      alert("Please select an account type and enter a valid deposit.");
-      return;
-    }
+        if (passwordConfirm !== userData.password) {
+          alert("Password is incorrect. Please try again.");
+          return;
+        }
 
-    if (!userData.accountInfo) {
-      userData.accountInfo = { checking: null, savings: null };
-    }
+        if (!accountType) {
+          alert("Please select an account type.");
+          return;
+        }
 
-    if (userData.accountInfo[accountType]?.isOpen) {
-      alert(`You already have a ${accountType} account.`);
-      return;
-    }
+        if (isNaN(initialDeposit) || initialDeposit < 0) {
+          alert("Please enter a valid initial deposit.");
+          return;
+        }
 
-    const accountNumber = Math.floor(100000000 + Math.random() * 900000000).toString();
-    const routingNumber = "021000021";
+        // Initialize account info & balances if missing
+        if (!userData.accountInfo) userData.accountInfo = {};
+        if (!userData.balances) userData.balances = {};
 
-    userData.accountInfo[accountType] = {
-      balance: parseFloat(initialDeposit.toFixed(2)),
-      accountNumber: accountNumber,
-      routingNumber: routingNumber,
-      transactions: [{
-        type: "credit",
-        amount: initialDeposit,
-        description: "Initial deposit",
-        date: new Date().toLocaleString()
-      }],
-      isOpen: true
-    };
+        if (userData.accountInfo[accountType]) {
+          alert(`You already have a ${accountType} account.`);
+          return;
+        }
 
-    if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
-    userData.balances[accountType] = initialDeposit;
+        function generateRandomAccountNumber() {
+          return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+        }
+        function generateRandomRoutingNumber() {
+          return Math.floor(100000000 + Math.random() * 900000000).toString();
+        }
 
-    localStorage.setItem("user_" + loggedInUser, JSON.stringify(userData));
+        userData.accountInfo[accountType] = {
+          accountNumber: generateRandomAccountNumber(),
+          routingNumber: generateRandomRoutingNumber(),
+        };
+        userData.balances[accountType] = initialDeposit;
 
-    alert(`${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account created successfully!`);
-    window.location.href = "dashboard.html";
-  }
-</script>
+        localStorage.setItem(userKey, JSON.stringify(userData));
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        alert(`Your new ${accountType} account has been opened with an initial deposit of $${initialDeposit.toFixed(2)}.`);
+
+        window.location.href = "dashboard.html";
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
