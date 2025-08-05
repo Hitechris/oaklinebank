@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Profile | Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Profile | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .profile-pic {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       object-fit: cover;
       border-radius: 50%;
       border: 4px solid #004080;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -20,20 +21,51 @@
 <div class="container mt-5">
   <div class="card shadow">
     <div class="card-header bg-primary text-white text-center">
-      <h3>Your Profile</h3>
+      <h3>Edit Profile</h3>
     </div>
-    <div class="card-body text-center">
-      <img id="profileImage" src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic mb-3" />
-
-      <div class="mb-3">
-        <label for="uploadPic" class="form-label">Change Profile Picture</label>
-        <input type="file" id="uploadPic" accept="image/*" class="form-control" />
+    <div class="card-body">
+      <div class="text-center">
+        <img id="profileImage" src="https://via.placeholder.com/150" class="profile-pic" alt="Profile Picture">
+        <input type="file" id="uploadPic" accept="image/*" class="form-control mt-2" />
       </div>
 
-      <button class="btn btn-success" onclick="saveProfilePic()">Save Picture</button>
-    </div>
-    <div class="card-footer text-center">
-      <a href="dashboard.html" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+      <form id="profileForm" class="mt-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="date" id="dob" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="ssn" class="form-label">SSN</label>
+            <input type="text" id="ssn" class="form-control" placeholder="XXX-XX-XXXX">
+          </div>
+          <div class="col-md-12">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" id="address" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="city" class="form-label">City</label>
+            <input type="text" id="city" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="state" class="form-label">State</label>
+            <input type="text" id="state" class="form-control">
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success">Save Profile</button>
+          <a href="dashboard.html" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -41,40 +73,60 @@
 <script>
   const loggedInUser = localStorage.getItem("loggedInUser");
   if (!loggedInUser) {
-    alert("Not logged in.");
+    alert("Not logged in");
     window.location.href = "login.html";
   }
 
-  // Load and show saved profile image
   const userKey = "user_" + loggedInUser;
-  const userData = JSON.parse(localStorage.getItem(userKey)) || {};
+  let userData = JSON.parse(localStorage.getItem(userKey)) || {};
 
-  if (userData.profileImage) {
-    document.getElementById("profileImage").src = userData.profileImage;
+  // Populate form
+  function populateForm() {
+    if (userData.profileImage) {
+      document.getElementById("profileImage").src = userData.profileImage;
+    }
+
+    document.getElementById("username").value = userData.username || loggedInUser;
+    document.getElementById("email").value = userData.email || "";
+    document.getElementById("dob").value = userData.dob || "";
+    document.getElementById("ssn").value = userData.ssn || "";
+    document.getElementById("address").value = userData.address || "";
+    document.getElementById("city").value = userData.city || "";
+    document.getElementById("state").value = userData.state || "";
   }
 
-  function saveProfilePic() {
-    const fileInput = document.getElementById("uploadPic");
-    const file = fileInput.files[0];
-
-    if (!file) {
-      alert("Please select an image.");
-      return;
-    }
+  // Save profile image
+  document.getElementById("uploadPic").addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function (e) {
-      const imageData = e.target.result;
-      document.getElementById("profileImage").src = imageData;
-
-      // Save to user data
-      userData.profileImage = imageData;
+      document.getElementById("profileImage").src = e.target.result;
+      userData.profileImage = e.target.result;
       localStorage.setItem(userKey, JSON.stringify(userData));
-      alert("Profile picture saved!");
     };
-
     reader.readAsDataURL(file);
-  }
+  });
+
+  // Save form data
+  document.getElementById("profileForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    userData.username = document.getElementById("username").value;
+    userData.email = document.getElementById("email").value;
+    userData.dob = document.getElementById("dob").value;
+    userData.ssn = document.getElementById("ssn").value;
+    userData.address = document.getElementById("address").value;
+    userData.city = document.getElementById("city").value;
+    userData.state = document.getElementById("state").value;
+
+    localStorage.setItem(userKey, JSON.stringify(userData));
+    alert("Profile updated successfully!");
+  });
+
+  // Initialize
+  populateForm();
 </script>
 
 </body>
