@@ -52,6 +52,7 @@
 <body>
 
   <script>
+    // Redirect to admin-login if admin is not logged in
     const admin = JSON.parse(localStorage.getItem("adminUser"));
     if (!admin || !admin.isLoggedIn) {
       window.location.href = "admin-login.html";
@@ -60,7 +61,7 @@
 
   <div class="top-bar">
     <div class="logo">Oakline Admin Panel</div>
-    <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+    <button class="btn btn-danger" id="logoutBtn">Logout</button>
   </div>
 
   <div class="section" id="depositsSection">
@@ -82,39 +83,43 @@
   </div>
 
   <script>
-    function logoutAdmin() {
+    // Logout button event
+    document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("adminUser");
-      location.href = "admin-login.html";
-    }
+      window.location.href = "admin-login.html";
+    });
 
+    // Helpers to load/save pending requests
     function loadPending(key) {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : [];
     }
-
     function savePending(key, arr) {
       localStorage.setItem(key, JSON.stringify(arr));
     }
 
+    // Helpers to load/save user data
     function loadUserData(username) {
       const raw = localStorage.getItem("user_" + username);
       return raw ? JSON.parse(raw) : null;
     }
-
     function saveUserData(username, data) {
       localStorage.setItem("user_" + username, JSON.stringify(data));
     }
 
+    // Remove pending item by index
     function removePending(key, index) {
       const arr = loadPending(key);
       arr.splice(index, 1);
       savePending(key, arr);
     }
 
+    // Format number as currency
     function formatCurrency(amount) {
-      return "$" + amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      return "$" + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    // Render functions
     function renderDepositItem(deposit, index) {
       return `
         <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -128,8 +133,7 @@
             <button class="btn btn-sm btn-approve me-2" onclick="approveDeposit(${index})">Approve</button>
             <button class="btn btn-sm btn-reject" onclick="rejectDeposit(${index})">Reject</button>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function renderWithdrawalItem(withdrawal, index) {
@@ -145,8 +149,7 @@
             <button class="btn btn-sm btn-approve me-2" onclick="approveWithdrawal(${index})">Approve</button>
             <button class="btn btn-sm btn-reject" onclick="rejectWithdrawal(${index})">Reject</button>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function renderAccountOpeningItem(request, index) {
@@ -161,71 +164,77 @@
             <button class="btn btn-sm btn-approve me-2" onclick="approveAccountOpening(${index})">Approve</button>
             <button class="btn btn-sm btn-reject" onclick="rejectAccountOpening(${index})">Reject</button>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
+    // Approve / reject functions
     function approveDeposit(index) {
-      const list = loadPending('pendingDeposits');
-      const deposit = list[index];
+      const deposits = loadPending("pendingDeposits");
+      const deposit = deposits[index];
       const user = loadUserData(deposit.username);
       if (!user) return alert("User not found");
 
-      user.balances[deposit.accountType] += deposit.amount;
+      if (!user.balances) user.balances = { checking: 0, savings: 0 };
+      if (!user.transactions) user.transactions = [];
+
+      user.balances[deposit.accountType] = (user.balances[deposit.accountType] || 0) + deposit.amount;
+
       user.transactions.push({
         date: new Date().toLocaleString(),
         type: "credit",
-        amount: deposit.amount,
         account: deposit.accountType,
-        description: "Admin-approved deposit"
+        amount: deposit.amount,
+        description: "Deposit approved by admin",
       });
 
       saveUserData(deposit.username, user);
-      removePending('pendingDeposits', index);
+      removePending("pendingDeposits", index);
       loadPendingRequests();
     }
 
     function rejectDeposit(index) {
-      if (confirm("Reject this deposit?")) {
-        removePending('pendingDeposits', index);
+      if (confirm("Reject this deposit request?")) {
+        removePending("pendingDeposits", index);
         loadPendingRequests();
       }
     }
 
     function approveWithdrawal(index) {
-      const list = loadPending('pendingWithdrawals');
-      const withdrawal = list[index];
+      const withdrawals = loadPending("pendingWithdrawals");
+      const withdrawal = withdrawals[index];
       const user = loadUserData(withdrawal.username);
       if (!user) return alert("User not found");
 
-      if (user.balances[withdrawal.accountType] < withdrawal.amount) {
-        return alert("Insufficient user balance.");
+      if (!user.balances || (user.balances[withdrawal.accountType] || 0) < withdrawal.amount) {
+        return alert("Insufficient balance.");
       }
+      if (!user.transactions) user.transactions = [];
 
       user.balances[withdrawal.accountType] -= withdrawal.amount;
+
       user.transactions.push({
         date: new Date().toLocaleString(),
         type: "debit",
-        amount: withdrawal.amount,
         account: withdrawal.accountType,
-        description: "Admin-approved withdrawal"
+        amount: withdrawal.amount,
+        description: "Withdrawal approved by admin",
       });
 
       saveUserData(withdrawal.username, user);
-      removePending('pendingWithdrawals', index);
+      removePending("pendingWithdrawals", index);
       loadPendingRequests();
     }
 
     function rejectWithdrawal(index) {
-      if (confirm("Reject this withdrawal?")) {
-        removePending('pendingWithdrawals', index);
+      if (confirm("Reject this withdrawal request?")) {
+        removePending("pendingWithdrawals", index);
         loadPendingRequests();
       }
     }
 
     function approveAccountOpening(index) {
-      const list = loadPending('pendingAccountOpenings');
-      const req = list[index];
+      const accounts = loadPending("pendingAccountOpenings");
+      const req = accounts[index];
       const user = loadUserData(req.username);
       if (!user) return alert("User not found");
 
@@ -236,54 +245,55 @@
       if (!user.accountInfo[req.accountType]) {
         user.accountInfo[req.accountType] = {
           accountNumber: generateRandomAccountNumber(),
-          routingNumber: generateRandomRoutingNumber()
+          routingNumber: generateRandomRoutingNumber(),
         };
       }
 
-      if (!user.balances[req.accountType]) {
-        user.balances[req.accountType] = 0;
-      }
+      if (!user.balances) user.balances = {};
+      if (!user.balances[req.accountType]) user.balances[req.accountType] = 0;
 
+      if (!user.transactions) user.transactions = [];
       user.transactions.push({
         date: new Date().toLocaleString(),
         type: "info",
-        amount: 0,
         account: req.accountType,
-        description: "New account opened by admin"
+        amount: 0,
+        description: "New account opened by admin",
       });
 
       saveUserData(req.username, user);
-      removePending('pendingAccountOpenings', index);
+      removePending("pendingAccountOpenings", index);
       loadPendingRequests();
     }
 
     function rejectAccountOpening(index) {
-      if (confirm("Reject this request?")) {
-        removePending('pendingAccountOpenings', index);
+      if (confirm("Reject this account opening request?")) {
+        removePending("pendingAccountOpenings", index);
         loadPendingRequests();
       }
     }
 
+    // Random account/routing number generators
     function generateRandomAccountNumber() {
-      return Math.floor(1000000000 + Math.random() * 9000000000);
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
     }
-
     function generateRandomRoutingNumber() {
-      return Math.floor(100000000 + Math.random() * 900000000);
+      return Math.floor(100000000 + Math.random() * 900000000).toString();
     }
 
+    // Load and render all pending requests
     function loadPendingRequests() {
-      const deposits = loadPending('pendingDeposits');
-      const withdrawals = loadPending('pendingWithdrawals');
-      const accounts = loadPending('pendingAccountOpenings');
+      const deposits = loadPending("pendingDeposits");
+      const withdrawals = loadPending("pendingWithdrawals");
+      const accounts = loadPending("pendingAccountOpenings");
 
-      document.getElementById('pendingDepositsList').innerHTML = deposits.map(renderDepositItem).join('');
-      document.getElementById('pendingWithdrawalsList').innerHTML = withdrawals.map(renderWithdrawalItem).join('');
-      document.getElementById('pendingAccountOpeningsList').innerHTML = accounts.map(renderAccountOpeningItem).join('');
+      document.getElementById("pendingDepositsList").innerHTML = deposits.map(renderDepositItem).join("");
+      document.getElementById("pendingWithdrawalsList").innerHTML = withdrawals.map(renderWithdrawalItem).join("");
+      document.getElementById("pendingAccountOpeningsList").innerHTML = accounts.map(renderAccountOpeningItem).join("");
 
-      document.getElementById('noDeposits').style.display = deposits.length ? 'none' : 'block';
-      document.getElementById('noWithdrawals').style.display = withdrawals.length ? 'none' : 'block';
-      document.getElementById('noAccountOpenings').style.display = accounts.length ? 'none' : 'block';
+      document.getElementById("noDeposits").style.display = deposits.length ? "none" : "block";
+      document.getElementById("noWithdrawals").style.display = withdrawals.length ? "none" : "block";
+      document.getElementById("noAccountOpenings").style.display = accounts.length ? "none" : "block";
     }
 
     document.addEventListener("DOMContentLoaded", loadPendingRequests);
