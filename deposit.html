@@ -3,220 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Deposit Funds - Oakline Bank</title>
+  <title>Deposit Funds | Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      font-size: 15.4px;
       background-color: #f4f6f9;
-      color: #333;
-      margin: 0;
-      padding-bottom: 40px;
+      font-family: 'Segoe UI', sans-serif;
     }
-    .header-container {
-      max-width: 960px;
-      margin: 1rem auto 0.5rem auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .logo-placeholder {
-      width: 70px;
-      height: 70px;
-      background-color: #004080;
+    .card {
+      max-width: 500px;
+      margin: 3rem auto;
+      padding: 2rem;
       border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .bank-name {
-      font-weight: 800;
-      font-size: 2.5rem;
-      color: #004080;
-    }
-    .marquee-banner {
-      background: #004080;
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 500;
-      padding: 6px 0;
-      text-align: center;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .marquee-text {
-      display: inline-block;
-      padding-left: 100%;
-      animation: marquee 15s linear infinite;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
-    }
-    .btn-back {
+    .btn-primary {
       background-color: #004080;
       border: none;
-      color: white;
-      margin-bottom: 20px;
     }
-    .btn-back:hover {
-      background-color: #002f66;
-    }
-    .form-container {
-      max-width: 480px;
-      margin: 2rem auto 4rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    }
-    .dark-mode {
-      background-color: #121212;
-      color: #eee;
-    }
-    .dark-mode .form-container {
-      background-color: #1e1e1e;
-      color: #fff;
+    .btn-primary:hover {
+      background-color: #003366;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="card">
+      <h3 class="text-center text-primary mb-4">Deposit Funds</h3>
 
-  <!-- Header -->
-  <div class="header-container">
-    <div class="logo-placeholder" aria-label="Bank Logo"></div>
-    <a href="index.html" class="bank-name text-decoration-none">Oakline Bank</a>
-  </div>
+      <form id="depositForm">
+        <div class="mb-3">
+          <label for="accountType" class="form-label">Select Account</label>
+          <select id="accountType" class="form-select" required>
+            <option value="">-- Choose account type --</option>
+            <option value="checking">Checking Account</option>
+            <option value="savings">Savings Account</option>
+          </select>
+        </div>
 
-  <!-- Scrolling Banner -->
-  <div class="marquee-banner">
-    <div class="marquee-text">
-      🔐 Welcome to Oakline Bank — The Most Secure and Trusted Digital Bank. Your Finances. Our Priority. 💼
+        <div class="mb-3">
+          <label for="depositAmount" class="form-label">Amount</label>
+          <input type="number" id="depositAmount" class="form-control" min="0.01" step="0.01" required />
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">Deposit</button>
+          <a href="dashboard.html" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="form-container">
-    <button id="backBtn" class="btn btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-
-    <h3 class="mb-4 text-center">Deposit Funds</h3>
-
-    <form id="depositForm" novalidate>
-      <div class="mb-3">
-        <label for="accountType" class="form-label">Select Account</label>
-        <select id="accountType" class="form-select" required>
-          <option value="" disabled selected>Choose account</option>
-          <option value="checking">Checking Account</option>
-          <option value="savings">Savings Account</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="depositAmount" class="form-label">Amount to Deposit</label>
-        <input type="number" id="depositAmount" class="form-control" min="0.01" step="0.01" placeholder="Enter amount" required />
-        <div class="invalid-feedback">Please enter a valid amount greater than $0.00</div>
-      </div>
-
-      <button type="submit" class="btn btn-primary w-100">
-        <i class="fas fa-arrow-down"></i> Deposit
-      </button>
-    </form>
-
-    <div id="message" class="mt-3 text-center"></div>
-  </div>
-
   <script>
-    // Redirect to dashboard
-    document.getElementById('backBtn').addEventListener('click', () => {
-      window.location.href = 'dashboard.html';
-    });
-
-    // Load logged in user
-    const loggedInUser = localStorage.getItem("loggedInUser");
-    if (!loggedInUser) {
-      alert("Please log in to deposit funds.");
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) {
+      alert("You must be logged in.");
       window.location.href = "login.html";
     }
 
-    // Load user data helper
-    function loadUserData(username) {
-      const raw = localStorage.getItem("user_" + username);
-      if (!raw) return null;
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return null;
-      }
-    }
+    const userKey = "user_" + username;
+    const userData = JSON.parse(localStorage.getItem(userKey));
 
-    // Save user data helper
-    function saveUserData(username, data) {
-      localStorage.setItem("user_" + username, JSON.stringify(data));
-    }
-
-    // Deposit form handling
-    const depositForm = document.getElementById('depositForm');
-    const messageDiv = document.getElementById('message');
-
-    depositForm.addEventListener('submit', e => {
+    document.getElementById("depositForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      // Clear previous message
-      messageDiv.textContent = '';
-      messageDiv.className = '';
+      const accountType = document.getElementById("accountType").value;
+      const amount = parseFloat(document.getElementById("depositAmount").value);
 
-      const accountType = document.getElementById('accountType').value;
-      const amountStr = document.getElementById('depositAmount').value;
-      const amount = parseFloat(amountStr);
-
-      // Validation
-      if (!accountType) {
-        messageDiv.textContent = 'Please select an account.';
-        messageDiv.style.color = 'red';
-        return;
-      }
-      if (isNaN(amount) || amount <= 0) {
-        messageDiv.textContent = 'Please enter a valid amount greater than $0.00.';
-        messageDiv.style.color = 'red';
+      if (!accountType || isNaN(amount) || amount <= 0) {
+        alert("Please enter valid account and amount.");
         return;
       }
 
-      // Load user data
-      const userData = loadUserData(loggedInUser);
-      if (!userData) {
-        alert('User data not found. Please log in again.');
-        window.location.href = "login.html";
+      // Ensure account exists
+      if (!userData.accountInfo || !userData.accountInfo[accountType]) {
+        alert("You don't have a " + accountType + " account.");
         return;
       }
+
+      if (!userData.balances) userData.balances = {};
+      if (!userData.transactions) userData.transactions = [];
 
       // Update balance
+      if (!userData.balances[accountType]) {
+        userData.balances[accountType] = 0;
+      }
       userData.balances[accountType] += amount;
 
       // Add transaction
       userData.transactions.push({
-        date: new Date().toLocaleString(),
-        description: `Deposit to ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} Account`,
+        type: "credit",
         amount: amount,
-        type: 'credit'
+        description: "Deposit to " + accountType + " account",
+        date: new Date().toLocaleString()
       });
 
-      // Save data back
-      saveUserData(loggedInUser, userData);
-
-      // Success message
-      messageDiv.textContent = `Deposit of $${amount.toFixed(2)} to your ${accountType} account was successful!`;
-      messageDiv.style.color = 'green';
-
-      // Reset form
-      depositForm.reset();
-
-      // Optional: redirect back to dashboard after delay
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 1500);
+      // Save and redirect
+      localStorage.setItem(userKey, JSON.stringify(userData));
+      alert("Deposit successful!");
+      window.location.href = "dashboard.html";
     });
   </script>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
