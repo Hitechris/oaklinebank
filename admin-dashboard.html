@@ -1,364 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin Dashboard - Oakline Bank</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f6f9;
-    margin: 0; padding: 20px;
-  }
-  h2 {
-    color: #004080;
-    margin-bottom: 1rem;
-  }
-  .section {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 30px;
-    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-  }
-  .btn-approve {
-    background-color: #28a745;
-    color: white;
-  }
-  .btn-approve:hover {
-    background-color: #218838;
-  }
-  .btn-reject {
-    background-color: #dc3545;
-    color: white;
-  }
-  .btn-reject:hover {
-    background-color: #c82333;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #004080;
+    }
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+    .btn-approve {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-approve:hover {
+      background-color: #218838;
+    }
+    .btn-reject {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-reject:hover {
+      background-color: #c82333;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #004080;
+    }
+  </style>
 </head>
 <body>
 
-  <h1 class="mb-4">Admin Dashboard - Approvals</h1>
+  <script>
+    const admin = JSON.parse(localStorage.getItem("adminUser"));
+    if (!admin || !admin.isLoggedIn) {
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
+  <div class="top-bar">
+    <div class="logo">Oakline Admin Panel</div>
+    <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+  </div>
 
   <div class="section" id="depositsSection">
     <h2>Pending Deposits</h2>
-    <div id="pendingDepositsList" class="list-group">
-      <!-- Pending deposits will load here -->
-    </div>
+    <div id="pendingDepositsList" class="list-group"></div>
     <p id="noDeposits" class="text-muted">No pending deposits.</p>
   </div>
 
   <div class="section" id="withdrawalsSection">
     <h2>Pending Withdrawals</h2>
-    <div id="pendingWithdrawalsList" class="list-group">
-      <!-- Pending withdrawals will load here -->
-    </div>
+    <div id="pendingWithdrawalsList" class="list-group"></div>
     <p id="noWithdrawals" class="text-muted">No pending withdrawals.</p>
   </div>
 
   <div class="section" id="accountOpeningsSection">
-    <h2>Pending New Account Openings</h2>
-    <div id="pendingAccountOpeningsList" class="list-group">
-      <!-- Pending account openings will load here -->
-    </div>
+    <h2>Pending Account Openings</h2>
+    <div id="pendingAccountOpeningsList" class="list-group"></div>
     <p id="noAccountOpenings" class="text-muted">No pending new account requests.</p>
   </div>
 
-<script>
-  // Utility to load JSON array or empty array if not present
-  function loadPending(key) {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
-  }
-
-  // Save pending array back to localStorage
-  function savePending(key, arr) {
-    localStorage.setItem(key, JSON.stringify(arr));
-  }
-
-  // Load user data by username
-  function loadUserData(username) {
-    const raw = localStorage.getItem("user_" + username);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
-  }
-
-  // Save user data by username
-  function saveUserData(username, data) {
-    localStorage.setItem("user_" + username, JSON.stringify(data));
-  }
-
-  // Remove item from array by index and save
-  function removePending(key, index) {
-    const arr = loadPending(key);
-    arr.splice(index, 1);
-    savePending(key, arr);
-  }
-
-  // Format currency
-  function formatCurrency(amount) {
-    return "$" + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  // Render a pending deposit request
-  function renderDepositItem(deposit, index) {
-    return `
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>User:</strong> ${deposit.username}<br />
-          <strong>Account:</strong> ${deposit.accountType}<br />
-          <strong>Amount:</strong> ${formatCurrency(deposit.amount)}<br />
-          <small>Submitted on: ${deposit.date}</small>
-        </div>
-        <div>
-          <button class="btn btn-sm btn-approve me-2" onclick="approveDeposit(${index})">Approve</button>
-          <button class="btn btn-sm btn-reject" onclick="rejectDeposit(${index})">Reject</button>
-        </div>
-      </div>
-    `;
-  }
-
-  // Render a pending withdrawal request
-  function renderWithdrawalItem(withdrawal, index) {
-    return `
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>User:</strong> ${withdrawal.username}<br />
-          <strong>Account:</strong> ${withdrawal.accountType}<br />
-          <strong>Amount:</strong> ${formatCurrency(withdrawal.amount)}<br />
-          <small>Submitted on: ${withdrawal.date}</small>
-        </div>
-        <div>
-          <button class="btn btn-sm btn-approve me-2" onclick="approveWithdrawal(${index})">Approve</button>
-          <button class="btn btn-sm btn-reject" onclick="rejectWithdrawal(${index})">Reject</button>
-        </div>
-      </div>
-    `;
-  }
-
-  // Render a pending account opening request
-  function renderAccountOpeningItem(accountRequest, index) {
-    return `
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>User:</strong> ${accountRequest.username}<br />
-          <strong>Request Type:</strong> ${accountRequest.accountType} Account<br />
-          <small>Submitted on: ${accountRequest.date}</small>
-        </div>
-        <div>
-          <button class="btn btn-sm btn-approve me-2" onclick="approveAccountOpening(${index})">Approve</button>
-          <button class="btn btn-sm btn-reject" onclick="rejectAccountOpening(${index})">Reject</button>
-        </div>
-      </div>
-    `;
-  }
-
-  // Load and render all pending requests
-  function loadPendingRequests() {
-    // Deposits
-    const deposits = loadPending('pendingDeposits');
-    const depositsList = document.getElementById('pendingDepositsList');
-    const noDepositsMsg = document.getElementById('noDeposits');
-    if (deposits.length === 0) {
-      noDepositsMsg.style.display = 'block';
-      depositsList.innerHTML = '';
-    } else {
-      noDepositsMsg.style.display = 'none';
-      depositsList.innerHTML = deposits.map(renderDepositItem).join('');
+  <script>
+    function logoutAdmin() {
+      localStorage.removeItem("adminUser");
+      location.href = "admin-login.html";
     }
 
-    // Withdrawals
-    const withdrawals = loadPending('pendingWithdrawals');
-    const withdrawalsList = document.getElementById('pendingWithdrawalsList');
-    const noWithdrawalsMsg = document.getElementById('noWithdrawals');
-    if (withdrawals.length === 0) {
-      noWithdrawalsMsg.style.display = 'block';
-      withdrawalsList.innerHTML = '';
-    } else {
-      noWithdrawalsMsg.style.display = 'none';
-      withdrawalsList.innerHTML = withdrawals.map(renderWithdrawalItem).join('');
+    function loadPending(key) {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
     }
 
-    // Account Openings
-    const accountOpenings = loadPending('pendingAccountOpenings');
-    const accountOpeningsList = document.getElementById('pendingAccountOpeningsList');
-    const noAccountOpeningsMsg = document.getElementById('noAccountOpenings');
-    if (accountOpenings.length === 0) {
-      noAccountOpeningsMsg.style.display = 'block';
-      accountOpeningsList.innerHTML = '';
-    } else {
-      noAccountOpeningsMsg.style.display = 'none';
-      accountOpeningsList.innerHTML = accountOpenings.map(renderAccountOpeningItem).join('');
+    function savePending(key, arr) {
+      localStorage.setItem(key, JSON.stringify(arr));
     }
-  }
 
-  // Approve deposit: update user balance, add transaction, remove from pending
-  function approveDeposit(index) {
-    const deposits = loadPending('pendingDeposits');
-    if (index < 0 || index >= deposits.length) return alert('Invalid deposit index');
-    const deposit = deposits[index];
-    const userData = loadUserData(deposit.username);
-    if (!userData) return alert('User data not found');
+    function loadUserData(username) {
+      const raw = localStorage.getItem("user_" + username);
+      return raw ? JSON.parse(raw) : null;
+    }
 
-    // Update balance
-    if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
-    if (!userData.transactions) userData.transactions = [];
+    function saveUserData(username, data) {
+      localStorage.setItem("user_" + username, JSON.stringify(data));
+    }
 
-    userData.balances[deposit.accountType] = (userData.balances[deposit.accountType] || 0) + deposit.amount;
+    function removePending(key, index) {
+      const arr = loadPending(key);
+      arr.splice(index, 1);
+      savePending(key, arr);
+    }
 
-    // Add transaction record
-    userData.transactions.push({
-      date: new Date().toISOString(),
-      type: 'credit',
-      account: deposit.accountType,
-      amount: deposit.amount,
-      description: 'Deposit Approved by Admin',
-      to: 'User Account',
-    });
+    function formatCurrency(amount) {
+      return "$" + amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
 
-    saveUserData(deposit.username, userData);
+    function renderDepositItem(deposit, index) {
+      return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>User:</strong> ${deposit.username}<br/>
+            <strong>Account:</strong> ${deposit.accountType}<br/>
+            <strong>Amount:</strong> ${formatCurrency(deposit.amount)}<br/>
+            <small>${deposit.date}</small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-approve me-2" onclick="approveDeposit(${index})">Approve</button>
+            <button class="btn btn-sm btn-reject" onclick="rejectDeposit(${index})">Reject</button>
+          </div>
+        </div>
+      `;
+    }
 
-    // Remove from pending
-    removePending('pendingDeposits', index);
+    function renderWithdrawalItem(withdrawal, index) {
+      return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>User:</strong> ${withdrawal.username}<br/>
+            <strong>Account:</strong> ${withdrawal.accountType}<br/>
+            <strong>Amount:</strong> ${formatCurrency(withdrawal.amount)}<br/>
+            <small>${withdrawal.date}</small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-approve me-2" onclick="approveWithdrawal(${index})">Approve</button>
+            <button class="btn btn-sm btn-reject" onclick="rejectWithdrawal(${index})">Reject</button>
+          </div>
+        </div>
+      `;
+    }
 
-    alert(`Deposit for ${deposit.username} approved.`);
+    function renderAccountOpeningItem(request, index) {
+      return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>User:</strong> ${request.username}<br/>
+            <strong>Type:</strong> ${request.accountType} Account<br/>
+            <small>${request.date}</small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-approve me-2" onclick="approveAccountOpening(${index})">Approve</button>
+            <button class="btn btn-sm btn-reject" onclick="rejectAccountOpening(${index})">Reject</button>
+          </div>
+        </div>
+      `;
+    }
 
-    loadPendingRequests();
-  }
+    function approveDeposit(index) {
+      const list = loadPending('pendingDeposits');
+      const deposit = list[index];
+      const user = loadUserData(deposit.username);
+      if (!user) return alert("User not found");
 
-  // Reject deposit: just remove from pending
-  function rejectDeposit(index) {
-    if (confirm('Reject this deposit request?')) {
+      user.balances[deposit.accountType] += deposit.amount;
+      user.transactions.push({
+        date: new Date().toLocaleString(),
+        type: "credit",
+        amount: deposit.amount,
+        account: deposit.accountType,
+        description: "Admin-approved deposit"
+      });
+
+      saveUserData(deposit.username, user);
       removePending('pendingDeposits', index);
       loadPendingRequests();
     }
-  }
 
-  // Approve withdrawal: update user balance, add transaction, remove from pending
-  function approveWithdrawal(index) {
-    const withdrawals = loadPending('pendingWithdrawals');
-    if (index < 0 || index >= withdrawals.length) return alert('Invalid withdrawal index');
-    const withdrawal = withdrawals[index];
-    const userData = loadUserData(withdrawal.username);
-    if (!userData) return alert('User data not found');
-
-    if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
-    if (!userData.transactions) userData.transactions = [];
-
-    // Check if user has enough balance
-    if ((userData.balances[withdrawal.accountType] || 0) < withdrawal.amount) {
-      alert('User does not have enough balance to approve this withdrawal.');
-      return;
+    function rejectDeposit(index) {
+      if (confirm("Reject this deposit?")) {
+        removePending('pendingDeposits', index);
+        loadPendingRequests();
+      }
     }
 
-    // Deduct balance
-    userData.balances[withdrawal.accountType] -= withdrawal.amount;
+    function approveWithdrawal(index) {
+      const list = loadPending('pendingWithdrawals');
+      const withdrawal = list[index];
+      const user = loadUserData(withdrawal.username);
+      if (!user) return alert("User not found");
 
-    // Add transaction record
-    userData.transactions.push({
-      date: new Date().toISOString(),
-      type: 'debit',
-      account: withdrawal.accountType,
-      amount: withdrawal.amount,
-      description: 'Withdrawal Approved by Admin',
-      to: 'Cash/Withdrawal',
-    });
+      if (user.balances[withdrawal.accountType] < withdrawal.amount) {
+        return alert("Insufficient user balance.");
+      }
 
-    saveUserData(withdrawal.username, userData);
+      user.balances[withdrawal.accountType] -= withdrawal.amount;
+      user.transactions.push({
+        date: new Date().toLocaleString(),
+        type: "debit",
+        amount: withdrawal.amount,
+        account: withdrawal.accountType,
+        description: "Admin-approved withdrawal"
+      });
 
-    // Remove from pending
-    removePending('pendingWithdrawals', index);
-
-    alert(`Withdrawal for ${withdrawal.username} approved.`);
-
-    loadPendingRequests();
-  }
-
-  // Reject withdrawal: just remove from pending
-  function rejectWithdrawal(index) {
-    if (confirm('Reject this withdrawal request?')) {
+      saveUserData(withdrawal.username, user);
       removePending('pendingWithdrawals', index);
       loadPendingRequests();
     }
-  }
 
-  // Approve new account opening: update user account status, remove from pending
-  function approveAccountOpening(index) {
-    const accounts = loadPending('pendingAccountOpenings');
-    if (index < 0 || index >= accounts.length) return alert('Invalid account opening index');
-    const accountReq = accounts[index];
-    const userData = loadUserData(accountReq.username);
-    if (!userData) return alert('User data not found');
-
-    // Update user's accountStatus flags for accountType
-    if (!userData.accountStatus) userData.accountStatus = {};
-    userData.accountStatus[accountReq.accountType] = true;
-
-    // Initialize balance 0 if not present
-    if (!userData.balances) userData.balances = { checking: 0, savings: 0 };
-    if (!(accountReq.accountType in userData.balances)) {
-      userData.balances[accountReq.accountType] = 0;
+    function rejectWithdrawal(index) {
+      if (confirm("Reject this withdrawal?")) {
+        removePending('pendingWithdrawals', index);
+        loadPendingRequests();
+      }
     }
 
-    // Initialize accountInfo if needed
-    if (!userData.accountInfo) userData.accountInfo = {};
-    if (!userData.accountInfo[accountReq.accountType]) {
-      // Generate random account and routing numbers
-      userData.accountInfo[accountReq.accountType] = {
-        accountNumber: generateRandomAccountNumber(),
-        routingNumber: generateRandomRoutingNumber(),
-      };
-    }
+    function approveAccountOpening(index) {
+      const list = loadPending('pendingAccountOpenings');
+      const req = list[index];
+      const user = loadUserData(req.username);
+      if (!user) return alert("User not found");
 
-    // Add a transaction to record opening account
-    if (!userData.transactions) userData.transactions = [];
-    userData.transactions.push({
-      date: new Date().toISOString(),
-      type: 'credit',
-      account: accountReq.accountType,
-      amount: 0,
-      description: `Account (${accountReq.accountType}) Opened by Admin`,
-    });
+      if (!user.accountStatus) user.accountStatus = {};
+      user.accountStatus[req.accountType] = true;
 
-    saveUserData(accountReq.username, userData);
+      if (!user.accountInfo) user.accountInfo = {};
+      if (!user.accountInfo[req.accountType]) {
+        user.accountInfo[req.accountType] = {
+          accountNumber: generateRandomAccountNumber(),
+          routingNumber: generateRandomRoutingNumber()
+        };
+      }
 
-    // Remove from pending
-    removePending('pendingAccountOpenings', index);
+      if (!user.balances[req.accountType]) {
+        user.balances[req.accountType] = 0;
+      }
 
-    alert(`New ${accountReq.accountType} account opened for ${accountReq.username}.`);
+      user.transactions.push({
+        date: new Date().toLocaleString(),
+        type: "info",
+        amount: 0,
+        account: req.accountType,
+        description: "New account opened by admin"
+      });
 
-    loadPendingRequests();
-  }
-
-  // Reject new account opening: just remove from pending
-  function rejectAccountOpening(index) {
-    if (confirm('Reject this new account request?')) {
+      saveUserData(req.username, user);
       removePending('pendingAccountOpenings', index);
       loadPendingRequests();
     }
-  }
 
-  // Utility random account & routing number generators
-  function generateRandomAccountNumber() {
-    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  }
+    function rejectAccountOpening(index) {
+      if (confirm("Reject this request?")) {
+        removePending('pendingAccountOpenings', index);
+        loadPendingRequests();
+      }
+    }
 
-  function generateRandomRoutingNumber() {
-    return Math.floor(100000000 + Math.random() * 900000000).toString();
-  }
+    function generateRandomAccountNumber() {
+      return Math.floor(1000000000 + Math.random() * 9000000000);
+    }
 
-  // On page load
-  document.addEventListener('DOMContentLoaded', () => {
-    loadPendingRequests();
-  });
-</script>
+    function generateRandomRoutingNumber() {
+      return Math.floor(100000000 + Math.random() * 900000000);
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    function loadPendingRequests() {
+      const deposits = loadPending('pendingDeposits');
+      const withdrawals = loadPending('pendingWithdrawals');
+      const accounts = loadPending('pendingAccountOpenings');
+
+      document.getElementById('pendingDepositsList').innerHTML = deposits.map(renderDepositItem).join('');
+      document.getElementById('pendingWithdrawalsList').innerHTML = withdrawals.map(renderWithdrawalItem).join('');
+      document.getElementById('pendingAccountOpeningsList').innerHTML = accounts.map(renderAccountOpeningItem).join('');
+
+      document.getElementById('noDeposits').style.display = deposits.length ? 'none' : 'block';
+      document.getElementById('noWithdrawals').style.display = withdrawals.length ? 'none' : 'block';
+      document.getElementById('noAccountOpenings').style.display = accounts.length ? 'none' : 'block';
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPendingRequests);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
