@@ -45,26 +45,33 @@
         return;
       }
 
-      const username = loggedInUser;
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const currentUser = users.find(user => user.username === loggedInUser || user.email === loggedInUser);
+      if (!currentUser) {
+        alert("User not found.");
+        return;
+      }
 
       const withdrawalRequest = {
-        username,
+        username: currentUser.username,
+        fullName: currentUser.fullName || "",
+        email: currentUser.email,
         accountType: account,
         amount,
         description,
         date: new Date().toLocaleString()
       };
 
-      // Save to correct key used by admin-dashboard
-      let withdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
-      withdrawals.push(withdrawalRequest);
-      localStorage.setItem("pendingWithdrawals", JSON.stringify(withdrawals));
+      // Save withdrawal request to pendingWithdrawals
+      const pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
+      pendingWithdrawals.push(withdrawalRequest);
+      localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals));
 
       // Show confirmation message
       document.getElementById("withdrawalMessage").innerText = "Your withdrawal request has been submitted for review.";
       document.getElementById("withdrawalMessage").style.display = "block";
 
-      // Clear form fields
+      // Reset the form
       document.getElementById("withdrawalForm").reset();
     });
   </script>
