@@ -7,48 +7,60 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      background-color: #f3f5f9;
       font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
     }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
+    .form-container {
       background: white;
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 320px;
     }
     h2 {
-      color: #0d6efd;
+      color: #004080;
       margin-bottom: 20px;
       text-align: center;
     }
     .btn-oakline {
-      background-color: #0d6efd;
+      background-color: #004080;
       color: white;
     }
     .btn-oakline:hover {
-      background-color: #0b5ed7;
+      background-color: #002c5c;
+    }
+    #message {
+      margin-top: 15px;
+      color: green;
+      text-align: center;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="form-container">
     <h2>Open New Account</h2>
     <form id="openAccountForm">
       <div class="mb-3">
         <label for="accountType" class="form-label">Account Type</label>
-        <select class="form-select" id="accountType" required>
-          <option value="">Select account type</option>
+        <select id="accountType" class="form-select" required>
+          <option value="">Select Account Type</option>
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
         </select>
       </div>
+
+      <div class="mb-3">
+        <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
+        <input type="number" id="initialDeposit" class="form-control" min="0" step="0.01" required />
+      </div>
+
       <button type="submit" class="btn btn-oakline w-100">Submit for Approval</button>
     </form>
-    <div id="message" class="mt-3 text-center text-success" style="display:none;">
-      Your account request has been submitted and is pending admin approval.
-    </div>
+    <div id="message">Application submitted. Awaiting admin approval.</div>
   </div>
 
   <script>
@@ -68,23 +80,30 @@
         return;
       }
 
-      // Prepare the account opening request object exactly as admin-dashboard expects
+      let initialDeposit = parseFloat(document.getElementById('initialDeposit').value);
+      if (isNaN(initialDeposit) || initialDeposit < 0) {
+        alert('Please enter a valid initial deposit.');
+        return;
+      }
+
+      // Compose the request object exactly as your admin expects
       const openAccountRequest = {
         username: loggedInUser,
         accountType: accountType.toLowerCase(),
+        amount: initialDeposit,
         date: new Date().toLocaleString()
       };
 
       // Get existing pending account openings or empty array
-      const pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
+      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
 
-      // Add new request
+      // Push the new request
       pendingAccountOpenings.push(openAccountRequest);
 
       // Save back to localStorage
       localStorage.setItem('pendingAccountOpenings', JSON.stringify(pendingAccountOpenings));
 
-      // Show success message & reset form
+      // Show success message and reset form
       document.getElementById('openAccountForm').reset();
       document.getElementById('message').style.display = 'block';
     });
