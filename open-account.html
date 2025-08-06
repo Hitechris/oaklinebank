@@ -79,12 +79,16 @@
   }
 
   const userKey = "user_" + username;
-  const userData = JSON.parse(localStorage.getItem(userKey));
+  let userData = JSON.parse(localStorage.getItem(userKey));
 
-  if (userData) {
-    document.getElementById("fullName").value = userData.fullName || username;
-    document.getElementById("email").value = userData.email || "";
+  if (!userData) {
+    alert("User data not found.");
+    location.href = "login.html";
   }
+
+  // Pre-fill name/email if available
+  document.getElementById("fullName").value = userData.fullName || username;
+  document.getElementById("email").value = userData.email || "";
 
   document.getElementById("openAccountForm").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -103,7 +107,7 @@
       return;
     }
 
-    // Ensure required structure
+    // Ensure structure
     if (!userData.accountInfo) userData.accountInfo = {};
     if (!userData.balances) userData.balances = {};
     if (!userData.transactions) userData.transactions = [];
@@ -114,8 +118,9 @@
       return;
     }
 
+    // Generate account number and assign
     const newAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    const routingNumber = "021000021"; // Oakline routing
+    const routingNumber = "021000021";
 
     userData.accountInfo[accountType] = {
       accountNumber: newAccountNumber,
@@ -127,12 +132,13 @@
     userData.transactions.push({
       type: "credit",
       amount: depositAmount,
-      description: "Initial deposit to " + accountType + " account",
+      description: `Initial deposit to ${accountType} account`,
       date: new Date().toLocaleString()
     });
 
     localStorage.setItem(userKey, JSON.stringify(userData));
     alert(accountType.charAt(0).toUpperCase() + accountType.slice(1) + " account created successfully!");
+
     window.location.href = "dashboard.html";
   });
 </script>
