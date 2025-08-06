@@ -38,24 +38,12 @@
     <h2 class="form-title">Open New Account</h2>
     <form id="openAccountForm">
       <div class="mb-3">
-        <label for="fullName" class="form-label">Full Name</label>
-        <input type="text" class="form-control" id="fullName" required />
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" required />
-      </div>
-      <div class="mb-3">
         <label for="accountType" class="form-label">Account Type</label>
         <select class="form-select" id="accountType" required>
           <option value="">Choose...</option>
-          <option value="Checking">Checking</option>
-          <option value="Savings">Savings</option>
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
         </select>
-      </div>
-      <div class="mb-3">
-        <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
-        <input type="number" class="form-control" id="initialDeposit" min="0" required />
       </div>
       <button type="submit" class="btn btn-oakline w-100">Submit for Approval</button>
     </form>
@@ -68,18 +56,28 @@
     document.getElementById("openAccountForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const accountRequest = {
-        fullName: document.getElementById("fullName").value,
-        email: document.getElementById("email").value,
-        accountType: document.getElementById("accountType").value,
-        deposit: document.getElementById("initialDeposit").value,
-        status: "Pending",
-        requestDate: new Date().toLocaleString()
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      if (!loggedInUser) {
+        alert("You must be logged in to open a new account.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const accountType = document.getElementById("accountType").value;
+      if (!accountType) {
+        alert("Please select an account type.");
+        return;
+      }
+
+      const openAccountRequest = {
+        username: loggedInUser,
+        accountType: accountType.toLowerCase(),
+        date: new Date().toLocaleString()
       };
 
-      let requests = JSON.parse(localStorage.getItem("accountRequests")) || [];
-      requests.push(accountRequest);
-      localStorage.setItem("accountRequests", JSON.stringify(requests));
+      let pendingAccountOpenings = JSON.parse(localStorage.getItem("pendingAccountOpenings")) || [];
+      pendingAccountOpenings.push(openAccountRequest);
+      localStorage.setItem("pendingAccountOpenings", JSON.stringify(pendingAccountOpenings));
 
       document.getElementById("openAccountForm").reset();
       document.getElementById("message").style.display = "block";
