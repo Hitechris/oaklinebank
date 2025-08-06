@@ -56,6 +56,7 @@
       font-weight: 600;
       text-align: center;
       cursor: pointer;
+      text-decoration: none;
     }
     .btn-back:hover {
       background-color: #003366;
@@ -119,18 +120,27 @@
     return "$" + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  function formatDate(dateString) {
+    if (!dateString) return "N/A";
+    const d = new Date(dateString);
+    return d.toLocaleString();
+  }
+
   function renderReceipt(tx, index) {
     if (!tx) {
       return `<p class="text-center text-danger">Transaction not found.</p>`;
     }
 
-    // Build details HTML
+    const date = formatDate(tx.date);
+
     return `
       <p><span class="label">Transaction ID:</span> <span class="value">${index}</span></p>
-      <p><span class="label">Date & Time:</span> <span class="value">${tx.date || "N/A"}</span></p>
+      <p><span class="label">Date & Time:</span> <span class="value">${date}</span></p>
       <p><span class="label">Type:</span> <span class="value">${tx.type ? tx.type.charAt(0).toUpperCase() + tx.type.slice(1) : "N/A"}</span></p>
       <p><span class="label">Account:</span> <span class="value">${tx.account ? tx.account.charAt(0).toUpperCase() + tx.account.slice(1) : "N/A"}</span></p>
-      <p><span class="label">Amount:</span> <span class="value" style="color:${tx.type === 'debit' ? '#dc3545' : '#28a745'};">${tx.type === 'debit' ? "-" : "+"}${formatCurrency(tx.amount || 0)}</span></p>
+      <p><span class="label">Amount:</span> <span class="value" style="color:${tx.type === 'debit' ? '#dc3545' : '#28a745'};">
+        ${tx.type === 'debit' ? "-" : "+"}${formatCurrency(tx.amount || 0)}</span>
+      </p>
       <p><span class="label">Description:</span> <span class="value">${tx.description || "N/A"}</span></p>
       <p><span class="label">Destination:</span> <span class="value">${tx.to ? tx.to : (tx.type === 'debit' ? "Cash/Withdrawal" : "N/A")}</span></p>
     `;
