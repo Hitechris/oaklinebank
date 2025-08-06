@@ -103,17 +103,19 @@
       return;
     }
 
-    // Check if account already exists
-    if (userData.accountInfo && userData.accountInfo[accountType]) {
+    // Ensure required structure
+    if (!userData.accountInfo) userData.accountInfo = {};
+    if (!userData.balances) userData.balances = {};
+    if (!userData.transactions) userData.transactions = [];
+
+    // Prevent duplicate account types
+    if (userData.accountInfo[accountType]) {
       alert("You already have a " + accountType + " account.");
       return;
     }
 
     const newAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    const routingNumber = "021000021"; // Oakline Bank routing number
-
-    if (!userData.accountInfo) userData.accountInfo = {};
-    if (!userData.balances) userData.balances = {};
+    const routingNumber = "021000021"; // Oakline routing
 
     userData.accountInfo[accountType] = {
       accountNumber: newAccountNumber,
@@ -122,8 +124,6 @@
 
     userData.balances[accountType] = depositAmount;
 
-    // Optional: add a transaction record
-    if (!userData.transactions) userData.transactions = [];
     userData.transactions.push({
       type: "credit",
       amount: depositAmount,
