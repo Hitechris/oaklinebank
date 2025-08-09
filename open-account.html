@@ -201,6 +201,14 @@
       window.location.href = 'login.html';
     });
 
+    // Helper functions for account & routing numbers
+    function generateRandomAccountNumber() {
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    }
+    function generateRandomRoutingNumber() {
+      return Math.floor(100000000 + Math.random() * 900000000).toString();
+    }
+
     // Form submission with validation and confirmation
     const form = document.getElementById('openAccountForm');
     form.addEventListener('submit', function(e) {
@@ -246,8 +254,32 @@ Press OK to submit or Cancel to revise.
       if (!confirm(confirmationMsg)) {
         return; // Cancel submission
       }
+         // Update logged-in user data with new account and deposit
+      const userKey = 'user_' + loggedInUser;
+      let userData = JSON.parse(localStorage.getItem(userKey)) || {
+        balances: { checking: 0, savings: 0 },
+        transactions: [],
+        accountInfo: {
+          checking: { accountNumber: '', routingNumber: '' },
+          savings: { accountNumber: '', routingNumber: '' }
+        }
+      };
 
-      // Build request object
+      if (accountType === 'checking') {
+        userData.balances.checking += initialDeposit;
+        userData.accountInfo.checking.accountNumber = generateRandomAccountNumber();
+        userData.accountInfo.checking.routingNumber = generateRandomRoutingNumber();
+      } else if (accountType === 'savings') {
+        userData.balances.savings += initialDeposit;
+        userData.accountInfo.savings.accountNumber = generateRandomAccountNumber();
+        userData.accountInfo.savings.routingNumber = generateRandomRoutingNumber();
+      }
+
+      // Save updated user data back to localStorage
+      localStorage.setItem(userKey, JSON.stringify(userData));
+
+      // Also save to pendingAccountOpenings for admin approval records
+      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
       const openAccountRequest = {
         username: loggedInUser,
         fullName,
@@ -257,9 +289,6 @@ Press OK to submit or Cancel to revise.
         status: "Pending",
         date: new Date().toLocaleString()
       };
-
-      // Save to localStorage pendingAccountOpenings array
-      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
       pendingAccountOpenings.push(openAccountRequest);
       localStorage.setItem('pendingAccountOpenings', JSON.stringify(pendingAccountOpenings));
 
@@ -272,4 +301,4 @@ Press OK to submit or Cancel to revise.
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>   
