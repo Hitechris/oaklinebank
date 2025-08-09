@@ -811,7 +811,16 @@ input:focus {
 }
    
  </style>
-  
+
+  <script>
+  // Force HTTPS and www
+  (function() {
+    var host = "www.theoaklinebank.com";
+    if (window.location.host !== host || window.location.protocol !== "https:") {
+      window.location.href = "https://" + host + window.location.pathname + window.location.search;
+    }
+  })();
+</script>
 </head>
 <body>
 
