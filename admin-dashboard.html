@@ -60,7 +60,10 @@
 
   <div class="top-bar">
     <div class="logo">Oakline Admin Panel</div>
-    <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+    <div>
+      <a href="dashboard.html" class="btn btn-primary me-2">Go to Dashboard</a>
+      <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+    </div>
   </div>
 
   <div class="section" id="depositsSection">
@@ -247,16 +250,29 @@
       }
 
       if (!user.balances) user.balances = {};
-      if (!user.balances[request.accountType]) user.balances[request.accountType] = 0;
+      
+      const depositAmount = request.initialDeposit || 0;
+      user.balances[request.accountType] = (user.balances[request.accountType] || 0) + depositAmount;
 
       if (!user.transactions) user.transactions = [];
-      user.transactions.push({
-        date: new Date().toLocaleString(),
-        type: 'info',
-        amount: 0,
-        account: request.accountType,
-        description: 'New account opened by admin',
-      });
+      
+      if (depositAmount > 0) {
+        user.transactions.push({
+          date: new Date().toLocaleString(),
+          type: 'credit',
+          amount: depositAmount,
+          account: request.accountType,
+          description: 'Initial deposit on new account opened by admin',
+        });
+      } else {
+        user.transactions.push({
+          date: new Date().toLocaleString(),
+          type: 'info',
+          amount: 0,
+          account: request.accountType,
+          description: 'New account opened by admin',
+        });
+      }
 
       saveUserData(request.username, user);
       removePending('pendingAccountOpenings', index);
