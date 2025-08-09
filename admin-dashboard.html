@@ -251,7 +251,8 @@
 
       if (!user.balances) user.balances = {};
       
-      const depositAmount = request.initialDeposit || 0;
+      // FIXED: use request.amount here (was request.initialDeposit before)
+      const depositAmount = request.amount || 0;
       user.balances[request.accountType] = (user.balances[request.accountType] || 0) + depositAmount;
 
       if (!user.transactions) user.transactions = [];
