@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign Up | Oakline Bank</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
@@ -26,11 +26,11 @@
     }
   </style>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
-  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
       authDomain: "oakline-bank.firebaseapp.com",
@@ -40,88 +40,14 @@
       appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
       measurementId: "G-XXRQF2N3XB"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
-</head>
-<body>
-  <div class="container">
-    <div class="card">
-      <h3 class="text-center text-primary mb-4">Open an Oakline Bank Account</h3>
-      <form id="signupForm">
-        <div class="row">
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Full Name</label>
-            <input type="text" id="fullName" class="form-control" required>
-          </div>
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Username</label>
-            <input type="text" id="username" class="form-control" required>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Email Address</label>
-            <input type="email" id="email" class="form-control" required>
-          </div>
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Phone Number</label>
-            <input type="tel" id="phone" class="form-control" required pattern="[0-9+()\- ]{7,}">
-          </div>
-        </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        <div class="row">
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Date of Birth</label>
-            <input type="date" id="dob" class="form-control" required>
-          </div>
-          <div class="mb-3 col-md-6">
-            <label class="form-label">SSN</label>
-            <input type="text" id="ssn" class="form-control" required pattern="\d{3}-\d{2}-\d{4}" placeholder="123-45-6789">
-          </div>
-        </div>
+    window.db = db;
 
-        <div class="row">
-          <div class="mb-3 col-md-4">
-            <label class="form-label">State</label>
-            <input type="text" id="state" class="form-control" required>
-          </div>
-          <div class="mb-3 col-md-4">
-            <label class="form-label">City</label>
-            <input type="text" id="city" class="form-control" required>
-          </div>
-          <div class="mb-3 col-md-4">
-            <label class="form-label">Country</label>
-            <input type="text" id="country" class="form-control" required>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Home Address</label>
-          <input type="text" id="address" class="form-control" required>
-        </div>
-
-        <div class="row">
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Password</label>
-            <input type="password" id="password" class="form-control" required minlength="6">
-          </div>
-          <div class="mb-3 col-md-6">
-            <label class="form-label">Confirm Password</label>
-            <input type="password" id="confirmPassword" class="form-control" required>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-        <p class="text-center mt-3">Already have an account? <a href="login.html">Login</a></p>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    document.getElementById("signupForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    window.signupHandler = async function(event) {
+      event.preventDefault();
 
       const fullName = document.getElementById("fullName").value.trim();
       const username = document.getElementById("username").value.trim();
@@ -141,43 +67,125 @@
         return;
       }
 
-      db.collection('users').doc(username).get()
-        .then(docSnapshot => {
-          if (docSnapshot.exists) {
-            alert("Username already exists. Please choose another.");
-          } else {
-            const user = {
-              fullName,
-              username,
-              email,
-              phone,
-              dob,
-              ssn,
-              state,
-              city,
-              country,
-              address,
-              password,
-              accountInfo: {},
-              balances: {},
-              transactions: []
-            };
-            db.collection('users').doc(username).set(user)
-              .then(() => {
-                alert("Signup successful! Please log in.");
-                location.href = "login.html";
-              })
-              .catch(error => {
-                console.error("Error saving user:", error);
-                alert("Failed to register user. Try again later.");
-              });
-          }
-        })
-        .catch(error => {
-          console.error("Error checking username:", error);
-          alert("Failed to register user. Try again later.");
+      // Check duplicate username
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        alert("Username already exists. Please choose another.");
+        return;
+      }
+
+      // Add new user doc
+      try {
+        await addDoc(usersRef, {
+          fullName,
+          username,
+          email,
+          phone,
+          dob,
+          ssn,
+          state,
+          city,
+          country,
+          address,
+          password, // In production, use Firebase Authentication or hash passwords!
+          accountInfo: {},
+          balances: {},
+          transactions: []
         });
-    });
+        alert("Signup successful! Please log in.");
+        window.location.href = "login.html";
+      } catch (error) {
+        console.error("Error saving user: ", error);
+        alert("Failed to sign up. Please try again later.");
+      }
+    }
   </script>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h3 class="text-center text-primary mb-4">Open an Oakline Bank Account</h3>
+      <form id="signupForm" onsubmit="signupHandler(event)">
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="fullName" class="form-control" required />
+          </div>
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" required />
+          </div>
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" required pattern="[0-9+()\- ]{7,}" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" id="dob" class="form-control" required />
+          </div>
+          <div class="mb-3 col-md-6">
+            <label class="form-label">SSN</label>
+            <input
+              type="text"
+              id="ssn"
+              class="form-control"
+              required
+              pattern="\d{3}-\d{2}-\d{4}"
+              placeholder="123-45-6789"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label class="form-label">State</label>
+            <input type="text" id="state" class="form-control" required />
+          </div>
+          <div class="mb-3 col-md-4">
+            <label class="form-label">City</label>
+            <input type="text" id="city" class="form-control" required />
+          </div>
+          <div class="mb-3 col-md-4">
+            <label class="form-label">Country</label>
+            <input type="text" id="country" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Home Address</label>
+          <input type="text" id="address" class="form-control" required />
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" required minlength="6" />
+          </div>
+          <div class="mb-3 col-md-6">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+        <p class="text-center mt-3">
+          Already have an account? <a href="login.html">Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
