@@ -18,8 +18,6 @@
       display: flex;
       flex-direction: column;
     }
-
-    /* Top Controls */
     .top-controls-left, .top-controls-right {
       position: fixed;
       top: 10px;
@@ -30,7 +28,6 @@
     }
     .top-controls-left { left: 10px; }
     .top-controls-right { right: 10px; }
-
     .btn-logout {
       background-color: #004080;
       border: none;
@@ -39,7 +36,6 @@
     .btn-logout:hover {
       background-color: #002f66;
     }
-
     .btn-darkmode {
       background-color: transparent;
       border: none;
@@ -50,11 +46,9 @@
     .btn-darkmode:hover {
       color: #002f66;
     }
-
-    /* Header */
     .header-container {
       max-width: 960px;
-      margin: 70px auto 20px auto; /* below fixed top controls */
+      margin: 70px auto 20px auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -72,8 +66,6 @@
       color: #004080;
       text-decoration: none;
     }
-
-    /* Container for form */
     .container {
       max-width: 600px;
       margin: 0 auto 40px auto;
@@ -83,15 +75,12 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
       flex-grow: 1;
     }
-
     .form-title {
       color: #0d6efd;
       font-weight: 600;
       margin-bottom: 25px;
       text-align: center;
     }
-
-    /* Oakline styled button */
     .btn-oakline {
       background-color: #0d6efd;
       color: white;
@@ -100,7 +89,6 @@
     .btn-oakline:hover {
       background-color: #0b5ed7;
     }
-
     #message {
       display: none;
       margin-top: 1.5rem;
@@ -108,8 +96,6 @@
       font-weight: 700;
       color: #198754; /* Bootstrap success green */
     }
-
-    /* Dark mode */
     .dark-mode {
       background-color: #121212;
       color: #eee;
@@ -201,15 +187,6 @@
       window.location.href = 'login.html';
     });
 
-    // Helper functions for account & routing numbers
-    function generateRandomAccountNumber() {
-      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    }
-    function generateRandomRoutingNumber() {
-      return Math.floor(100000000 + Math.random() * 900000000).toString();
-    }
-
-    // Form submission with validation and confirmation
     const form = document.getElementById('openAccountForm');
     form.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -239,8 +216,8 @@
         return;
       }
 
-      // Check if user already has the account type
-      let userKey = 'user_' + loggedInUser;
+      // Load user data
+      const userKey = 'user_' + loggedInUser;
       let userData = JSON.parse(localStorage.getItem(userKey)) || {
         balances: { checking: 0, savings: 0 },
         transactions: [],
@@ -250,29 +227,28 @@
         }
       };
 
-      console.log('Checking account number:', userData.accountInfo.checking.accountNumber);
-      console.log('Savings account number:', userData.accountInfo.savings.accountNumber);
+      // Check if user already has this account type
+      if (
+        userData.accountInfo &&
+        userData.accountInfo[accountType] &&
+        userData.accountInfo[accountType].accountNumber &&
+        userData.accountInfo[accountType].accountNumber.trim() !== ''
+      ) {
+        alert(`You already have a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
+        return;
+      }
 
-      if (accountType === 'checking') {
-        if (
-          userData.accountInfo &&
-          userData.accountInfo.checking &&
-          userData.accountInfo.checking.accountNumber &&
-          userData.accountInfo.checking.accountNumber.trim() !== ''
-        ) {
-          alert('You already have a Checking account.');
-          return;
-        }
-      } else if (accountType === 'savings') {
-        if (
-          userData.accountInfo &&
-          userData.accountInfo.savings &&
-          userData.accountInfo.savings.accountNumber &&
-          userData.accountInfo.savings.accountNumber.trim() !== ''
-        ) {
-          alert('You already have a Savings account.');
-          return;
-        }
+      // Check if there is already a pending request for this account type
+      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
+      const existingPending = pendingAccountOpenings.find(r =>
+        r.username === loggedInUser &&
+        r.accountType === accountType &&
+        r.status === 'Pending'
+      );
+
+      if (existingPending) {
+        alert(`You already have a pending request for a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
+        return;
       }
 
       // Confirmation dialog
@@ -291,27 +267,12 @@ Press OK to submit or Cancel to revise.
         return; // Cancel submission
       }
 
-      // Update logged-in user data with new account and deposit
-      if (accountType === 'checking') {
-        userData.balances.checking += initialDeposit;
-        userData.accountInfo.checking.accountNumber = generateRandomAccountNumber();
-        userData.accountInfo.checking.routingNumber = generateRandomRoutingNumber();
-      } else if (accountType === 'savings') {
-        userData.balances.savings += initialDeposit;
-        userData.accountInfo.savings.accountNumber = generateRandomAccountNumber();
-        userData.accountInfo.savings.routingNumber = generateRandomRoutingNumber();
-      }
-
-      // Save updated user data back to localStorage
-      localStorage.setItem(userKey, JSON.stringify(userData));
-
-      // Also save to pendingAccountOpenings for admin approval records
-      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
+      // Add new pending request for admin approval
       const openAccountRequest = {
         username: loggedInUser,
         fullName,
         email,
-        accountType: accountType.toLowerCase(),
+        accountType,
         amount: initialDeposit,
         status: "Pending",
         date: new Date().toLocaleString()
