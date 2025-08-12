@@ -27,6 +27,14 @@
       font-weight: 400;
       color: #333;
     }
+    .section-title {
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+      color: #004080;
+    }
   </style>
 </head>
 <body>
@@ -44,67 +52,108 @@
     </div>
   </nav>
 
-  <div class="confirmation-container text-center">
-    <div class="mb-4">
+  <div class="confirmation-container">
+    <div class="text-center mb-4">
       <i class="fas fa-check-circle confirmation-icon"></i>
-      <h4 class="mt-3">Transaction Successful</h4>
+      <h3 class="mt-3">Transaction Successful</h3>
       <p class="text-muted">Your transaction has been completed.</p>
     </div>
 
-    <div class="text-start">
-      <p><span class="label">Transaction Type:</span> <span class="value" id="txType"></span></p>
-      <p><span class="label">From Account:</span> <span class="value" id="fromAccount"></span></p>
-      <p id="recipientNameRow"><span class="label">Recipient Name:</span> <span class="value" id="recipientName"></span></p>
-      <p id="accountNumberRow"><span class="label">Account Number:</span> <span class="value" id="accountNumber"></span></p>
-      <p id="routingNumberRow"><span class="label">Routing Number:</span> <span class="value" id="routingNumber"></span></p>
-      <p><span class="label">Amount:</span> <span class="value">$<span id="amount"></span></span></p>
-      <p id="noteRow"><span class="label">Note:</span> <span class="value" id="note"></span></p>
-      <p><span class="label">Transaction ID:</span> <span class="value" id="transactionId"></span></p>
-      <p><span class="label">Date:</span> <span class="value" id="date"></span></p>
+    <div>
+      <h5 class="section-title">Transaction Details</h5>
+      <p><span class="label">Transaction Type:</span> <span class="value" id="txType">-</span></p>
+      <p><span class="label">Transaction ID:</span> <span class="value" id="transactionId">-</span></p>
+      <p><span class="label">Date & Time:</span> <span class="value" id="date">-</span></p>
+      <p><span class="label">Amount:</span> <span class="value">$<span id="amount">0.00</span></span></p>
     </div>
 
-    <div class="mt-4">
-      <a href="receipt.html" class="btn btn-outline-primary btn-sm">
-        View Full Receipt <i class="fas fa-file-invoice ms-1"></i>
-      </a>
+    <div>
+      <h5 class="section-title">Sender Details</h5>
+      <p><span class="label">Account Type:</span> <span class="value" id="senderAccountType">-</span></p>
+      <p><span class="label">Account Number:</span> <span class="value" id="senderAccountNumber">-</span></p>
+      <p><span class="label">Routing Number:</span> <span class="value" id="senderRoutingNumber">-</span></p>
+    </div>
+
+    <div id="recipientSection">
+      <h5 class="section-title">Recipient Details</h5>
+      <p><span class="label">Name:</span> <span class="value" id="recipientName">-</span></p>
+      <p><span class="label">Account Type:</span> <span class="value" id="recipientAccountType">-</span></p>
+      <p><span class="label">Account Number:</span> <span class="value" id="recipientAccountNumber">-</span></p>
+      <p><span class="label">Routing Number:</span> <span class="value" id="recipientRoutingNumber">-</span></p>
+    </div>
+
+    <div id="noteSection" style="display:none;">
+      <h5 class="section-title">Note</h5>
+      <p class="value" id="noteText"></p>
+    </div>
+
+    <div class="mt-4 text-center">
+      <a href="dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+      <a href="receipt.html" class="btn btn-outline-primary ms-2">View Full Receipt</a>
     </div>
   </div>
 
 <script>
+  // Get logged in user
   const currentUser = localStorage.getItem('loggedInUser');
-  const tx = JSON.parse(localStorage.getItem(`${currentUser}_latestTransaction`));
-
-  if (!tx) {
-    window.location.href = "dashboard.html";
-  } else {
-    document.getElementById("txType").textContent = tx.type || "-";
-    document.getElementById("fromAccount").textContent = tx.account || tx.from || "-";
-    document.getElementById("amount").textContent = parseFloat(tx.amount).toFixed(2);
-    document.getElementById("transactionId").textContent = tx.transactionId || tx.reference || generateID();
-    document.getElementById("date").textContent = tx.date || new Date().toLocaleString();
-
-    if (tx.type === "Transfer") {
-      document.getElementById("recipientName").textContent = tx.recipientName || tx.to || "-";
-      document.getElementById("accountNumber").textContent = tx.recipientAccount || tx.accountNumber || "-";
-      document.getElementById("routingNumber").textContent = tx.routingNumber || "021000021"; // fallback
-      document.getElementById("note").textContent = tx.note || "—";
-    } else {
-      // Hide irrelevant fields for Deposit or Withdrawal
-      document.getElementById("recipientNameRow").style.display = "none";
-      document.getElementById("accountNumberRow").style.display = "none";
-      document.getElementById("routingNumberRow").style.display = "none";
-      document.getElementById("noteRow").style.display = tx.note ? "block" : "none";
-      if (tx.note) {
-        document.getElementById("note").textContent = tx.note;
-      }
-    }
+  if (!currentUser) {
+    alert("Not logged in");
+    window.location.href = "index.html";
   }
 
-  function generateID() {
-    return "TX" + Math.floor(Math.random() * 1000000000);
+  // Load user data to get sender account info
+  const userDataRaw = localStorage.getItem("user_" + currentUser);
+  const userData = userDataRaw ? JSON.parse(userDataRaw) : null;
+
+  // Load latest transaction from localStorage
+  const txRaw = localStorage.getItem(currentUser + "_latestTransaction");
+  if (!txRaw) {
+    alert("No recent transaction found.");
+    window.location.href = "dashboard.html";
+  }
+  const tx = JSON.parse(txRaw);
+
+  // Fill transaction details
+  document.getElementById('txType').textContent = tx.type || "-";
+  document.getElementById('transactionId').textContent = tx.transactionId || "-";
+  document.getElementById('date').textContent = tx.date || new Date().toLocaleString();
+  document.getElementById('amount').textContent = (parseFloat(tx.amount) || 0).toFixed(2);
+
+  // Fill sender details (account type, number, routing)
+  let senderAccountType = tx.fromAccountType || tx.fromAccount || "-";
+  document.getElementById('senderAccountType').textContent = senderAccountType.charAt(0).toUpperCase() + senderAccountType.slice(1);
+
+  let senderAccountNumber = "-";
+  let senderRoutingNumber = "-";
+  if (userData && userData.accountInfo && userData.accountInfo[senderAccountType]) {
+    senderAccountNumber = userData.accountInfo[senderAccountType].accountNumber || "-";
+    senderRoutingNumber = userData.accountInfo[senderAccountType].routingNumber || "-";
+  }
+  document.getElementById('senderAccountNumber').textContent = senderAccountNumber;
+  document.getElementById('senderRoutingNumber').textContent = senderRoutingNumber;
+
+  // Recipient details - hide section if missing (like Between Accounts transfer might not have recipient)
+  if (tx.type === "Transfer Between Accounts") {
+    // Hide recipient section for between accounts transfers
+    document.getElementById('recipientSection').style.display = "none";
+  } else {
+    document.getElementById('recipientSection').style.display = "block";
+    document.getElementById('recipientName').textContent = tx.recipientName || tx.to || "-";
+    let recipientAccountType = tx.recipientAccountType || "-";
+    document.getElementById('recipientAccountType').textContent = recipientAccountType.charAt(0).toUpperCase() + recipientAccountType.slice(1);
+    document.getElementById('recipientAccountNumber').textContent = tx.recipientAccount || tx.accountNumber || "-";
+    document.getElementById('recipientRoutingNumber').textContent = tx.routingNumber || "-";
+  }
+
+  // Show note if exists
+  if (tx.note) {
+    document.getElementById('noteSection').style.display = "block";
+    document.getElementById('noteText').textContent = tx.note;
+  } else {
+    document.getElementById('noteSection').style.display = "none";
   }
 </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
