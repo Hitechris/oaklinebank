@@ -35,9 +35,8 @@
   <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    // Your Firebase config - replace with your config
     const firebaseConfig = {
       apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
       authDomain: "oakline-bank.firebaseapp.com",
@@ -53,32 +52,31 @@
 
     window.loginWithFirestore = async function(loginUser, loginPassword) {
       try {
-        const usersCol = collection(db, "users");
+        // Try get user doc by username
+        const userDocRef = doc(db, "users", loginUser);
+        let userSnap = await getDoc(userDocRef);
 
-        // Query users by username or email
-        const qUsername = query(usersCol, where("username", "==", loginUser));
-        const qEmail = query(usersCol, where("email", "==", loginUser));
+        if (!userSnap.exists()) {
+          // fallback: query by email
+          const usersCol = collection(db, "users");
+          const qEmail = query(usersCol, where("email", "==", loginUser));
+          const emailSnapshot = await getDocs(qEmail);
 
-        let userSnapshot = await getDocs(qUsername);
-        if (userSnapshot.empty) {
-          userSnapshot = await getDocs(qEmail);
-          if (userSnapshot.empty) {
+          if (emailSnapshot.empty) {
             alert("User not found. Please check your username or email.");
             return null;
           }
+          userSnap = emailSnapshot.docs[0];
         }
 
-        // Get user data from first matched doc
-        const userDoc = userSnapshot.docs[0];
-        const userData = userDoc.data();
+        const userData = userSnap.data();
 
-        // For demo: plain text password check (NEVER do this in production)
         if (userData.password !== loginPassword) {
           alert("Incorrect password. Please try again.");
           return null;
         }
 
-        // Login success
+        // Save logged in username to localStorage
         localStorage.setItem("loggedInUser", userData.username);
         alert("Login successful! Redirecting to dashboard...");
         window.location.href = "dashboard.html";
