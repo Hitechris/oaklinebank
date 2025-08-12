@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oakline Bank - Transfer Funds</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .bank-name {
+      font-weight: 800;
+      font-size: 2rem;
+      color: #004080;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .form-section {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    .result-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .result-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .result-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <a href="dashboard.html" class="bank-name"><i class="fas fa-arrow-left"></i> Oakline Bank</a>
+  <h2 class="text-center mb-4">Transfer Funds</h2>
+
+  <div class="form-section">
+    <ul class="nav nav-tabs mb-3" id="transferTypeTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button" role="tab" aria-controls="local" aria-selected="true">Local Transfer</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="between-tab" data-bs-toggle="tab" data-bs-target="#between" type="button" role="tab" aria-controls="between" aria-selected="false">Between Accounts</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="international-tab" data-bs-toggle="tab" data-bs-target="#international" type="button" role="tab" aria-controls="international" aria-selected="false">International Transfer</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="transferTypeTabsContent">
+      <!-- Local Transfer -->
+      <div class="tab-pane fade show active" id="local" role="tabpanel" aria-labelledby="local-tab">
+        <form id="localTransferForm">
+          <div class="mb-3">
+            <label for="localRecipientName" class="form-label">Recipient Full Name</label>
+            <input type="text" class="form-control" id="localRecipientName" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientAccountNumber" class="form-label">Recipient Account Number</label>
+            <input type="text" class="form-control" id="localRecipientAccountNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientRoutingNumber" class="form-label">Recipient Routing Number</label>
+            <input type="text" class="form-control" id="localRecipientRoutingNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="localRecipientAccountType" class="form-label">Recipient Account Type</label>
+            <select class="form-select" id="localRecipientAccountType" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="localAmount" class="form-label">Amount ($)</label>
+            <input type="number" class="form-control" id="localAmount" min="0.01" step="0.01" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Send Local Transfer</button>
+        </form>
+      </div>
+
+      <!-- Between Accounts -->
+      <div class="tab-pane fade" id="between" role="tabpanel" aria-labelledby="between-tab">
+        <form id="betweenAccountsForm">
+          <div class="mb-3">
+            <label for="betweenFromAccount" class="form-label">From Account</label>
+            <select class="form-select" id="betweenFromAccount" required>
+              <option value="">Select account</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="betweenToAccount" class="form-label">To Account</label>
+            <select class="form-select" id="betweenToAccount" required>
+              <option value="">Select account</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="betweenAmount" class="form-label">Amount ($)</label>
+            <input type="number" class="form-control" id="betweenAmount" min="0.01" step="0.01" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Transfer Between Accounts</button>
+        </form>
+      </div>
+
+      <!-- International Transfer -->
+      <div class="tab-pane fade" id="international" role="tabpanel" aria-labelledby="international-tab">
+        <form id="internationalTransferForm">
+          <div class="mb-3">
+            <label for="intRecipientName" class="form-label">Recipient Full Name</label>
+            <input type="text" class="form-control" id="intRecipientName" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientAccountNumber" class="form-label">Recipient Account Number</label>
+            <input type="text" class="form-control" id="intRecipientAccountNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientRoutingNumber" class="form-label">Recipient Routing Number (or SWIFT/BIC)</label>
+            <input type="text" class="form-control" id="intRecipientRoutingNumber" required />
+          </div>
+          <div class="mb-3">
+            <label for="intRecipientAccountType" class="form-label">Recipient Account Type</label>
+            <select class="form-select" id="intRecipientAccountType" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="intAmount" class="form-label">Amount ($ USD)</label>
+            <input type="number" class="form-control" id="intAmount" min="0.01" step="0.01" required />
+          </div>
+          <div class="mb-3">
+            <label for="intCurrency" class="form-label">Currency</label>
+            <input type="text" class="form-control" id="intCurrency" placeholder="e.g. EUR, GBP" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Send International Transfer</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="resultMessage" class="result-message"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+    authDomain: "oakline-bank.firebaseapp.com",
+    projectId: "oakline-bank",
+    storageBucket: "oakline-bank.firebasestorage.app",
+    messagingSenderId: "199506974383",
+    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+    measurementId: "G-XXRQF2N3XB"
+  };
+
+  // Initialize Firebase and Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Get logged in user from localStorage
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) {
+    alert("You are not logged in. Redirecting to login.");
+    window.location.href = "index.html";
+  }
+
+  // Helper: show message
+  function showResultMessage(msg, isSuccess = true) {
+    const el = document.getElementById("resultMessage");
+    el.textContent = msg;
+    el.className = "result-message " + (isSuccess ? "result-success" : "result-error");
+    el.style.display = "block";
+  }
+
+  // Load user data from Firestore
+  async function loadUserData(username) {
+    const userDocRef = doc(db, "users", username);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      return userDocSnap.data();
+    } else {
+      // Default user data
+      const defaultData = {
+        balances: { checking: 1000, savings: 5000 },
+        transactions: [],
+        accountInfo: {
+          checking: { accountNumber: generateRandomAccountNumber(), routingNumber: generateRandomRoutingNumber() },
+          savings: { accountNumber: generateRandomAccountNumber(), routingNumber: generateRandomRoutingNumber() }
+        }
+      };
+      await setDoc(userDocRef, defaultData);
+      return defaultData;
+    }
+  }
+
+  // Save user data (overwrite)
+  async function saveUserData(username, data) {
+    const userDocRef = doc(db, "users", username);
+    await setDoc(userDocRef, data);
+  }
+
+  // Add a transaction without overwriting existing transactions
+  async function addTransaction(username, transaction) {
+    const userDocRef = doc(db, "users", username);
+    await updateDoc(userDocRef, {
+      transactions: arrayUnion(transaction)
+    });
+  }
+
+  // Generate random account number (10 digits)
+  function generateRandomAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  }
+
+  // Generate random routing number (9 digits)
+  function generateRandomRoutingNumber() {
+    return Math.floor(100000000 + Math.random() * 900000000).toString();
+  }
+
+  // Generate transaction ID
+  function generateTransactionId() {
+    return "TX" + Math.floor(Math.random() * 1000000000);
+  }
+
+  // Format date/time
+  function formatDateTime() {
+    return new Date().toLocaleString();
+  }
+
+  // Update balance with amount change (positive or negative), returns true if successful (no overdraft)
+  async function updateBalance(username, accountType, amountChange) {
+    const data = await loadUserData(username);
+    if (!data || !data.balances.hasOwnProperty(accountType)) return false;
+
+    const newBalance = (data.balances[accountType] || 0) + amountChange;
+    if (newBalance < 0) return false; // no overdraft allowed
+
+    data.balances[accountType] = newBalance;
+    await saveUserData(username, data);
+    return true;
+  }
+
+  // --- Local Transfer ---
+  document.getElementById("localTransferForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const recipientName = document.getElementById("localRecipientName").value.trim();
+    const recipientAccountNumber = document.getElementById("localRecipientAccountNumber").value.trim();
+    const recipientRoutingNumber = document.getElementById("localRecipientRoutingNumber").value.trim();
+    const recipientAccountType = document.getElementById("localRecipientAccountType").value;
+    const amount = parseFloat(document.getElementById("localAmount").value);
+
+    if (!recipientName || !recipientAccountNumber || !recipientRoutingNumber || !recipientAccountType || isNaN(amount) || amount <= 0) {
+      showResultMessage("Please fill all fields correctly.", false);
+      return;
+    }
+
+    const success = await updateBalance(loggedInUser, "checking", -amount);
+    if (!success) {
+      showResultMessage("Insufficient funds in your checking account.", false);
+      return;
+    }
+
+    const txDate = formatDateTime();
+    const transactionId = generateTransactionId();
+
+    const transaction = {
+      type: "Local Transfer",
+      amount: amount,
+      description: `Local transfer to ${recipientName} (${recipientAccountType} acct)`,
+      date: txDate,
+      recipientName,
+      recipientAccount: recipientAccountNumber,
+      routingNumber: recipientRoutingNumber,
+      recipientAccountType,
+      fromAccount: "checking",
+      transactionId
+    };
+
+    await addTransaction(loggedInUser, transaction);
+
+    localStorage.setItem(loggedInUser + "_latestTransaction", JSON.stringify(transaction));
+
+    showResultMessage(`Successfully sent $${amount.toFixed(2)} to ${recipientName} (${recipientAccountType}).`);
+
+    setTimeout(() => {
+      location.href = "confirmation.html";
+    }, 1500);
+
+    e.target.reset();
+  });
+
+  // --- Between Accounts Transfer ---
+  document.getElementById("betweenAccountsForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fromAcct = document.getElementById("betweenFromAccount").value;
+    const toAcct = document.getElementById("betweenToAccount").value;
+    const amount = parseFloat(document.getElementById("betweenAmount").value);
+
+    if (!fromAcct || !toAcct || fromAcct === toAcct || isNaN(amount) || amount <= 0) {
+      showResultMessage("Please fill all fields correctly and select different accounts.", false);
+      return;
+    }
+
+    const success = await updateBalance(loggedInUser, fromAcct, -amount);
+    if (!success) {
+      showResultMessage(`Insufficient funds in your ${fromAcct} account.`, false);
+      return;
+    }
+
+    await updateBalance(loggedInUser, toAcct, amount);
+
+    const txDate = formatDateTime();
+    const transactionId = generateTransactionId();
+
+    const transaction = {
+      type: "Transfer Between Accounts",
+      amount: amount,
+      description: `Transfer between accounts: ${fromAcct} -> ${toAcct}`,
+      date: txDate,
+      fromAccount: fromAcct,
+      toAccount: toAcct,
+      transactionId
+    };
+
+    await addTransaction(loggedInUser, transaction);
+
+    localStorage.setItem(loggedInUser + "_latestTransaction", JSON.stringify(transaction));
+
+    showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${fromAcct} to ${toAcct}.`);
+
+    setTimeout(() => {
+      location.href = "confirmation.html";
+    }, 1500);
+
+    e.target.reset();
+  });
+
+  // --- International Transfer ---
+  document.getElementById("internationalTransferForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const recipientName = document.getElementById("intRecipientName").value.trim();
+    const recipientAccountNumber = document.getElementById("intRecipientAccountNumber").value.trim();
+    const recipientRoutingNumber = document.getElementById("intRecipientRoutingNumber").value.trim();
+    const recipientAccountType = document.getElementById("intRecipientAccountType").value;
+    const amount = parseFloat(document.getElementById("intAmount").value);
+    const currency = document.getElementById("intCurrency").value.trim().toUpperCase();
+
+    if (!recipientName || !recipientAccountNumber || !recipientRoutingNumber || !recipientAccountType || isNaN(amount) || amount <= 0 || !currency) {
+      showResultMessage("Please fill all fields correctly.", false);
+      return;
+    }
+
+    const success = await updateBalance(loggedInUser, "checking", -amount);
+    if (!success) {
+      showResultMessage("Insufficient funds in your checking account.", false);
+      return;
+    }
+
+    const txDate = formatDateTime();
+    const transactionId = generateTransactionId();
+
+    const transaction = {
+      type: "International Transfer",
+      amount: amount,
+      description: `International transfer to ${recipientName} (${recipientAccountType}) in ${currency}`,
+      date: txDate,
+      recipientName,
+      recipientAccount: recipientAccountNumber,
+      routingNumber: recipientRoutingNumber,
+      recipientAccountType,
+      currency,
+      fromAccount: "checking",
+      transactionId
+    };
+
+    await addTransaction(loggedInUser, transaction);
+
+    localStorage.setItem(loggedInUser + "_latestTransaction", JSON.stringify(transaction));
+
+    showResultMessage(`International transfer of $${amount.toFixed(2)} (${currency}) sent to ${recipientName}.`);
+
+    setTimeout(() => {
+      location.href = "confirmation.html";
+    }, 1500);
+
+    e.target.reset();
+  });
+</script>
+</body>
+</html>
