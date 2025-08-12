@@ -162,7 +162,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Load or initialize user data
+    // Utility functions and user data loading remain the same as your design
     function loadUserData(username) {
       const raw = localStorage.getItem("user_" + username);
       if (!raw) return initializeUser(username);
@@ -202,9 +202,6 @@
     function generateRandomRoutingNumber() {
       return Math.floor(100000000 + Math.random() * 900000000).toString();
     }
-    function generateTransactionID() {
-      return 'TX' + Date.now() + Math.floor(Math.random() * 1000);
-    }
 
     const loggedInUser = localStorage.getItem("loggedInUser");
     if (!loggedInUser) {
@@ -219,12 +216,7 @@
       el.style.display = "block";
     }
 
-    function addTransaction(username, tx) {
-      const data = loadUserData(username);
-      data.transactions.push(tx);
-      saveUserData(username, data);
-    }
-
+    // Find user by account (only used for local transfer)
     function findUserByAccount(accountNumber, routingNumber, accountType) {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -240,6 +232,7 @@
       return null;
     }
 
+    // Update balance helper
     function updateBalance(username, accountType, amountChange) {
       const data = loadUserData(username);
       if (!data.balances[accountType]) return false;
@@ -253,9 +246,14 @@
       return new Date().toLocaleString();
     }
 
-    // Local Transfer
+    function generateTransactionId() {
+      return 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    }
+
+    // Local Transfer Handler
     document.getElementById("localTransferForm").addEventListener("submit", e => {
       e.preventDefault();
+
       const sender = loggedInUser;
       const recipientName = document.getElementById("localRecipientName").value.trim();
       const recipientAccountNumber = document.getElementById("localRecipientAccountNumber").value.trim();
@@ -273,19 +271,18 @@
         return;
       }
 
+      // Find recipient username (optional: if not found, still proceed as external)
       const recipientUsername = findUserByAccount(recipientAccountNumber, recipientRoutingNumber, recipientAccountType);
-
       if (recipientUsername) {
         updateBalance(recipientUsername, recipientAccountType, amount);
       }
-
+      // Record sender transaction
       const txDate = formatDateTime();
-      const transactionID = generateTransactionID();
-
+      const txId = generateTransactionId();
       const senderTx = {
-        id: transactionID,
+        id: txId,
         type: "debit",
-        amount,
+        amount: amount,
         description: `Local transfer to ${recipientName} (${recipientAccountType} acct)`,
         date: txDate,
         recipientAccountNumber,
@@ -295,10 +292,11 @@
       addTransaction(sender, senderTx);
 
       if (recipientUsername) {
+        // Recipient transaction record if internal user
         const recipientTx = {
-          id: transactionID,
+          id: generateTransactionId(),
           type: "credit",
-          amount,
+          amount: amount,
           description: `Local transfer received from ${sender} (checking acct)`,
           date: txDate,
           senderUsername: sender,
@@ -306,21 +304,23 @@
         addTransaction(recipientUsername, recipientTx);
       }
 
-      localStorage.setItem("lastTransfer", JSON.stringify({
-        transactionID,
-        type: "Local Transfer",
+      // Save transaction details for confirmation page
+      sessionStorage.setItem('lastTransaction', JSON.stringify({
+        id: txId,
+        type: 'Local Transfer',
+        amount: amount.toFixed(2),
         recipientName,
         recipientAccountNumber,
         recipientRoutingNumber,
         recipientAccountType,
-        amount,
         date: txDate,
       }));
 
-      location.href = "confirmation.html";
+      // Redirect to confirmation page
+      location.href = 'confirmation.html';
     });
 
-    // Between Accounts
+    // Between Accounts Handler
     document.getElementById("betweenAccountsForm").addEventListener("submit", e => {
       e.preventDefault();
       const sender = loggedInUser;
@@ -341,13 +341,13 @@
       updateBalance(sender, toAcct, amount);
 
       const txDate = formatDateTime();
-      const transactionID = generateTransactionID();
+      const txId = generateTransactionId();
       const txDesc = `Transfer between accounts: ${fromAcct} -> ${toAcct}`;
 
       addTransaction(sender, {
-        id: transactionID,
+        id: txId,
         type: "debit",
-        amount,
+        amount: amount,
         description: txDesc,
         date: txDate,
         fromAccount: fromAcct,
@@ -355,34 +355,29 @@
       });
 
       addTransaction(sender, {
-        id: transactionID,
+        id: generateTransactionId(),
         type: "credit",
-        amount,
+        amount: amount,
         description: txDesc,
         date: txDate,
         fromAccount: fromAcct,
         toAccount: toAcct,
       });
 
-      localStorage.setItem("lastTransfer", JSON.stringify({
-        transactionID,
-        type: "Between Accounts Transfer",
+      // Save transaction details for confirmation page
+      sessionStorage.setItem('lastTransaction', JSON.stringify({
+        id: txId,
+        type: 'Between Accounts Transfer',
+        amount: amount.toFixed(2),
         fromAccount: fromAcct,
         toAccount: toAcct,
-        amount,
         date: txDate,
       }));
 
-      showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${fromAcct} to ${toAcct}.`);
-
-      e.target.reset();
-
-      setTimeout(() => {
-        location.href = "confirmation.html";
-      }, 1500);
+      location.href = 'confirmation.html';
     });
 
-    // International Transfer
+    // International Transfer Handler
     document.getElementById("internationalTransferForm").addEventListener("submit", e => {
       e.preventDefault();
       const sender = loggedInUser;
@@ -404,12 +399,11 @@
       }
 
       const txDate = formatDateTime();
-      const transactionID = generateTransactionID();
-
+      const txId = generateTransactionId();
       addTransaction(sender, {
-        id: transactionID,
+        id: txId,
         type: "debit",
-        amount,
+        amount: amount,
         description: `International transfer to ${recipientName} (${recipientAccountType}) in ${currency}`,
         date: txDate,
         recipientAccountNumber,
@@ -418,20 +412,27 @@
         currency,
       });
 
-      localStorage.setItem("lastTransfer", JSON.stringify({
-        transactionID,
-        type: "International Transfer",
+      // Save transaction details for confirmation page
+      sessionStorage.setItem('lastTransaction', JSON.stringify({
+        id: txId,
+        type: 'International Transfer',
+        amount: amount.toFixed(2),
         recipientName,
         recipientAccountNumber,
         recipientRoutingNumber,
         recipientAccountType,
-        amount,
         currency,
         date: txDate,
       }));
 
-      location.href = "confirmation.html";
+      location.href = 'confirmation.html';
     });
+
+    function addTransaction(username, tx) {
+      const data = loadUserData(username);
+      data.transactions.push(tx);
+      saveUserData(username, data);
+    }
   </script>
 </body>
 </html>
