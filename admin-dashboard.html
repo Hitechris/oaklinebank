@@ -51,8 +51,8 @@
 </head>
 <body>
 
+  <!-- Redirect to admin-login if not logged in -->
   <script>
-    // Redirect to admin-login if not logged in
     if (!localStorage.getItem('adminLoggedIn')) {
       window.location.href = 'admin-login.html';
     }
@@ -66,10 +66,10 @@
     </div>
   </div>
 
-<div class="section">
-  <h2>Total Registered Users</h2>
-  <p id="totalUsersCount">Loading...</p>
-</div>
+  <div class="section">
+    <h2>Total Registered Users</h2>
+    <p id="totalUsersCount">Loading...</p>
+  </div>
   
   <div class="section" id="depositsSection">
     <h2>Pending Deposits</h2>
@@ -89,13 +89,32 @@
     <p id="noAccountOpenings" class="text-muted">No pending new account requests.</p>
   </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     function logoutAdmin() {
       localStorage.removeItem('adminLoggedIn');
       window.location.href = 'admin-login.html';
     }
 
-    // Helpers for localStorage data
+    // Load pending requests from localStorage
     function loadPending(key) {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : [];
@@ -124,6 +143,7 @@
       return '$' + amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
     }
 
+    // Render functions
     function renderDepositItem(deposit, index) {
       return `
         <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -174,6 +194,7 @@
       `;
     }
 
+    // Approval and rejection handlers (same as your original code)
     function approveDeposit(index) {
       const deposits = loadPending('pendingDeposits');
       const deposit = deposits[index];
@@ -256,7 +277,6 @@
 
       if (!user.balances) user.balances = {};
       
-      // FIXED: use request.amount here (was request.initialDeposit before)
       const depositAmount = request.amount || 0;
       user.balances[request.accountType] = (user.balances[request.accountType] || 0) + depositAmount;
 
@@ -300,6 +320,7 @@
       return Math.floor(100000000 + Math.random() * 900000000).toString();
     }
 
+    // Load and render pending requests lists
     function loadPendingRequests() {
       const deposits = loadPending('pendingDeposits');
       const withdrawals = loadPending('pendingWithdrawals');
@@ -314,31 +335,27 @@
       document.getElementById('noAccountOpenings').style.display = accountOpenings.length ? 'none' : 'block';
     }
 
-    document.addEventListener('DOMContentLoaded', loadPendingRequests);
+    // Query Firestore to count users and update display
+    function updateUserCountDisplay() {
+      const elem = document.getElementById('totalUsersCount');
+      if (!elem) return;
 
-    function countRegisteredUsers() {
-  let count = 0;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('user_')) {
-      count++;
+      db.collection('users').get()
+        .then(snapshot => {
+          const count = snapshot.size;
+          elem.textContent = count;
+        })
+        .catch(error => {
+          console.error('Error getting users count:', error);
+          elem.textContent = 'Error loading user count';
+        });
     }
-  }
-  return count;
-}
 
-function updateUserCountDisplay() {
-  const count = countRegisteredUsers();
-  const elem = document.getElementById('totalUsersCount');
-  if (elem) {
-    elem.textContent = count;
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  updateUserCountDisplay();
-  loadPendingRequests(); // your existing function call
-});
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUserCountDisplay();
+      loadPendingRequests();
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
