@@ -329,23 +329,24 @@
   }
 
   function initializeUser(username) {
-    const defaultData = {
-      balances: { checking: 0, savings: 0 },
-      transactions: [],
-      accountInfo: {
-        checking: {
-          accountNumber: generateRandomAccountNumber(),
-          routingNumber: generateRandomRoutingNumber(),
-        },
-        savings: {
-          accountNumber: generateRandomAccountNumber(),
-          routingNumber: generateRandomRoutingNumber(),
-        },
+  const permanentRoutingNumber = "075917864";  // Your permanent routing number
+  const defaultData = {
+    balances: { checking: 0, savings: 0 },
+    transactions: [],
+    accountInfo: {
+      checking: {
+        accountNumber: generateRandomAccountNumber(),
+        routingNumber: permanentRoutingNumber,
       },
-    };
-    saveUserData(username, defaultData);
-    return defaultData;
-  }
+      savings: {
+        accountNumber: generateRandomAccountNumber(),
+        routingNumber: permanentRoutingNumber,
+      },
+    },
+  };
+  saveUserData(username, defaultData);
+  return defaultData;
+}
 
   function saveUserData(username, data) {
     localStorage.setItem("user_" + username, JSON.stringify(data));
