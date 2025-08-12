@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome to Oakline Bank</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fa;
+      color: #222;
+      line-height: 1.6;
+    }
+ /* Sticky header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #003366;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* ==== MENU TOGGLE ==== */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* ==== NAVIGATION ==== */
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+}
+
+/* ==== MODE TOGGLE ==== */
+.toggle-container {
+  margin-left: 1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+input:checked + .slider {
+  background-color: #4a90e2;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* ==== DARK MODE STYLES ==== */
+body.dark-mode {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+.navbar.dark-mode {
+  background-color: #121212;
+}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: inherit;
+    padding: 1rem;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+}
+
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: linear-gradient(120deg, #0052cc, #007fff);
+      color: white;
+      padding: 60px 40px;
+    }
+    .hero-text {
+      flex: 1 1 50%;
+      max-width: 600px;
+    }
+    .hero-text h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+    .cta-button {
+      background-color: white;
+      color: #0052cc;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .cta-button:hover {
+      background-color: #f0f0f0;
+    }
+    .hero-img {
+      flex: 1 1 40%;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .hero-img img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+    }
+    section.calculator {
+      padding: 60px 40px;
+      background-color: #f0f4f8;
+      text-align: center;
+    }
+    section.calculator h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    section.calculator p {
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    .calculator-form {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .calculator-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+    .calculator-form input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .calculator-form button {
+      background: #0052cc;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .calculator-form button:hover {
+      background: #003d99;
+    }
+    #result {
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #0052cc;
+    }
+    section.testimonials {
+      padding: 60px 40px;
+      background-color: #ffffff;
+    }
+    section.testimonials h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #003366;
+    }
+    .testimonial-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .testimonial-card {
+      flex: 1 1 250px;
+      max-width: 300px;
+      background-color: #f9f9f9;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      color: #333;
+    }
+    .testimonial-card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      object-fit: cover;
+    }
+    .testimonial-card p {
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+    .testimonial-card .name {
+      font-weight: 700;
+      color: #0052cc;
+    }
+    footer {
+      background-color: #003366;
+      color: #fff;
+      padding: 50px 40px 20px;
+    }
+
+  /* Footer Container */
+  footer {
+    background-color: #003366;
+    color: #fff;
+    padding: 50px 20px 30px;
+    font-family: Arial, sans-serif;
+  }
+  .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .footer-column {
+    flex: 1 1 280px;
+  }
+  .footer-column h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+  .footer-column ul li {
+    margin-bottom: 10px;
+  }
+  .footer-column ul li a {
+    color: #cce6ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .footer-column ul li a:hover {
+    color: #fff;
+  }
+  /* Newsletter form */
+  form#newsletterForm input[type="email"] {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 3px;
+  }
+  form#newsletterForm button {
+    padding: 8px 15px;
+    border: none;
+    background: #f5a623;
+    color: #000;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  form#newsletterForm button:hover {
+    background: #d18f0d;
+  }
+
+  /* Licenses Section */
+  .footer-licenses {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+  .footer-licenses p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 15px;
+  }
+  .footer-icon {
+    height: 18px;
+    vertical-align: middle;
+  }
+
+  /* Social and Legal Section */
+  .footer-legal {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid #4c6ea7;
+    padding-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    color: #ccc;
+  }
+  .footer-social a {
+    margin-right: 15px;
+    color: #aaa;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .footer-social a:hover {
+    color: #fff;
+  }
+  .footer-info {
+    flex: 2 1 400px;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+  .footer-info p {
+    margin: 5px 0;
+  }
+  /* Responsive */
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+      padding: 0 10px;
+    }
+    .footer-column {
+      flex: 1 1 100%;
+    }
+    .footer-licenses {
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .footer-legal {
+      flex-direction: column;
+      text-align: center !important;
+    }
+    .footer-social,
+    .footer-info {
+      margin-bottom: 10px;
+      text-align: center !important;
+    ;
+}
+   @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-text h1 {
+        font-size: 2.2rem;
+      }
+      nav a {
+        margin-left: 15px;
+        font-size: 0.95rem;
+      }
+      .footer-column {
+        flex: 1 1 100%;
+      }
+    }
+
+    @keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero-digital {
+  background: linear-gradient(to right, #f9fbff, #e6f0ff);
+  padding: 80px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.hero-digital .hero-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  gap: 40px;
+}
+
+.hero-digital .text {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+.hero-digital h1 {
+  font-size: 2.8rem;
+  color: #003366;
+  margin-bottom: 20px;
+}
+
+.hero-digital p {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.hero-digital .cta-button {
+  background-color: #0052cc;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.hero-digital .cta-button:hover {
+  background-color: #003d99;
+}
+
+.hero-digital .image {
+  flex: 1 1 45%;
+  min-width: 300px;
+  text-align: center;
+}
+
+.hero-digital .image img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+}
+
+    .hero-modern {
+  background: linear-gradient(135deg, #0052cc, #007fff);
+  color: white;
+  padding: 80px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 82, 204, 0.3);
+  margin: 40px auto;
+  max-width: 1200px;
+}
+
+.hero-modern-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.hero-text {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hero-text p {
+  font-size: 1.3rem;
+  margin-bottom: 35px;
+  opacity: 0.9;
+}
+
+.hero-buttons a {
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #0052cc;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.5);
+}
+
+.btn-primary:hover {
+  background-color: #e6f0ff;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background-color: white;
+  color: #0052cc;
+}
+
+.hero-image {
+  flex: 1 1 45%;
+  min-width: 300px;
+  text-align: center;
+}
+
+.hero-image img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-modern {
+    flex-direction: column;
+    padding: 60px 20px;
+  }
+  .hero-text, .hero-image {
+    flex: 1 1 100%;
+    max-width: 100%;
+    text-align: center;
+  }
+  .hero-text h1 {
+    font-size: 2.2rem;
+  }
+  .hero-buttons a {
+    margin: 10px 10px 0 10px;
+  }
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-button {
+  background-color: #0052cc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.modal-button:hover {
+  background-color: #003d99;
+}
+
+.modal-content a {
+  color: #0052cc;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.modal-content a:hover {
+  text-decoration: underline;
+}
+
+.close {
+  float: right;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+    input::placeholder {
+  color: #999;
+}
+input:focus {
+  outline: 2px solid #0052cc;
+}
+
+#passwordError {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #ffe6e6; /* light red background for errors */
+  color: #cc0000; /* red text for errors */
+  margin-top: 10px;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+#passwordError.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Add this to your <style> tag or your external CSS file */
+.hide {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.footer {
+  background: #003366;
+  color: #fff;
+  padding: 40px 20px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+.footer-container.stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.footer-container h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.footer-links ul,
+.footer-contact,
+.footer-social {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-links ul li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: #00ccff;
+}
+
+.footer-contact p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.footer-social img {
+  width: 24px;
+  height: 24px;
+  margin: 0 6px;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s;
+}
+
+.footer-social img:hover {
+  filter: brightness(0.8) invert(1);
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #ccc;
+  border-top: 1px solid #666;
+  padding-top: 10px;  
+}}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #003366;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px solid #444;
+  z-index: 1000;
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 12px;
+  width: 25%;
+}
+
+.bottom-nav img {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 2px;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s;
+}
+
+.bottom-nav a:hover img {
+  filter: brightness(0.8) invert(1);
+}
+
+.bottom-nav span {
+  font-size: 11px;
+}
+   
+ </style>
+
+  <script>
+  // Force HTTPS and www
+  (function() {
+    var host = "www.theoaklinebank.com";
+    if (window.location.host !== host || window.location.protocol !== "https:") {
+      window.location.href = "https://" + host + window.location.pathname + window.location.search;
+    }
+  })();
+</script>
+</head>
+<body>
+
+<!-- ======= NAVBAR ======= -->
+<header class="navbar" id="navbar">
+  <div class="logo">Oakline Bank</div>
+
+  <!-- ☰ Menu Toggle for Mobile -->
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <!-- Navigation Links -->
+  <nav class="nav-links" id="navbar-links">
+    <a href="#hero1">Home</a>
+    <a href="#features">Services</a>
+    <a href="#get-started">Calculator</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#footer">Contact</a>
+  <a href="login.html">Login</a>
+<a href="signup.html">Sign Up</a>
+
+    <!-- 🌙 Mode Toggle -->
+    <div class="toggle-container">
+      <label class="switch" aria-label="Toggle dark mode">
+        <input type="checkbox" id="modeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </nav>
+</header>
+
+  <section class="hero" id="hero1">
+    <div class="hero-text">
+      <h1>Welcome to Oakline Bank</h1>
+      <p>Secure. Simple. Seamless.<br>Your financial future starts here with Oakline Bank — trusted by millions.</p>
+      <button onclick="openModal('signupModal')" class="modal-button">Get Started</button>
+    <div class="hero-img">
+      <img src="https://via.placeholder.com/400x300?text=Bank+Image" alt="Oakline Bank Hero Image" />
+    </div>
+  </section>
+
+ <section class="calculator" id="get-started">
+    <h2>Savings Growth Calculator</h2>
+    <p>Estimate your future savings with Oakline Bank.</p>
+    <div class="calculator-form">
+      <label for="amount">Initial Amount ($)</label>
+      <input type="number" id="amount" placeholder="e.g., 1000" />
+      <label for="rate">Annual Interest Rate (%)</label>
+      <input type="number" id="rate" placeholder="e.g., 5" />
+      <label for="years">Years</label>
+      <input type="number" id="years" placeholder="e.g., 10" />
+      <button onclick="calculateSavings()">Calculate</button>
+      <div id="result"></div>
+    </div>
+  </section>
+
+  <!-- HERO #1: Animated Welcome -->
+<section style="padding: 100px 40px; color: white; text-align: center; position: relative; overflow: hidden; background: linear-gradient(-45deg, #003366, #0052cc, #007fff, #003366); background-size: 400% 400%; animation: gradientBG 10s ease infinite;">
+  <div style="max-width: 700px; margin: 0 auto; animation: fadeIn 2s ease-out;">
+    <h1 style="font-size: 3rem; margin-bottom: 20px;">Your Future, Financed Smoothly</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 30px;">Join millions of customers who trust Oakline for their savings, loans, and digital banking needs.</p>
+    <a href="/login.html" style="background-color: white; color: #003366; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;">Open an Account</a>
+  </div>
+</section>
+
+<!-- HERO #2: Features Section -->
+<section id="features" style="padding: 80px 40px; background-color: #f9fbff; text-align: center;">
+  <h2 style="font-size: 2.5rem; color: #003366; margin-bottom: 40px;">Why Choose Oakline?</h2>
+  <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/security-checked.png" alt="Secure" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">Secure Banking</h3>
+      <p>Advanced encryption keeps your data and money safe.</p>
+    </div>
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/smartphone.png" alt="Mobile App" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">Mobile Control</h3>
+      <p>Access your finances anywhere, anytime with our app.</p>
+    </div>
+
+    <div style="flex: 1 1 200px; max-width: 250px;">
+      <img src="https://img.icons8.com/ios-filled/100/0052cc/handshake.png" alt="Support" style="height: 60px; margin-bottom: 15px;">
+      <h3 style="font-size: 1.2rem;">24/7 Support</h3>
+      <p>Real humans ready to help with any issue — day or night.</p>
+    </div>
+
+  </div>
+</section>
+
+  <!-- HERO #3: CTA Section -->
+<section style="padding: 100px 40px; background-color: #e6f0ff; text-align: center;">
+  <h2 style="font-size: 2.8rem; color: #003366; margin-bottom: 20px;">Ready to Start Your Journey?</h2>
+  <p style="font-size: 1.2rem; color: #333; margin-bottom: 30px;">
+    Open an account in minutes. No hidden fees. No surprises.
+  </p>
+  <a href="/open-account.html" style="background-color: #0052cc; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">Get Started</a>
+</section>
+
+<section class="testimonials" id="testimonials">
+    <h2>What Our Clients Say</h2>
+    <div class="testimonial-cards">
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jane Doe" />
+        <p>“Oakline made managing my savings so easy. Their mobile app is top-notch!”</p>
+        <p class="name">Jane Doe</p>
+      </div>
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos B." />
+        <p>“I got approved for my home loan in days. Their service is incredible.”</p>
+        <p class="name">Carlos B.</p>
+      </div>
+      <div class="testimonial-card">
+        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Amina R." />
+        <p>“Oakline helped me start my first business. I’ll never bank anywhere else.”</p>
+        <p class="name">Amina R.</p>
+      </div>
+    </div>
+  </section>
+
+<!-- HERO: Modern Welcome -->
+<section class="hero-modern">
+  <div class="hero-modern-content">
+    <div class="hero-text">
+      <h1>Banking Made Simple & Smart</h1>
+      <p>Your trusted partner for seamless digital banking — anytime, anywhere.</p>
+      <div class="hero-buttons">
+        <a href="/signup.html" class="btn-primary">Get Started</a>
+        <a href="/learn-more.html" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1556741533-f6acd647d2fb?auto=format&fit=crop&w=800&q=80" alt="Modern Banking Illustration" />
+    </div>
+  </div>
+</section>
+
+  <section class="hero hero-digital">
+  <div class="hero-content">
+    <div class="text">
+      <h1>All-in-One Digital Banking</h1>
+      <p>Manage your finances, transfer funds, pay bills, and invest — all from one secure app.</p>
+      <a href="/login.html" class="cta-button">Explore Features</a>
+    </div>
+    <div class="image">
+      <img src="https://via.placeholder.com/500x350?text=Digital+Banking+App" alt="Digital Banking" />
+    </div>
+  </div>
+</section>
+  <!-- Hero Section: Small Business Banking -->
+<section class="hero hero-business">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <h1>Empowering Small Businesses</h1>
+      <p>Flexible loans, expert advice, and personalized service to help your business thrive.</p>
+
+    </div>
+  </div>
+</section>
+
+  <!-- START FOOTER -->
+   
+  <footer id="mainFooter">
+  <div class="footer-container">
+    <!-- About -->
+    <div class="footer-column">
+      <h3>About Oakline Bank</h3>
+      <p>Your trusted partner in financial growth and security.</p>
+      <p>123 Main Street, Anytown, USA 12345</p>
+      <p>Customer Service: 1-800-555-1234</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-column">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms & Conditions</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <!-- Newsletter Signup -->
+    <div class="footer-column">
+      <h3>Stay Updated</h3>
+      <p>Subscribe to our newsletter for the latest updates and offers.</p>
+      <form id="newsletterForm" style="display:flex; gap:10px; margin-top:10px;">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Licenses and Legal -->
+  <div class="footer-licenses">
+    <p>
+      <img src="https://www.fdic.gov/images/shared/fdic-logo.svg" alt="FDIC Logo" class="footer-icon" />
+      Member FDIC
+    </p>
+    <p>
+      <img src="https://www.ncua.gov/sites/default/files/NCUA_Logo_2020.png" alt="NCUA Logo" class="footer-icon" style="height:20px;" />
+      Insured by NCUA
+    </p>
+    <p>
+      <img src="https://www.consumerfinance.gov/wp-content/themes/cfpb_nexus_2018/assets/images/logo-efh.png" alt="Equal Housing Lender Logo" class="footer-icon" />
+      Equal Housing Lender
+    </p>
+  </div>
+
+  <!-- Social and Legal -->
+  <div class="footer-legal">
+    <div class="footer-social">
+  <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+  <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">Twitter</a>
+  <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+</div>
+
+    <div class="footer-info">
+      <p>NMLS ID: 1234567 | Routing Number: 987654321</p>
+      <p>© 2025 Oakline Bank. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+  
+<script>
+  function calculateSavings() {
+    const amount = parseFloat(document.getElementById("amount").value);
+    const rate = parseFloat(document.getElementById("rate").value) / 100;
+    const years = parseInt(document.getElementById("years").value);
+
+    if (isNaN(amount) || isNaN(rate) || isNaN(years) || amount < 0 || rate < 0 || years < 0) {
+      document.getElementById("result").innerText = "Please enter valid positive numbers.";
+      return;
+    }
+
+    const finalAmount = amount * Math.pow(1 + rate, years);
+    document.getElementById("result").innerText =
+      `Estimated Future Value: $${finalAmount.toFixed(2)}`;
+  }
+
+  // Mobile Menu Toggle
+  function toggleMenu() {
+    document.getElementById('navbar-links').classList.toggle('active');
+  }
+
+ window.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('modeToggle');
+  const navbar = document.getElementById('navbar');
+
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    navbar.classList.add('dark-mode');
+    toggle.checked = true;
+  
+  }
+
+  toggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode');
+    navbar.classList.toggle('dark-mode');
+    localStorage.setItem('theme', toggle.checked ? 'dark' : 'light');
+  });
+
+  // Collapse mobile nav on link click
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('navbar-links').classList.remove('active');
+    });
+  });
+
+});
+</script> 
+  
+<!-- SIGN UP MODAL -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('signupModal')">&times;</span>
+    <h2>Create an Account</h2>
+
+   <input id="signupFirstName" type="text" placeholder="First Name" autocomplete="off" required>
+<input id="signupMiddleName" type="text" placeholder="Middle Name (Optional)" autocomplete="off">
+<input id="signupLastName" type="text" placeholder="Last Name" autocomplete="off" required>
+
+    <input id="signupEmail" type="email" placeholder="Email" autocomplete="off" required>
+    <input id="signupPhone" type="tel" placeholder="Phone Number" autocomplete="off" required>
+
+<input id="signupDOB" type="text" placeholder="Date of Birth (YYYY-MM-DD)" autocomplete="off" required>
+
+    <select id="signupAccountType" required>
+      <option value="">Select Account Type</option>
+      <option value="checking">Checking</option>
+      <option value="savings">Savings</option>
+      <option value="business">Business</option>
+    </select>
+
+    <input id="signupAddress" type="text" placeholder="Home Address" autocomplete="off" required>
+    <input id="signupCity" type="text" placeholder="City" autocomplete="off" required>
+    <input id="signupState" type="text" placeholder="State" autocomplete="off" required>
+    <input id="signupCountry" type="text" placeholder="Country" autocomplete="off" required>
+<input id="signupSSN" type="text" placeholder="Social Security Number (SSN)" autocomplete="off" required>
+    <input id="signupPassword" type="password" placeholder="Create Password" autocomplete="off" required>
+    <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" autocomplete="off" required>
+
+    <select id="signupSecurityQuestion" required>
+      <option value="">Select a security question</option>
+      <option value="pet">What is your pet’s name?</option>
+      <option value="school">What was the name of your first school?</option>
+      <option value="city">In what city were you born?</option>
+    </select>
+
+    <input id="signupSecurityAnswer" type="text" placeholder="Security Answer" autocomplete="off" required>
+
+    <p id="passwordError" style="color: red; display: none; font-size: 14px;"></p>
+
+    <button class="modal-button" onclick="validateSignup()">Sign Up</button>
+    <p>Already have an account? <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a></p>
+  </div>
+</div>
+
+  <!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+    <h2>Login to Your Account</h2>
+
+    <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" required>
+    <input id="loginPassword" type="password" placeholder="Password" autocomplete="off" required>
+
+    <label style="display: flex; align-items: center; margin-top: 10px;">
+      <input type="checkbox" id="rememberMe" style="margin-right: 8px;"> Remember Me
+    </label>
+
+    <p id="loginError" style="color: red; display: none; font-size: 14px;"></p>
+
+    <button class="modal-button" onclick="validateLogin()">Login</button>
+
+    <p><a href="#" onclick="switchModal('loginModal','forgotModal')">Forgot Password?</a></p>
+    <p>Don't have an account? <a href="#" onclick="switchModal('loginModal','signupModal')">Sign Up</a></p>
+  </div>
+</div>
+    
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('forgotModal')">&times;</span>
+    <h2>Reset Your Password</h2>
+    <input type="email" placeholder="Enter your email" autocomplete="off" required>
+    <button class="modal-button">Send Reset Link</button>
+    <p>Remembered it? <a href="#" onclick="switchModal('forgotModal','loginModal')">Back to login</a></p>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    document.getElementById(id).style.display = "block";
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function switchModal(currentId, targetId) {
+    closeModal(currentId);
+    openModal(targetId);
+  }
+
+function validateSignup() {
+  const fullName = document.getElementById('signupFullName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const phone = document.getElementById('signupPhone').value.trim();
+  const dob = document.getElementById('signupDOB').value.trim();
+  const accountType = document.getElementById('signupAccountType').value;
+  const ssn = document.getElementById('signupSSN').value.trim();
+  const city = document.getElementById('signupCity').value.trim();
+  const state = document.getElementById('signupState').value.trim();
+  const country = document.getElementById('signupCountry').value.trim();
+  const address = document.getElementById('signupAddress').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+  const securityQuestion = document.getElementById('signupSecurityQuestion').value;
+  const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
+
+  const error = document.getElementById('passwordError');
+
+  // Check all fields filled
+  if (
+    !fullName || !email || !phone || !dob || !accountType || !ssn || !city ||
+    !state || !country || !address || !password || !confirmPassword ||
+    !securityQuestion || !securityAnswer
+  ) {
+    error.innerText = "Please fill out all fields.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    error.innerText = "Please enter a valid email address.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Phone number validation (at least 10 digits)
+  const phoneRegex = /^\d{10,}$/;
+  if (!phoneRegex.test(phone)) {
+    error.innerText = "Please enter a valid phone number (at least 10 digits).";
+    error.style.display = "block";
+    return;
+  }
+
+  // SSN validation (simple US SSN format: 9 digits, optionally with dashes)
+  const ssnRegex = /^\d{3}-?\d{2}-?\d{4}$/;
+  if (!ssnRegex.test(ssn)) {
+    error.innerText = "Please enter a valid Social Security Number (SSN).";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password length check
+  if (password.length < 6) {
+    error.innerText = "Password must be at least 6 characters long.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password strength check: at least one uppercase, one lowercase, one digit
+  const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+  if (!strongPassword.test(password)) {
+    error.innerText = "Password must include upper and lower case letters and a number.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Password and confirm password match check
+  if (password !== confirmPassword) {
+    error.innerText = "Passwords do not match.";
+    error.style.display = "block";
+    return;
+  }
+
+  // All checks passed — clear error and proceed
+  error.style.display = "none";
+  alert("Sign-up successful!");
+  closeModal('signupModal');
+}
+
+let loginAttempts = 0;
+let lockoutTimer;
+
+function validateLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+  const error = document.getElementById('loginError');
+
+  // Lockout protection
+  if (loginAttempts >= 3) {
+    error.innerText = "Too many failed attempts. Try again in 30 seconds.";
+    error.style.display = "block";
+    return;
+  }
+
+  if (!email || !password) {
+    error.innerText = "Please enter both email and password.";
+    error.style.display = "block";
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    error.innerText = "Invalid email format.";
+    error.style.display = "block";
+    return;
+  }
+
+  // Simulated login check (replace with real authentication)
+  const dummyEmail = "user@oakline.com";
+  const dummyPassword = "Password123";
+
+  if (email === dummyEmail && password === dummyPassword) {
+    error.style.display = "none";
+    alert(rememberMe ? "Welcome back! (remembered)" : "Login successful!");
+    closeModal('loginModal');
+    loginAttempts = 0; // Reset on success
+  } else {
+    loginAttempts++;
+    error.innerText = `Incorrect email or password. Attempt ${loginAttempts} of 3.`;
+    error.style.display = "block";
+
+    if (loginAttempts === 3) {
+      lockoutTimer = setTimeout(() => {
+        loginAttempts = 0;
+        error.style.display = "none";
+      }, 30000); // 30 seconds lockout
+    }
+  }
+}  
+</script>
+
+<footer class="footer">
+  <div class="footer-container stacked">
+    <div class="footer-logo">
+      <h3>Oakline Bank</h3>
+      <p>Modern Banking for Everyday Life</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html">Main</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <p>Email: support@oaklinebank.com</p>
+      <p>Phone: (800) 123-4567</p>
+      <p>123 Oakline Ave, Financial City, USA</p>
+    </div>
+
+    <div class="footer-social">
+      <h4>Connect</h4>
+      <div class="social-icons">
+        <a href="#"><img src="icons/facebook.svg" alt="Facebook" /></a>
+        <a href="#"><img src="icons/twitter.svg" alt="Twitter" /></a>
+        <a href="#"><img src="icons/instagram.svg" alt="Instagram" /></a>
+        <a href="#"><img src="icons/linkedin.svg" alt="LinkedIn" /></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
+  </div>
+</footer>
+
+  <nav class="bottom-nav">
+  <a href="index.html">
+    <img src="icons/home.svg" alt="Home" />
+    <span>Main</span>
+  </a>
+  <a href="signup.html">
+    <img src="icons/signup.svg" alt="Sign Up" />
+    <span>Sign Up</span>
+  </a>
+  <a href="login.html">
+    <img src="icons/login.svg" alt="Login" />
+    <span>Login</span>
+  </a>
+  <a href="contact.html">
+    <img src="icons/contact.svg" alt="Contact" />
+    <span>Contact</span>
+  </a>
+</nav>
+</body>
+</html>
+  
