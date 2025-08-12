@@ -32,6 +32,63 @@
       text-decoration: none;
     }
   </style>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    // Your Firebase config - replace with your config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.loginWithFirestore = async function(loginUser, loginPassword) {
+      try {
+        const usersCol = collection(db, "users");
+
+        // Query users by username or email
+        const qUsername = query(usersCol, where("username", "==", loginUser));
+        const qEmail = query(usersCol, where("email", "==", loginUser));
+
+        let userSnapshot = await getDocs(qUsername);
+        if (userSnapshot.empty) {
+          userSnapshot = await getDocs(qEmail);
+          if (userSnapshot.empty) {
+            alert("User not found. Please check your username or email.");
+            return null;
+          }
+        }
+
+        // Get user data from first matched doc
+        const userDoc = userSnapshot.docs[0];
+        const userData = userDoc.data();
+
+        // For demo: plain text password check (NEVER do this in production)
+        if (userData.password !== loginPassword) {
+          alert("Incorrect password. Please try again.");
+          return null;
+        }
+
+        // Login success
+        localStorage.setItem("loggedInUser", userData.username);
+        alert("Login successful! Redirecting to dashboard...");
+        window.location.href = "dashboard.html";
+
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("An error occurred during login. Please try again later.");
+      }
+    };
+  </script>
 </head>
 <body>
   <div class="container">
@@ -56,7 +113,7 @@
   </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const loginUser = document.getElementById("loginUser").value.trim();
       const loginPassword = document.getElementById("loginPassword").value;
@@ -66,33 +123,7 @@
         return;
       }
 
-      // Search all users in localStorage for matching username or email
-      let foundUser = null;
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith("user_")) {
-          const userData = JSON.parse(localStorage.getItem(key));
-          if (userData.username === loginUser || userData.email === loginUser) {
-            foundUser = userData;
-            break;
-          }
-        }
-      }
-
-      if (!foundUser) {
-        alert("User not found. Please check your username or email.");
-        return;
-      }
-
-      if (foundUser.password !== loginPassword) {
-        alert("Incorrect password. Please try again.");
-        return;
-      }
-
-      // Login successful
-      localStorage.setItem("loggedInUser", foundUser.username);
-      alert("Login successful! Redirecting to dashboard...");
-      window.location.href = "dashboard.html";
+      await window.loginWithFirestore(loginUser, loginPassword);
     });
   </script>
 </body>
