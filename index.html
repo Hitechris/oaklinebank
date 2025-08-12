@@ -1329,16 +1329,15 @@ function validateLogin() {
       <p>Modern Banking for Everyday Life</p>
     </div>
 
-    <div class="footer-links">
-      <h4>Quick Links</h4>
-      <ul>
-        <li><a href="index.html">Main</a></li>
-        <li><a href="signup.html">Sign Up</a></li>
-        <li><a href="login.html">Login</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </div>
-
+<div class="footer-links">
+  <h4>Quick Links</h4>
+  <ul>
+    <li><a href="index.html">Main</a></li>
+    <li><a href="signup.html" id="footerSignupLink">Sign Up</a></li>
+    <li><a href="login.html" id="footerLoginLink">Login</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</div>
     <div class="footer-contact">
       <h4>Contact Us</h4>
       <p>Email: support@oaklinebank.com</p>
@@ -1380,6 +1379,73 @@ function validateLogin() {
     <span>Contact</span>
   </a>
 </nav>
+
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+<script>
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+    authDomain: "oakline-bank.firebaseapp.com",
+    projectId: "oakline-bank",
+    storageBucket: "oakline-bank.firebasestorage.app",
+    messagingSenderId: "199506974383",
+    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+    measurementId: "G-XXRQF2N3XB"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+<script>
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+    authDomain: "oakline-bank.firebaseapp.com",
+    projectId: "oakline-bank",
+    storageBucket: "oakline-bank.firebasestorage.app",
+    messagingSenderId: "199506974383",
+    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+    measurementId: "G-XXRQF2N3XB"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged(user => {
+    // Elements in navbar
+    const loginLink = document.querySelector('nav.nav-links a[href="login.html"]');
+    const signupLink = document.querySelector('nav.nav-links a[href="signup.html"]');
+
+    // Elements in footer
+    const footerLoginLink = document.getElementById('footerLoginLink');
+    const footerSignupLink = document.getElementById('footerSignupLink');
+
+    if (user) {
+      // Hide login/signup links when logged in
+      if (loginLink) loginLink.style.display = 'none';
+      if (signupLink) signupLink.style.display = 'none';
+      if (footerLoginLink) footerLoginLink.style.display = 'none';
+      if (footerSignupLink) footerSignupLink.style.display = 'none';
+
+      // You can also hide or show other features here as needed
+    } else {
+      // Show login/signup links when logged out
+      if (loginLink) loginLink.style.display = 'inline';
+      if (signupLink) signupLink.style.display = 'inline';
+      if (footerLoginLink) footerLoginLink.style.display = 'inline';
+      if (footerSignupLink) footerSignupLink.style.display = 'inline';
+    }
+  });
+</script>
 </body>
 </html>
   
