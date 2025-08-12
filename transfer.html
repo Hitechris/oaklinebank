@@ -205,6 +205,11 @@
       return Math.floor(100000000 + Math.random() * 900000000).toString();
     }
 
+    // Generate transaction ID
+    function generateTransactionId() {
+      return "TX" + Math.floor(Math.random() * 1000000000);
+    }
+
     // Get logged in user
     const loggedInUser = localStorage.getItem("loggedInUser");
     if (!loggedInUser) {
@@ -235,23 +240,6 @@
       return new Date().toLocaleString();
     }
 
-    // Add transaction record
-    function addTransaction(username, tx) {
-      const data = loadUserData(username);
-      data.transactions.push(tx);
-      saveUserData(username, data);
-    }
-
-    // Generate transaction ID
-    function generateTransactionId() {
-      return "TX" + Math.floor(Math.random() * 1_000_000_000);
-    }
-
-    function capitalizeFirst(str) {
-      if (!str) return "";
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
     // ---- Local Transfer ----
     document.getElementById("localTransferForm").addEventListener("submit", e => {
       e.preventDefault();
@@ -267,39 +255,53 @@
         return;
       }
 
+      if (sender === null) {
+        showResultMessage("You are not logged in.", false);
+        return;
+      }
+
       if (!updateBalance(sender, "checking", -amount)) {
         showResultMessage("Insufficient funds in your checking account.", false);
         return;
       }
 
-      // We accept any account number for external transfers, no need to check system users
-      // So we just log the transaction and deduct the amount from sender
+      // We no longer require recipient to be local user
+      // Just record the transaction
 
       const txDate = formatDateTime();
       const transactionId = generateTransactionId();
 
-      const transaction = {
+      // Create transaction object
+      const senderTx = {
         type: "Local Transfer",
-        fromAccount: "checking",
+        amount: amount,
+        description: `Local transfer to ${recipientName} (${recipientAccountType} acct)`,
+        date: txDate,
         recipientName,
         recipientAccount: recipientAccountNumber,
         routingNumber: recipientRoutingNumber,
         recipientAccountType,
-        amount,
-        transactionId,
-        date: txDate,
+        fromAccount: "checking",
+        fromAccountType: "checking",
+        transactionId
       };
 
-      addTransaction(sender, transaction);
-      localStorage.setItem(`${sender}_latestTransaction`, JSON.stringify(transaction));
+      // Save transaction locally for sender
+      const data = loadUserData(sender);
+      data.transactions.push(senderTx);
+      saveUserData(sender, data);
+
+      // Save latest transaction to show on confirmation page
+      localStorage.setItem(sender + "_latestTransaction", JSON.stringify(senderTx));
 
       showResultMessage(`Successfully sent $${amount.toFixed(2)} to ${recipientName} (${recipientAccountType}).`);
 
-      e.target.reset();
-
+      // Redirect to confirmation page after short delay
       setTimeout(() => {
-        window.location.href = "confirmation.html";
+        location.href = "confirmation.html";
       }, 1500);
+
+      e.target.reset();
     });
 
     // ---- Between Accounts ----
@@ -316,7 +318,7 @@
       }
 
       if (!updateBalance(sender, fromAcct, -amount)) {
-        showResultMessage(`Insufficient funds in your ${capitalizeFirst(fromAcct)} account.`, false);
+        showResultMessage(`Insufficient funds in your ${fromAcct} account.`, false);
         return;
       }
 
@@ -325,28 +327,36 @@
       const txDate = formatDateTime();
       const transactionId = generateTransactionId();
 
+      const txDesc = `Transfer between accounts: ${fromAcct} -> ${toAcct}`;
+
       const transaction = {
-        type: "Transfer",
-        fromAccount: fromAcct,
-        toAccount: toAcct,
-        amount,
-        transactionId,
+        type: "Transfer Between Accounts",
+        amount: amount,
+        description: txDesc,
         date: txDate,
-        note: "Between Accounts Transfer",
-        recipientName: sender,
-        recipientAccount: "",
-        routingNumber: "",
+        fromAccount: fromAcct,
+        fromAccountType: fromAcct,
+        toAccount: toAcct,
+        toAccountType: toAcct,
+        transactionId,
       };
 
-      addTransaction(sender, transaction);
-      localStorage.setItem(`${sender}_latestTransaction`, JSON.stringify(transaction));
+      // Save transaction for sender
+      const data = loadUserData(sender);
+      data.transactions.push(transaction);
+      saveUserData(sender, data);
 
-      showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${capitalizeFirst(fromAcct)} to ${capitalizeFirst(toAcct)}.`);
-      e.target.reset();
+      // Save latest transaction for confirmation page
+      localStorage.setItem(sender + "_latestTransaction", JSON.stringify(transaction));
 
+      showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${fromAcct} to ${toAcct}.`);
+
+      // Redirect to confirmation page after short delay
       setTimeout(() => {
-        window.location.href = "confirmation.html";
+        location.href = "confirmation.html";
       }, 1500);
+
+      e.target.reset();
     });
 
     // ---- International Transfer ----
@@ -373,29 +383,39 @@
       const txDate = formatDateTime();
       const transactionId = generateTransactionId();
 
-      const transaction = {
+      const senderTx = {
         type: "International Transfer",
-        fromAccount: "checking",
+        amount: amount,
+        description: `International transfer to ${recipientName} (${recipientAccountType}) in ${currency}`,
+        date: txDate,
         recipientName,
         recipientAccount: recipientAccountNumber,
         routingNumber: recipientRoutingNumber,
         recipientAccountType,
-        amount,
-        transactionId,
-        date: txDate,
         currency,
+        fromAccount: "checking",
+        fromAccountType: "checking",
+        transactionId,
       };
 
-      addTransaction(sender, transaction);
-      localStorage.setItem(`${sender}_latestTransaction`, JSON.stringify(transaction));
+      // Save transaction locally for sender
+      const data = loadUserData(sender);
+      data.transactions.push(senderTx);
+      saveUserData(sender, data);
+
+      // Save latest transaction to show on confirmation page
+      localStorage.setItem(sender + "_latestTransaction", JSON.stringify(senderTx));
 
       showResultMessage(`International transfer of $${amount.toFixed(2)} (${currency}) sent to ${recipientName}.`);
-      e.target.reset();
 
+      // Redirect to confirmation page after short delay
       setTimeout(() => {
-        window.location.href = "confirmation.html";
+        location.href = "confirmation.html";
       }, 1500);
+
+      e.target.reset();
     });
+
   </script>
 </body>
 </html>
