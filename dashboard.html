@@ -501,6 +501,26 @@ if (menuLogout) {
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function doLogout() {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "login.html";
+    }
 
+    // Top-right button
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) logoutBtn.addEventListener("click", doLogout);
+
+    // Dropdown menu link
+    const menuLogout = document.querySelector('.dropdown-item[href="login.html"]');
+    if (menuLogout) {
+        menuLogout.addEventListener("click", function (e) {
+            e.preventDefault();
+            doLogout();
+        });
+    }
+});
+</script>
 </body>
 </html>
