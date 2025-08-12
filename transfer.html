@@ -76,7 +76,7 @@
           </div>
           <div class="mb-3">
             <label for="localRecipientRoutingNumber" class="form-label">Recipient Routing Number</label>
-            <input type="text" class="form-control" id="localRecipientRoutingNumber" pattern="\d{9}" title="9 digit routing number" required />
+            <input type="text" class="form-control" id="localRecipientRoutingNumber" required />
           </div>
           <div class="mb-3">
             <label for="localRecipientAccountType" class="form-label">Recipient Account Type</label>
@@ -162,6 +162,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Load or initialize user data
     function loadUserData(username) {
       const raw = localStorage.getItem("user_" + username);
       if (!raw) return initializeUser(username);
@@ -177,9 +178,15 @@
         balances: { checking: 1000, savings: 5000 },
         transactions: [],
         accountInfo: {
-          checking: { accountNumber: generateRandomAccountNumber(), routingNumber: generateRandomRoutingNumber() },
-          savings: { accountNumber: generateRandomAccountNumber(), routingNumber: generateRandomRoutingNumber() }
-        }
+          checking: {
+            accountNumber: generateRandomAccountNumber(),
+            routingNumber: generateRandomRoutingNumber(),
+          },
+          savings: {
+            accountNumber: generateRandomAccountNumber(),
+            routingNumber: generateRandomRoutingNumber(),
+          },
+        },
       };
       saveUserData(username, defaultData);
       return defaultData;
@@ -195,6 +202,9 @@
     function generateRandomRoutingNumber() {
       return Math.floor(100000000 + Math.random() * 900000000).toString();
     }
+    function generateTransactionID() {
+      return 'TX' + Date.now() + Math.floor(Math.random() * 1000);
+    }
 
     const loggedInUser = localStorage.getItem("loggedInUser");
     if (!loggedInUser) {
@@ -209,19 +219,12 @@
       el.style.display = "block";
     }
 
-    // Validate routing number is 9 digits
-    function validateRoutingNumber(num) {
-      return /^\d{9}$/.test(num);
-    }
-
-    // Add transaction record
     function addTransaction(username, tx) {
       const data = loadUserData(username);
       data.transactions.push(tx);
       saveUserData(username, data);
     }
 
-    // Find user by account number and routing number (local transfer recipient search)
     function findUserByAccount(accountNumber, routingNumber, accountType) {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -237,12 +240,11 @@
       return null;
     }
 
-    // Update balances helper
     function updateBalance(username, accountType, amountChange) {
       const data = loadUserData(username);
       if (!data.balances[accountType]) return false;
       data.balances[accountType] += amountChange;
-      if (data.balances[accountType] < 0) return false; // no overdraft allowed
+      if (data.balances[accountType] < 0) return false; // no overdraft
       saveUserData(username, data);
       return true;
     }
@@ -251,12 +253,7 @@
       return new Date().toLocaleString();
     }
 
-    // Generate a simple unique transaction ID
-    function generateTransactionId() {
-      return 'TX' + Date.now() + Math.floor(Math.random() * 1000);
-    }
-
-    // ---- Local Transfer ----
+    // Local Transfer
     document.getElementById("localTransferForm").addEventListener("submit", e => {
       e.preventDefault();
       const sender = loggedInUser;
@@ -266,13 +263,8 @@
       const recipientAccountType = document.getElementById("localRecipientAccountType").value;
       const amount = parseFloat(document.getElementById("localAmount").value);
 
-      if (!recipientName || !recipientAccountNumber || !validateRoutingNumber(recipientRoutingNumber) || !recipientAccountType || isNaN(amount) || amount <= 0) {
+      if (!recipientName || !recipientAccountNumber || !recipientRoutingNumber || !recipientAccountType || isNaN(amount) || amount <= 0) {
         showResultMessage("Please fill all fields correctly.", false);
-        return;
-      }
-
-      if (sender === null) {
-        showResultMessage("You are not logged in.", false);
         return;
       }
 
@@ -281,59 +273,54 @@
         return;
       }
 
-      // Find recipient username by account/routing/accountType
       const recipientUsername = findUserByAccount(recipientAccountNumber, recipientRoutingNumber, recipientAccountType);
 
-      // If recipient not found, treat as external account and just debit sender
       if (recipientUsername) {
-        // Credit recipient balance
         updateBalance(recipientUsername, recipientAccountType, amount);
       }
 
       const txDate = formatDateTime();
-      const txId = generateTransactionId();
+      const transactionID = generateTransactionID();
 
-      // Record sender transaction
-      addTransaction(sender, {
-        id: txId,
+      const senderTx = {
+        id: transactionID,
         type: "debit",
-        amount: amount,
+        amount,
         description: `Local transfer to ${recipientName} (${recipientAccountType} acct)`,
         date: txDate,
         recipientAccountNumber,
         recipientRoutingNumber,
         recipientAccountType,
-      });
+      };
+      addTransaction(sender, senderTx);
 
-      // Record recipient transaction only if internal
       if (recipientUsername) {
-        addTransaction(recipientUsername, {
-          id: txId,
+        const recipientTx = {
+          id: transactionID,
           type: "credit",
-          amount: amount,
+          amount,
           description: `Local transfer received from ${sender} (checking acct)`,
           date: txDate,
           senderUsername: sender,
-        });
+        };
+        addTransaction(recipientUsername, recipientTx);
       }
 
-      // Store last transaction info in sessionStorage for receipt display
-      sessionStorage.setItem('lastTransaction', JSON.stringify({
-        id: txId,
-        type: 'Local Transfer',
-        amount,
+      localStorage.setItem("lastTransfer", JSON.stringify({
+        transactionID,
+        type: "Local Transfer",
         recipientName,
         recipientAccountNumber,
         recipientRoutingNumber,
         recipientAccountType,
-        date: txDate
+        amount,
+        date: txDate,
       }));
 
-      showResultMessage(`Successfully sent $${amount.toFixed(2)} to ${recipientName} (${recipientAccountType}).`);
-      e.target.reset();
+      location.href = "confirmation.html";
     });
 
-    // ---- Between Accounts ----
+    // Between Accounts
     document.getElementById("betweenAccountsForm").addEventListener("submit", e => {
       e.preventDefault();
       const sender = loggedInUser;
@@ -354,13 +341,13 @@
       updateBalance(sender, toAcct, amount);
 
       const txDate = formatDateTime();
-      const txId = generateTransactionId();
+      const transactionID = generateTransactionID();
       const txDesc = `Transfer between accounts: ${fromAcct} -> ${toAcct}`;
 
       addTransaction(sender, {
-        id: txId,
+        id: transactionID,
         type: "debit",
-        amount: amount,
+        amount,
         description: txDesc,
         date: txDate,
         fromAccount: fromAcct,
@@ -368,30 +355,34 @@
       });
 
       addTransaction(sender, {
-        id: txId,
+        id: transactionID,
         type: "credit",
-        amount: amount,
+        amount,
         description: txDesc,
         date: txDate,
         fromAccount: fromAcct,
         toAccount: toAcct,
       });
 
-      // Store last transaction info for receipt
-      sessionStorage.setItem('lastTransaction', JSON.stringify({
-        id: txId,
-        type: 'Between Accounts Transfer',
-        amount,
+      localStorage.setItem("lastTransfer", JSON.stringify({
+        transactionID,
+        type: "Between Accounts Transfer",
         fromAccount: fromAcct,
         toAccount: toAcct,
-        date: txDate
+        amount,
+        date: txDate,
       }));
 
       showResultMessage(`Successfully transferred $${amount.toFixed(2)} from ${fromAcct} to ${toAcct}.`);
+
       e.target.reset();
+
+      setTimeout(() => {
+        location.href = "confirmation.html";
+      }, 1500);
     });
 
-    // ---- International Transfer ----
+    // International Transfer
     document.getElementById("internationalTransferForm").addEventListener("submit", e => {
       e.preventDefault();
       const sender = loggedInUser;
@@ -413,12 +404,12 @@
       }
 
       const txDate = formatDateTime();
-      const txId = generateTransactionId();
+      const transactionID = generateTransactionID();
 
       addTransaction(sender, {
-        id: txId,
+        id: transactionID,
         type: "debit",
-        amount: amount,
+        amount,
         description: `International transfer to ${recipientName} (${recipientAccountType}) in ${currency}`,
         date: txDate,
         recipientAccountNumber,
@@ -427,20 +418,19 @@
         currency,
       });
 
-      sessionStorage.setItem('lastTransaction', JSON.stringify({
-        id: txId,
-        type: 'International Transfer',
-        amount,
+      localStorage.setItem("lastTransfer", JSON.stringify({
+        transactionID,
+        type: "International Transfer",
         recipientName,
         recipientAccountNumber,
         recipientRoutingNumber,
         recipientAccountType,
+        amount,
         currency,
-        date: txDate
+        date: txDate,
       }));
 
-      showResultMessage(`International transfer of $${amount.toFixed(2)} (${currency}) sent to ${recipientName}.`);
-      e.target.reset();
+      location.href = "confirmation.html";
     });
   </script>
 </body>
