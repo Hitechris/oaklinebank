@@ -254,7 +254,8 @@ Press OK to submit or Cancel to revise.
       if (!confirm(confirmationMsg)) {
         return; // Cancel submission
       }
-         // Update logged-in user data with new account and deposit
+
+      // Load user data or initialize
       const userKey = 'user_' + loggedInUser;
       let userData = JSON.parse(localStorage.getItem(userKey)) || {
         balances: { checking: 0, savings: 0 },
@@ -265,17 +266,27 @@ Press OK to submit or Cancel to revise.
         }
       };
 
-      if (accountType === 'checking') {
-        userData.balances.checking += initialDeposit;
-        userData.accountInfo.checking.accountNumber = generateRandomAccountNumber();
-        userData.accountInfo.checking.routingNumber = generateRandomRoutingNumber();
-      } else if (accountType === 'savings') {
-        userData.balances.savings += initialDeposit;
-        userData.accountInfo.savings.accountNumber = generateRandomAccountNumber();
-        userData.accountInfo.savings.routingNumber = generateRandomRoutingNumber();
+      // Prevent duplicate accounts
+      if (accountType === 'checking' && userData.accountInfo.checking.accountNumber) {
+        alert('You already have a Checking account.');
+        return;
+      } else if (accountType === 'savings' && userData.accountInfo.savings.accountNumber) {
+        alert('You already have a Savings account.');
+        return;
       }
 
-      // Save updated user data back to localStorage
+      // Generate account info only if not existing & add initial deposit
+      if (accountType === 'checking') {
+        userData.accountInfo.checking.accountNumber = generateRandomAccountNumber();
+        userData.accountInfo.checking.routingNumber = generateRandomRoutingNumber();
+        userData.balances.checking = initialDeposit;
+      } else if (accountType === 'savings') {
+        userData.accountInfo.savings.accountNumber = generateRandomAccountNumber();
+        userData.accountInfo.savings.routingNumber = generateRandomRoutingNumber();
+        userData.balances.savings = initialDeposit;
+      }
+
+      // Save updated user data
       localStorage.setItem(userKey, JSON.stringify(userData));
 
       // Also save to pendingAccountOpenings for admin approval records
@@ -301,4 +312,4 @@ Press OK to submit or Cancel to revise.
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>   
+</html>
