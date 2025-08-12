@@ -70,30 +70,43 @@
 
   <div id="message" role="alert" aria-live="polite"></div>
 
-  <script>
-    // Get logged in username from localStorage
-    const username = localStorage.getItem('loggedInUser');
+  <!-- Firebase SDK and script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-    if (!username) {
-      alert('You must be logged in to withdraw funds.');
-      window.location.href = 'login.html'; // Or your login page
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
+    };
 
-    // Helper: load user data from localStorage
-    function loadUserData(user) {
-      const raw = localStorage.getItem('user_' + user);
-      if (!raw) return null;
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return null;
-      }
-    }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    const form = document.getElementById('withdrawalForm');
     const messageDiv = document.getElementById('message');
+    const form = document.getElementById('withdrawalForm');
 
-    form.addEventListener('submit', (e) => {
+    let currentUser;
+    let userDocRef;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert('You must be logged in to withdraw funds.');
+        window.location.href = 'login.html';
+        return;
+      }
+      currentUser = user;
+      userDocRef = doc(db, 'users', user.uid);
+    });
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       messageDiv.textContent = '';
       messageDiv.className = '';
@@ -113,43 +126,45 @@
         return;
       }
 
-      const userData = loadUserData(username);
-      if (!userData) {
-        messageDiv.textContent = 'User data not found. Please login again.';
+      try {
+        const docSnap = await getDoc(userDocRef);
+        if (!docSnap.exists()) {
+          messageDiv.textContent = 'User data not found. Please contact support.';
+          messageDiv.className = 'text-danger';
+          return;
+        }
+
+        const userData = docSnap.data();
+        const balance = userData.balances?.[accountType] || 0;
+
+        if (amount > balance) {
+          messageDiv.textContent = `Insufficient funds. Your ${accountType} balance is $${balance.toFixed(2)}.`;
+          messageDiv.className = 'text-danger';
+          return;
+        }
+
+        const withdrawalRequest = {
+          uid: currentUser.uid,
+          username: userData.username || currentUser.email,
+          accountType,
+          amount,
+          description,
+          date: serverTimestamp(),
+          status: 'pending'
+        };
+
+        await addDoc(collection(db, 'withdrawalRequests'), withdrawalRequest);
+
+        messageDiv.textContent = 'Withdrawal request submitted and awaiting admin approval.';
+        messageDiv.className = 'text-success';
+
+        form.reset();
+
+      } catch (error) {
+        console.error("Error submitting withdrawal:", error);
+        messageDiv.textContent = 'Failed to submit withdrawal request: ' + error.message;
         messageDiv.className = 'text-danger';
-        return;
       }
-
-      // Check balance
-      const balance = userData.balances?.[accountType] || 0;
-      if (amount > balance) {
-        messageDiv.textContent = `Insufficient funds. Your ${accountType} balance is $${balance.toFixed(2)}.`;
-        messageDiv.className = 'text-danger';
-        return;
-      }
-
-      // Prepare withdrawal request object matching admin-dashboard format
-      const withdrawalRequest = {
-        username: username,
-        accountType: accountType,
-        amount: amount,
-        description: description,
-        date: new Date().toLocaleString()
-      };
-
-      // Get current pending withdrawals or initialize
-      let pendingWithdrawals = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-
-      // Add new request
-      pendingWithdrawals.push(withdrawalRequest);
-      localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingWithdrawals));
-
-      // Confirmation message
-      messageDiv.textContent = 'Withdrawal request submitted and awaiting admin approval.';
-      messageDiv.className = 'text-success';
-
-      // Clear form
-      form.reset();
     });
   </script>
 
