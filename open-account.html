@@ -239,6 +239,42 @@
         return;
       }
 
+      // Check if user already has the account type
+      let userKey = 'user_' + loggedInUser;
+      let userData = JSON.parse(localStorage.getItem(userKey)) || {
+        balances: { checking: 0, savings: 0 },
+        transactions: [],
+        accountInfo: {
+          checking: { accountNumber: '', routingNumber: '' },
+          savings: { accountNumber: '', routingNumber: '' }
+        }
+      };
+
+      console.log('Checking account number:', userData.accountInfo.checking.accountNumber);
+      console.log('Savings account number:', userData.accountInfo.savings.accountNumber);
+
+      if (accountType === 'checking') {
+        if (
+          userData.accountInfo &&
+          userData.accountInfo.checking &&
+          userData.accountInfo.checking.accountNumber &&
+          userData.accountInfo.checking.accountNumber.trim() !== ''
+        ) {
+          alert('You already have a Checking account.');
+          return;
+        }
+      } else if (accountType === 'savings') {
+        if (
+          userData.accountInfo &&
+          userData.accountInfo.savings &&
+          userData.accountInfo.savings.accountNumber &&
+          userData.accountInfo.savings.accountNumber.trim() !== ''
+        ) {
+          alert('You already have a Savings account.');
+          return;
+        }
+      }
+
       // Confirmation dialog
       const confirmationMsg = `
 Please confirm your details:
@@ -255,38 +291,18 @@ Press OK to submit or Cancel to revise.
         return; // Cancel submission
       }
 
-      // Load user data or initialize
-      const userKey = 'user_' + loggedInUser;
-      let userData = JSON.parse(localStorage.getItem(userKey)) || {
-        balances: { checking: 0, savings: 0 },
-        transactions: [],
-        accountInfo: {
-          checking: { accountNumber: '', routingNumber: '' },
-          savings: { accountNumber: '', routingNumber: '' }
-        }
-      };
-
-      // Prevent duplicate accounts
-      if (accountType === 'checking' && userData.accountInfo.checking.accountNumber) {
-        alert('You already have a Checking account.');
-        return;
-      } else if (accountType === 'savings' && userData.accountInfo.savings.accountNumber) {
-        alert('You already have a Savings account.');
-        return;
-      }
-
-      // Generate account info only if not existing & add initial deposit
+      // Update logged-in user data with new account and deposit
       if (accountType === 'checking') {
+        userData.balances.checking += initialDeposit;
         userData.accountInfo.checking.accountNumber = generateRandomAccountNumber();
         userData.accountInfo.checking.routingNumber = generateRandomRoutingNumber();
-        userData.balances.checking = initialDeposit;
       } else if (accountType === 'savings') {
+        userData.balances.savings += initialDeposit;
         userData.accountInfo.savings.accountNumber = generateRandomAccountNumber();
         userData.accountInfo.savings.routingNumber = generateRandomRoutingNumber();
-        userData.balances.savings = initialDeposit;
       }
 
-      // Save updated user data
+      // Save updated user data back to localStorage
       localStorage.setItem(userKey, JSON.stringify(userData));
 
       // Also save to pendingAccountOpenings for admin approval records
