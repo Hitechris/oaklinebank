@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Profile | Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     .profile-pic {
       width: 120px;
@@ -82,7 +82,7 @@
 
         <div class="text-center mt-4">
           <button type="submit" class="btn btn-success">Save Profile</button>
-          <a href="dashboard.html" class="btn btn-outline-secondary">Back to Dashboard</a>
+          <a href="dashboard.html" class="btn btn-outline-secondary ms-2">Back to Dashboard</a>
         </div>
       </form>
 
@@ -130,184 +130,191 @@
   </div>
 </div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-storage-compat.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+  import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-storage.js";
 
-<script>
-  // Your Firebase config here
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+    authDomain: "oakline-bank.firebaseapp.com",
+    projectId: "oakline-bank",
+    storageBucket: "oakline-bank.firebasestorage.app",
+    messagingSenderId: "199506974383",
+    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+    measurementId: "G-XXRQF2N3XB"
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
 
   let currentUser;
   let userDocRef;
 
-  // Check auth state and load profile
-  auth.onAuthStateChanged(user => {
+  const profileImageElem = document.getElementById('profileImage');
+  const uploadPicElem = document.getElementById('uploadPic');
+
+  const checkingAccountNumberFull = document.getElementById('checkingAccountNumberFull');
+  const checkingRoutingNumberFull = document.getElementById('checkingRoutingNumberFull');
+  const savingsAccountNumberFull = document.getElementById('savingsAccountNumberFull');
+  const savingsRoutingNumberFull = document.getElementById('savingsRoutingNumberFull');
+
+  // Elements for profile form
+  const profileForm = document.getElementById('profileForm');
+  const usernameInput = document.getElementById('username');
+  const emailInput = document.getElementById('email');
+  const dobInput = document.getElementById('dob');
+  const ssnInput = document.getElementById('ssn');
+  const addressInput = document.getElementById('address');
+  const cityInput = document.getElementById('city');
+  const stateInput = document.getElementById('state');
+
+  // Password form elements
+  const passwordForm = document.getElementById('passwordForm');
+  const currentPasswordInput = document.getElementById('currentPassword');
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+
+  function loadUserProfile(user) {
+    userDocRef = doc(db, 'users', user.uid);
+
+    getDoc(userDocRef).then(docSnap => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        usernameInput.value = data.username || '';
+        emailInput.value = user.email || '';
+        dobInput.value = data.dob || '';
+        ssnInput.value = data.ssn || '';
+        addressInput.value = data.address || '';
+        cityInput.value = data.city || '';
+        stateInput.value = data.state || '';
+
+        if (data.profileImageURL) {
+          profileImageElem.src = data.profileImageURL;
+        }
+
+        if(data.accountInfo){
+          checkingAccountNumberFull.textContent = data.accountInfo.checking?.accountNumber || "N/A";
+          checkingRoutingNumberFull.textContent = data.accountInfo.checking?.routingNumber || "N/A";
+          savingsAccountNumberFull.textContent = data.accountInfo.savings?.accountNumber || "N/A";
+          savingsRoutingNumberFull.textContent = data.accountInfo.savings?.routingNumber || "N/A";
+        } else {
+          checkingAccountNumberFull.textContent = "N/A";
+          checkingRoutingNumberFull.textContent = "N/A";
+          savingsAccountNumberFull.textContent = "N/A";
+          savingsRoutingNumberFull.textContent = "N/A";
+        }
+      } else {
+        // New user doc - set defaults if needed
+        checkingAccountNumberFull.textContent = "N/A";
+        checkingRoutingNumberFull.textContent = "N/A";
+        savingsAccountNumberFull.textContent = "N/A";
+        savingsRoutingNumberFull.textContent = "N/A";
+      }
+    }).catch(console.error);
+  }
+
+  onAuthStateChanged(auth, user => {
     if (!user) {
-      alert("Not logged in");
-      window.location.href = "login.html";
+      alert('Not logged in');
+      window.location.href = 'login.html';
       return;
     }
     currentUser = user;
-    userDocRef = db.collection('users').doc(user.uid);
-    loadUserProfile();
+    loadUserProfile(user);
   });
 
-  async function loadUserProfile() {
-    try {
-      const doc = await userDocRef.get();
-      if (!doc.exists) {
-        // Create doc if doesn't exist
-        await userDocRef.set({
-          username: currentUser.displayName || '',
-          email: currentUser.email || '',
-          dob: '',
-          ssn: '',
-          address: '',
-          city: '',
-          state: '',
-          profileImage: '',
-          accountInfo: {
-            checking: { accountNumber: 'N/A', routingNumber: 'N/A' },
-            savings: { accountNumber: 'N/A', routingNumber: 'N/A' }
-          }
-        });
-        populateForm({});
-      } else {
-        populateForm(doc.data());
-      }
-    } catch (error) {
-      console.error("Error loading profile:", error);
-      alert("Failed to load profile data.");
-    }
-  }
-
-  function populateForm(data) {
-    document.getElementById("profileImage").src = data.profileImage || "https://via.placeholder.com/150";
-    document.getElementById("username").value = data.username || currentUser.displayName || "";
-    document.getElementById("email").value = data.email || currentUser.email || "";
-    document.getElementById("dob").value = data.dob || "";
-    document.getElementById("ssn").value = data.ssn || "";
-    document.getElementById("address").value = data.address || "";
-    document.getElementById("city").value = data.city || "";
-    document.getElementById("state").value = data.state || "";
-
-    document.getElementById("checkingAccountNumberFull").textContent = (data.accountInfo?.checking?.accountNumber) || "N/A";
-    document.getElementById("checkingRoutingNumberFull").textContent = (data.accountInfo?.checking?.routingNumber) || "N/A";
-    document.getElementById("savingsAccountNumberFull").textContent = (data.accountInfo?.savings?.accountNumber) || "N/A";
-    document.getElementById("savingsRoutingNumberFull").textContent = (data.accountInfo?.savings?.routingNumber) || "N/A";
-  }
-
   // Upload profile picture
-  document.getElementById("uploadPic").addEventListener("change", async (e) => {
+  uploadPicElem.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const storageRef = storage.ref(`profilePictures/${currentUser.uid}/${file.name}`);
-    const uploadTask = storageRef.put(file);
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const base64String = evt.target.result;
+      profileImageElem.src = base64String;
 
-    uploadTask.on('state_changed', 
-      snapshot => {
-        // Optional: progress indicator
-      }, 
-      error => {
-        console.error("Upload failed:", error);
-        alert("Failed to upload image.");
-      }, 
-      async () => {
-        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        document.getElementById("profileImage").src = downloadURL;
-        await userDocRef.update({ profileImage: downloadURL });
-        alert("Profile picture updated.");
+      // Upload to Firebase Storage
+      try {
+        const imageRef = ref(storage, `profileImages/${currentUser.uid}`);
+        await uploadString(imageRef, base64String, 'data_url');
+
+        const url = await getDownloadURL(imageRef);
+        await updateDoc(userDocRef, { profileImageURL: url });
+
+        alert('Profile image updated!');
+      } catch (error) {
+        alert('Failed to upload profile image: ' + error.message);
+        console.error(error);
       }
-    );
+    };
+    reader.readAsDataURL(file);
   });
 
   // Save profile form
-  document.getElementById("profileForm").addEventListener("submit", async (e) => {
+  profileForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     try {
-      const username = document.getElementById("username").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const dob = document.getElementById("dob").value;
-      const ssn = document.getElementById("ssn").value.trim();
-      const address = document.getElementById("address").value.trim();
-      const city = document.getElementById("city").value.trim();
-      const state = document.getElementById("state").value.trim();
-
-      // Update Firebase Auth email if changed
-      if (email !== currentUser.email) {
-        await currentUser.updateEmail(email);
-      }
-
-      // Update Firestore profile document
-      await userDocRef.update({
-        username,
-        email,
-        dob,
-        ssn,
-        address,
-        city,
-        state
+      await updateDoc(userDocRef, {
+        username: usernameInput.value.trim(),
+        dob: dobInput.value,
+        ssn: ssnInput.value.trim(),
+        address: addressInput.value.trim(),
+        city: cityInput.value.trim(),
+        state: stateInput.value.trim()
       });
 
-      alert("Profile updated successfully!");
+      // Update email if changed
+      if (emailInput.value.trim() !== currentUser.email) {
+        await currentUser.updateEmail(emailInput.value.trim());
+      }
+
+      alert('Profile updated successfully!');
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile: " + error.message);
+      alert('Error updating profile: ' + error.message);
+      console.error(error);
     }
   });
 
   // Change password form
-  document.getElementById("passwordForm").addEventListener("submit", async (e) => {
+  passwordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const currentPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (newPassword.length < 6) {
+      alert('New password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert('New passwords do not match.');
+      return;
+    }
+
     try {
-      const currentPassword = document.getElementById("currentPassword").value;
-      const newPassword = document.getElementById("newPassword").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-
-      if (newPassword.length < 6) {
-        alert("New password must be at least 6 characters.");
-        return;
-      }
-      if (newPassword !== confirmPassword) {
-        alert("New passwords do not match.");
-        return;
-      }
-
-      // Re-authenticate user with current password
-      const credential = firebase.auth.EmailAuthProvider.credential(
-        currentUser.email,
-        currentPassword
-      );
-      await currentUser.reauthenticateWithCredential(credential);
+      // Re-authenticate user
+      const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+      await reauthenticateWithCredential(currentUser, credential);
 
       // Update password
-      await currentUser.updatePassword(newPassword);
-      alert("Password updated successfully!");
-      document.getElementById("passwordForm").reset();
+      await updatePassword(currentUser, newPassword);
 
+      alert('Password updated successfully!');
+      passwordForm.reset();
     } catch (error) {
-      console.error("Error updating password:", error);
-      alert("Failed to update password: " + error.message);
+      alert('Failed to update password: ' + error.message);
+      console.error(error);
     }
   });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
