@@ -457,11 +457,22 @@
     document.getElementById("savingsRoutingNumber").textContent =
       userData.accountInfo.savings.routingNumber;
 
-    // Fixed logout button handler
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("loggedInUser");
-      location.href = "login.html";
-    });
+  function doLogout() {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "login.html";
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) logoutBtn.addEventListener("click", doLogout);
+
+// Also fix the dropdown menu logout link
+const menuLogout = document.querySelector('.dropdown-item[href="login.html"]');
+if (menuLogout) {
+  menuLogout.addEventListener("click", function (e) {
+    e.preventDefault(); // stop normal link navigation
+    doLogout();
+  });
+}
 
     const tooltipList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipList.map(t => new bootstrap.Tooltip(t));
