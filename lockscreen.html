@@ -110,7 +110,25 @@
     <a href="logout.html" class="logout-link" tabindex="0">Log out</a>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    // Firebase config - YOUR KEYS HERE
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     // Reapply dark mode if saved
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark-mode');
@@ -120,7 +138,24 @@
     const passwordInput = document.getElementById('passwordInput');
     const errorMessage = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', e => {
+    async function verifyPassword(username, enteredPassword) {
+      try {
+        const userRef = doc(db, "users", username);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          // WARNING: Plain text password check (for demo only)
+          return enteredPassword === userData.password;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.error("Error checking password:", error);
+        return false;
+      }
+    }
+
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       errorMessage.style.display = 'none';
 
@@ -132,21 +167,16 @@
         return;
       }
 
-      // Simulated password check: In a real app, verify securely server-side
-      // Here, we check against the stored password in localStorage (hashed ideally)
-      const userData = JSON.parse(localStorage.getItem('loggedInUser'));
-      if (!userData) {
+      const username = localStorage.getItem('loggedInUser');
+      if (!username) {
         errorMessage.textContent = 'No user logged in. Please log in again.';
         errorMessage.style.display = 'block';
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 3000);
+        setTimeout(() => window.location.href = 'login.html', 3000);
         return;
       }
 
-      // For demo: assume password stored in plain text in userData.password (not secure)
-      if (enteredPassword === userData.password) {
-        // Unlock session by redirecting to dashboard or homepage
+      const isValid = await verifyPassword(username, enteredPassword);
+      if (isValid) {
         window.location.href = 'dashboard.html';
       } else {
         errorMessage.textContent = 'Incorrect password. Please try again.';
