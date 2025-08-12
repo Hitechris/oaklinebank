@@ -26,10 +26,11 @@
     }
   </style>
 
-  <!-- Firebase App (the core Firebase SDK) -->
+  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
@@ -42,9 +43,8 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
-
-    window.db = db;
 
     window.signupHandler = async function(event) {
       event.preventDefault();
@@ -67,7 +67,7 @@
         return;
       }
 
-      // Check duplicate username
+      // Check duplicate username in Firestore
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("username", "==", username));
       const querySnapshot = await getDocs(q);
@@ -77,9 +77,13 @@
         return;
       }
 
-      // Add new user doc
       try {
-        await addDoc(usersRef, {
+        // Create user in Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Save user profile data in Firestore using uid as doc ID
+        await setDoc(doc(db, "users", user.uid), {
           fullName,
           username,
           email,
@@ -90,18 +94,23 @@
           city,
           country,
           address,
-          password, // In production, use Firebase Authentication or hash passwords!
+          createdAt: new Date(),
           accountInfo: {},
           balances: {},
           transactions: []
         });
+
         alert("Signup successful! Please log in.");
         window.location.href = "login.html";
+
       } catch (error) {
-        console.error("Error saving user: ", error);
-        alert("Failed to sign up. Please try again later.");
+        if (error.code === "auth/email-already-in-use") {
+          alert("Email already in use. Please use another.");
+        } else {
+          alert("Error signing up: " + error.message);
+        }
       }
-    }
+    };
   </script>
 </head>
 <body>
