@@ -172,29 +172,66 @@
     </div>
   </div>
 
-  <script>
-    const BANK_ROUTING_NUMBER = "075917864"; // Bank's permanent routing number
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    // Dark mode toggle
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      const icon = document.querySelector('.btn-darkmode i');
-      icon.classList.toggle('fa-moon');
-      icon.classList.toggle('fa-sun');
-    }
+<script>
+  // Firebase config (use your own config here)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+    authDomain: "oakline-bank.firebaseapp.com",
+    projectId: "oakline-bank",
+    storageBucket: "oakline-bank.firebasestorage.app",
+    messagingSenderId: "199506974383",
+    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+    measurementId: "G-XXRQF2N3XB"
+  };
 
-    // Logout button
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('loggedInUser');
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const BANK_ROUTING_NUMBER = "075917864"; // Bank's permanent routing number
+
+  // Dark mode toggle
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const icon = document.querySelector('.btn-darkmode i');
+    icon.classList.toggle('fa-moon');
+    icon.classList.toggle('fa-sun');
+  }
+
+  document.querySelector('.btn-darkmode').addEventListener('click', toggleDarkMode);
+
+  // Logout button using Firebase auth
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    auth.signOut().then(() => {
       window.location.href = 'login.html';
     });
+  });
 
-    function generateRandomAccountNumber() {
-      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  // Generate random 10-digit account number
+  function generateRandomAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  }
+
+  // Form submission handler
+  const form = document.getElementById('openAccountForm');
+
+  // Wait for auth state
+  auth.onAuthStateChanged(async user => {
+    if (!user) {
+      alert('You must be logged in to open a new account.');
+      window.location.href = 'login.html';
+      return;
     }
 
-    const form = document.getElementById('openAccountForm');
-    form.addEventListener('submit', function(e) {
+    const uid = user.uid;
+    const email = user.email;
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       if (!form.checkValidity()) {
@@ -203,15 +240,8 @@
         return;
       }
 
-      const loggedInUser = localStorage.getItem('loggedInUser');
-      if (!loggedInUser) {
-        alert('You must be logged in to open a new account.');
-        window.location.href = 'login.html';
-        return;
-      }
-
       const fullName = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
+      const formEmail = document.getElementById('email').value.trim();
       const accountType = document.getElementById('accountType').value;
       const initialDepositRaw = document.getElementById('initialDeposit').value;
       const initialDeposit = parseFloat(initialDepositRaw);
@@ -221,79 +251,101 @@
         return;
       }
 
-      const userKey = 'user_' + loggedInUser;
-      let userData = JSON.parse(localStorage.getItem(userKey)) || {
-        balances: { checking: 0, savings: 0 },
-        transactions: [],
-        accountInfo: {
-          checking: { accountNumber: '', routingNumber: '' },
-          savings: { accountNumber: '', routingNumber: '' }
+      // Confirm email matches logged-in user
+      if (formEmail.toLowerCase() !== email.toLowerCase()) {
+        alert('Email does not match your logged-in email.');
+        return;
+      }
+
+      try {
+        // Load user data document from Firestore
+        const userDocRef = db.collection('users').doc(uid);
+        const userDoc = await userDocRef.get();
+
+        let userData;
+        if (userDoc.exists) {
+          userData = userDoc.data();
+        } else {
+          // Initialize user data if not exists
+          userData = {
+            balances: { checking: 0, savings: 0 },
+            transactions: [],
+            accountInfo: {
+              checking: { accountNumber: '', routingNumber: '' },
+              savings: { accountNumber: '', routingNumber: '' }
+            }
+          };
+          await userDocRef.set(userData);
         }
-      };
 
-      // Check if user already has this account type
-      if (
-        userData.accountInfo &&
-        userData.accountInfo[accountType] &&
-        userData.accountInfo[accountType].accountNumber &&
-        userData.accountInfo[accountType].accountNumber.trim() !== ''
-      ) {
-        alert(`You already have a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
-        return;
-      }
+        // Check if user already has this account type
+        if (
+          userData.accountInfo &&
+          userData.accountInfo[accountType] &&
+          userData.accountInfo[accountType].accountNumber &&
+          userData.accountInfo[accountType].accountNumber.trim() !== ''
+        ) {
+          alert(`You already have a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
+          return;
+        }
 
-      // Check for existing pending requests
-      let pendingAccountOpenings = JSON.parse(localStorage.getItem('pendingAccountOpenings')) || [];
-      const existingPending = pendingAccountOpenings.find(r =>
-        r.username === loggedInUser &&
-        r.accountType === accountType &&
-        r.status === 'Pending'
-      );
+        // Check for existing pending requests in Firestore 'pendingAccountOpenings' collection
+        const pendingQuery = await db.collection('pendingAccountOpenings')
+          .where('uid', '==', uid)
+          .where('accountType', '==', accountType)
+          .where('status', '==', 'Pending')
+          .get();
 
-      if (existingPending) {
-        alert(`You already have a pending request for a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
-        return;
-      }
+        if (!pendingQuery.empty) {
+          alert(`You already have a pending request for a ${accountType.charAt(0).toUpperCase() + accountType.slice(1)} account.`);
+          return;
+        }
 
-      const confirmationMsg = `
+        const confirmationMsg = `
 Please confirm your details:
 
 Full Name: ${fullName}
-Email: ${email}
+Email: ${formEmail}
 Account Type: ${accountType.charAt(0).toUpperCase() + accountType.slice(1)}
 Initial Deposit: $${initialDeposit.toFixed(2)}
 
 Press OK to submit or Cancel to revise.
-      `;
+        `;
 
-      if (!confirm(confirmationMsg)) {
-        return;
+        if (!confirm(confirmationMsg)) {
+          return;
+        }
+
+        // Prepare new account data
+        userData.balances[accountType] += initialDeposit;
+        userData.accountInfo[accountType].accountNumber = generateRandomAccountNumber();
+        userData.accountInfo[accountType].routingNumber = BANK_ROUTING_NUMBER;
+
+        // Update user data in Firestore
+        await userDocRef.update(userData);
+
+        // Add pending account opening request in Firestore
+        await db.collection('pendingAccountOpenings').add({
+          uid: uid,
+          username: user.email.split('@')[0],
+          fullName: fullName,
+          email: formEmail,
+          accountType: accountType,
+          amount: initialDeposit,
+          status: "Pending",
+          date: new Date().toLocaleString()
+        });
+
+        form.reset();
+        form.classList.remove('was-validated');
+        document.getElementById('message').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error submitting account opening request:', error);
+        alert('An error occurred while submitting your request. Please try again later.');
       }
-
-      // Assign account number and permanent routing number
-      userData.balances[accountType] += initialDeposit;
-      userData.accountInfo[accountType].accountNumber = generateRandomAccountNumber();
-      userData.accountInfo[accountType].routingNumber = BANK_ROUTING_NUMBER;
-
-      localStorage.setItem(userKey, JSON.stringify(userData));
-
-      pendingAccountOpenings.push({
-        username: loggedInUser,
-        fullName,
-        email,
-        accountType,
-        amount: initialDeposit,
-        status: "Pending",
-        date: new Date().toLocaleString()
-      });
-      localStorage.setItem('pendingAccountOpenings', JSON.stringify(pendingAccountOpenings));
-
-      form.reset();
-      form.classList.remove('was-validated');
-      document.getElementById('message').style.display = 'block';
     });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  });
+</script>
 </body>
 </html>
