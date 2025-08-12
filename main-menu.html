@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    /* Your existing styles here */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f6f9;
@@ -221,7 +220,114 @@
       <button type="button" id="clearSearch" aria-label="Clear search"><i class="fas fa-times"></i></button>
     </form>
 
-    <!-- Feature cards will go here (part 2) -->
+    <!-- Account Management -->
+    <section aria-labelledby="accountMgmtTitle">
+      <h2 class="section-title" id="accountMgmtTitle">Account Management</h2>
+      <div class="feature-grid" id="accountMgmtFeatures">
+        <a href="dashboard.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="View your dashboard summary">
+          <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="profile.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="View and update your profile">
+          <i class="fas fa-user" aria-hidden="true"></i>
+          <span>Profile</span>
+        </a>
+        <a href="settings.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Update account and security settings">
+          <i class="fas fa-cog" aria-hidden="true"></i>
+          <span>Settings</span>
+        </a>
+        <a href="security.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Manage security options like 2FA and password">
+          <i class="fas fa-shield-alt" aria-hidden="true"></i>
+          <span>Security</span>
+        </a>
+        <a href="notifications.html" class="feature-card position-relative" role="link" tabindex="0" data-bs-toggle="tooltip" title="View your notifications">
+          <i class="fas fa-bell" aria-hidden="true"></i>
+          <span>Notifications</span>
+          <span class="badge-notify" id="notifBadge" aria-label="Unread notifications count" style="display:none;">0</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Transactions & Payments -->
+    <section aria-labelledby="transPaymentsTitle">
+      <h2 class="section-title" id="transPaymentsTitle">Transactions & Payments</h2>
+      <div class="feature-grid" id="transactionsFeatures">
+        <a href="transfer.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Transfer money between accounts or to others">
+          <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+          <span>Transfer Funds</span>
+        </a>
+        <a href="deposit.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Deposit money into your account">
+          <i class="fas fa-arrow-down" aria-hidden="true"></i>
+          <span>Deposit Funds</span>
+        </a>
+        <a href="withdrawal.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Withdraw money from your account">
+          <i class="fas fa-arrow-up" aria-hidden="true"></i>
+          <span>Withdraw Funds</span>
+        </a>
+        <a href="transactions.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="View your transaction history">
+          <i class="fas fa-list-ul" aria-hidden="true"></i>
+          <span>Transactions</span>
+        </a>
+        <a href="statements.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Download your bank statements">
+          <i class="fas fa-file-alt" aria-hidden="true"></i>
+          <span>Statements</span>
+        </a>
+        <a href="bill-pay.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Pay your bills online">
+          <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+          <span>Bill Pay</span>
+        </a>
+      </div>
+    </section>
+
+        <!-- Financial Tools -->
+    <section aria-labelledby="financialToolsTitle">
+      <h2 class="section-title" id="financialToolsTitle">Financial Tools</h2>
+      <div class="feature-grid" id="financialToolsFeatures">
+        <a href="budget.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Plan and manage your budget">
+          <i class="fas fa-wallet" aria-hidden="true"></i>
+          <span>Budget Planner</span>
+        </a>
+        <a href="investments.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Manage your investments and portfolio">
+          <i class="fas fa-chart-line" aria-hidden="true"></i>
+          <span>Investments</span>
+        </a>
+        <a href="loans.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Apply or manage your loans">
+          <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
+          <span>Loans</span>
+        </a>
+        <a href="credit-score.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Check your credit score">
+          <i class="fas fa-credit-card" aria-hidden="true"></i>
+          <span>Credit Score</span>
+        </a>
+        <a href="currency-converter.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Convert currencies in real-time">
+          <i class="fas fa-coins" aria-hidden="true"></i>
+          <span>Currency Converter</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Support & Info -->
+    <section aria-labelledby="supportInfoTitle">
+      <h2 class="section-title" id="supportInfoTitle">Support & Information</h2>
+      <div class="feature-grid" id="supportFeatures">
+        <a href="support.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Contact support or help">
+          <i class="fas fa-headset" aria-hidden="true"></i>
+          <span>Support</span>
+        </a>
+        <a href="faq.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Frequently Asked Questions">
+          <i class="fas fa-question-circle" aria-hidden="true"></i>
+          <span>FAQ</span>
+        </a>
+        <a href="contact.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Contact Oakline Bank">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+          <span>Contact Us</span>
+        </a>
+        <a href="feedback.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Send feedback">
+          <i class="fas fa-comment-dots" aria-hidden="true"></i>
+          <span>Feedback</span>
+        </a>
+      </div>
+    </section>
 
   </main>
 
@@ -231,66 +337,72 @@
     </div>
   </footer>
 
-  <!-- Firebase and script imports in part 2 -->
-  <!-- Feature Cards HTML -->
-  <section aria-labelledby="accountMgmtTitle">
-    <h2 class="section-title" id="accountMgmtTitle">Account Management</h2>
-    <div class="feature-grid" id="accountMgmtFeatures">
-      <a href="dashboard.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="View your dashboard summary">
-        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
-        <span>Dashboard</span>
-      </a>
-      <a href="profile.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="View and update your profile">
-        <i class="fas fa-user" aria-hidden="true"></i>
-        <span>Profile</span>
-      </a>
-      <a href="settings.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Update account and security settings">
-        <i class="fas fa-cog" aria-hidden="true"></i>
-        <span>Settings</span>
-      </a>
-      <a href="security.html" class="feature-card" role="link" tabindex="0" data-bs-toggle="tooltip" title="Manage security options like 2FA and password">
-        <i class="fas fa-shield-alt" aria-hidden="true"></i>
-        <span>Security</span>
-      </a>
-      <a href="notifications.html" class="feature-card position-relative" role="link" tabindex="0" data-bs-toggle="tooltip" title="View your notifications">
-        <i class="fas fa-bell" aria-hidden="true"></i>
-        <span>Notifications</span>
-        <span class="badge-notify" id="notifBadge" aria-label="Unread notifications count">3</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- Add other feature sections as needed... -->
-
-  <!-- Bootstrap JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+    // Your Firebase config (with your keys)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID",
-      measurementId: "YOUR_MEASUREMENT_ID"
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
 
-    // Show current user or redirect if not logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in
-        document.getElementById('welcomeUser').textContent = `Welcome, ${user.displayName || user.email}`;
+    // Fetch user data from Firestore by username
+    async function fetchUserData(username) {
+      try {
+        const userRef = doc(db, "users", username);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          return userSnap.data();
+        } else {
+          console.warn("No user document found for", username);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
+      }
+    }
+
+    // DOM Ready
+    window.addEventListener('DOMContentLoaded', async () => {
+      const username = localStorage.getItem('loggedInUser');
+      if (!username) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const userData = await fetchUserData(username);
+
+      // Update welcome message
+      const welcomeUserEl = document.getElementById('welcomeUser');
+      if (userData && userData.fullName) {
+        welcomeUserEl.textContent = `Welcome, ${userData.fullName}`;
       } else {
-        // Not signed in — redirect to login page
-        window.location.href = 'login.html';
+        welcomeUserEl.textContent = `Welcome, ${username}`;
+      }
+
+      // Update notifications badge
+      const notifBadge = document.getElementById('notifBadge');
+      if (userData && userData.notifications && userData.notifications.unreadCount > 0) {
+        notifBadge.textContent = userData.notifications.unreadCount;
+        notifBadge.style.display = 'inline-block';
+      } else {
+        notifBadge.style.display = 'none';
       }
     });
 
@@ -305,7 +417,7 @@
         : '<i class="fas fa-moon"></i> Dark Mode';
     });
 
-    // Tooltip init
+    // Tooltip initialization (Bootstrap)
     const tooltipTriggerList = [...document.querySelectorAll('[data-bs-toggle="tooltip"]')];
     tooltipTriggerList.forEach(t => new bootstrap.Tooltip(t));
 
@@ -317,7 +429,7 @@
       input.focus();
     });
 
-    // Filter feature cards based on search
+    // Filter feature cards based on search input
     document.getElementById('searchInput').addEventListener('input', e => {
       filterFeatures(e.target.value);
     });
@@ -331,6 +443,7 @@
       });
     }
   </script>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
