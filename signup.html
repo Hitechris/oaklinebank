@@ -18,7 +18,7 @@
   <div class="container">
     <div class="card">
       <h3 class="text-center text-primary mb-4">Create Your Oakline Bank Account</h3>
-      <form id="signupForm" onsubmit="signUpUser(event)">
+      <form id="signupForm">
         <div class="mb-3">
           <label class="form-label">Full Name</label>
           <input type="text" id="fullName" class="form-control" required />
@@ -62,7 +62,7 @@
       apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
       authDomain: "oakline-bank.firebaseapp.com",
       projectId: "oakline-bank",
-      storageBucket: "oakline-bank.appspot.com",  // <-- Corrected here
+      storageBucket: "oakline-bank.firebasestorage.app",
       messagingSenderId: "199506974383",
       appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
       measurementId: "G-XXRQF2N3XB"
@@ -72,8 +72,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    window.signUpUser = async function(event) {
-      event.preventDefault();
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
       const fullName = document.getElementById("fullName").value.trim();
       const username = document.getElementById("username").value.trim();
@@ -84,11 +84,11 @@
       const phone = document.getElementById("phone").value.trim();
 
       try {
-        // Create user account in Firebase Authentication
+        // Create the user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Save additional info in Firestore under user.uid
+        // Save extra user info in Firestore
         await setDoc(doc(db, "users", user.uid), {
           fullName,
           username,
@@ -106,7 +106,7 @@
         console.error("Signup error:", error);
         alert("Failed to sign up: " + error.message);
       }
-    };
+    });
   </script>
 </body>
 </html>
