@@ -207,24 +207,35 @@
   <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
     <i class="fas fa-bars me-1"></i> Menu
   </button>
-  <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-    <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
-    <li><a class="dropdown-item" href="open-account.html"><i class="fas fa-file-signature me-2 text-secondary"></i> Open New Account</a></li>
-    <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
-    <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
-    <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
-    <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
-    <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
-    <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="login.html"><i class="fas fa-wallet me-2 text-secondary"></i>Logout</a></li>
-    <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
-    <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="admin-login.html"><i class="fas fa-user-shield me-2 text-danger"></i> Admin Dashboard</a></li>
-  </ul>
+<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+  <li><a class="dropdown-item" href="main-menu.html"><i class="fas fa-bars me-2 text-primary"></i> Main Menu</a></li>
+
+  <li><hr class="dropdown-divider"></li>
+  <li class="dropdown-header">Accounts</li>
+  <li class="dropdown-item">
+    Checking: <span id="dropdownCheckingAccount">****1023</span>
+  </li>
+  <li class="dropdown-item">
+    Savings: <span id="dropdownSavingsAccount">****7854</span>
+  </li>
+
+  <li><hr class="dropdown-divider"></li>
+  <li><a class="dropdown-item" href="open-account.html"><i class="fas fa-file-signature me-2 text-secondary"></i> Open New Account</a></li>
+  <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2 text-secondary"></i> View Profile</a></li>
+  <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2 text-secondary"></i> Settings</a></li>
+  <li><hr class="dropdown-divider"></li>
+  <li><a class="dropdown-item" href="transfer.html"><i class="fas fa-exchange-alt me-2 text-secondary"></i> Quick Transfer</a></li>
+  <li><a class="dropdown-item" href="transactions.html"><i class="fas fa-list-ul me-2 text-secondary"></i> Transaction History</a></li>
+  <li><a class="dropdown-item" href="deposit.html"><i class="fas fa-arrow-down me-2 text-secondary"></i> Deposit Funds</a></li>
+  <li><a class="dropdown-item" href="withdrawal.html"><i class="fas fa-arrow-up me-2 text-secondary"></i> Withdraw Funds</a></li>
+  <li><a class="dropdown-item" href="statements.html"><i class="fas fa-file-alt me-2 text-secondary"></i> Download Statements</a></li>
+  <li><hr class="dropdown-divider"></li>
+  <li><a class="dropdown-item" href="login.html"><i class="fas fa-wallet me-2 text-secondary"></i>Logout</a></li>
+  <li><a class="dropdown-item" href="investments.html"><i class="fas fa-chart-line me-2 text-secondary"></i> Investment Portfolio</a></li>
+  <li><a class="dropdown-item" href="support.html"><i class="fas fa-headset me-2 text-secondary"></i> Support & Help</a></li>
+  <li><hr class="dropdown-divider"></li>
+  <li><a class="dropdown-item" href="admin-login.html"><i class="fas fa-user-shield me-2 text-danger"></i> Admin Dashboard</a></li>
+</ul>
 </div>
     </div>
   </div>
@@ -456,6 +467,17 @@
       userData.accountInfo.checking.routingNumber;
     document.getElementById("savingsRoutingNumber").textContent =
       userData.accountInfo.savings.routingNumber;
+
+      document.getElementById("checkingAccountNumber").textContent =
+    "****" + userData.accountInfo.checking.accountNumber.slice(-4);
+  document.getElementById("savingsAccountNumber").textContent =
+    "****" + userData.accountInfo.savings.accountNumber.slice(-4);
+
+  // ADD THIS:
+  document.getElementById("dropdownCheckingAccount").textContent =
+    "****" + userData.accountInfo.checking.accountNumber.slice(-4);
+  document.getElementById("dropdownSavingsAccount").textContent =
+    "****" + userData.accountInfo.savings.accountNumber.slice(-4);
 
   function doLogout() {
   localStorage.removeItem("loggedInUser");
