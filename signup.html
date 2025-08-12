@@ -25,6 +25,24 @@
       background-color: #003366;
     }
   </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
+      authDomain: "oakline-bank.firebaseapp.com",
+      projectId: "oakline-bank",
+      storageBucket: "oakline-bank.firebasestorage.app",
+      messagingSenderId: "199506974383",
+      appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
+      measurementId: "G-XXRQF2N3XB"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
   <div class="container">
@@ -123,31 +141,42 @@
         return;
       }
 
-      if (localStorage.getItem("user_" + username)) {
-        alert("Username already exists. Please choose another.");
-        return;
-      }
-
-      const user = {
-        fullName,
-        username,
-        email,
-        phone,
-        dob,
-        ssn,
-        state,
-        city,
-        country,
-        address,
-        password,
-        accountInfo: {},
-        balances: {},
-        transactions: []
-      };
-
-      localStorage.setItem("user_" + username, JSON.stringify(user));
-      alert("Signup successful! Please log in.");
-      location.href = "login.html";
+      db.collection('users').doc(username).get()
+        .then(docSnapshot => {
+          if (docSnapshot.exists) {
+            alert("Username already exists. Please choose another.");
+          } else {
+            const user = {
+              fullName,
+              username,
+              email,
+              phone,
+              dob,
+              ssn,
+              state,
+              city,
+              country,
+              address,
+              password,
+              accountInfo: {},
+              balances: {},
+              transactions: []
+            };
+            db.collection('users').doc(username).set(user)
+              .then(() => {
+                alert("Signup successful! Please log in.");
+                location.href = "login.html";
+              })
+              .catch(error => {
+                console.error("Error saving user:", error);
+                alert("Failed to register user. Try again later.");
+              });
+          }
+        })
+        .catch(error => {
+          console.error("Error checking username:", error);
+          alert("Failed to register user. Try again later.");
+        });
     });
   </script>
 </body>
