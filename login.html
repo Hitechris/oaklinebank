@@ -21,11 +21,29 @@
     button { background-color: #0052cc; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-weight: bold; }
     button:hover { background-color: #003366; }
     .error { color: red; margin-bottom: 10px; display: none; }
-    .remember { display: flex; align-items: center; margin-bottom: 15px; }
-    .remember input { margin-right: 10px; }
+
+    /* Remember Me checkbox styling */
+    .remember {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .remember input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #003366;
+      margin-right: 10px;
+    }
+    .remember label {
+      font-weight: 500;
+      color: #003366;
+    }
+
+    /* Dark mode */
     body.dark-mode { background-color: #121212; color: #e0e0e0; }
     body.dark-mode .form-container { background-color: #1a1a1a; color: #e0e0e0; }
     body.dark-mode input { background-color: #2a2a2a; color: #e0e0e0; border: 1px solid #555; }
+    body.dark-mode .remember label { color: #e0e0e0; }
   </style>
 </head>
 <body>
@@ -62,12 +80,14 @@
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
     const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYmVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Dark mode toggle
     const toggle = document.getElementById('darkModeToggle');
     toggle.addEventListener('change', () => document.body.classList.toggle('dark-mode', toggle.checked));
 
+    // Login form
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errorEl = document.getElementById("loginError");
@@ -87,14 +107,15 @@
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
+        // Remember Me storage
         if (remember) {
           localStorage.setItem("oaklineUser", JSON.stringify(data.user));
         } else {
           sessionStorage.setItem("oaklineUser", JSON.stringify(data.user));
         }
 
-        alert("Login successful! Redirecting...");
-        window.location.href = "index.html";
+        alert("Login successful! Redirecting to dashboard...");
+        window.location.href = "dashboard.html";
 
       } catch (err) {
         console.error("Login error:", err);
