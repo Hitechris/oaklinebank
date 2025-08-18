@@ -49,17 +49,33 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // ==================== Auth Check (fixed) ====================
+  // ==================== Auth State ====================
+  let currentUser = null;
+
+  // Listen for auth state changes
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session && session.user) {
+      currentUser = session.user;
+    } else {
+      // Not logged in, redirect
+      window.location.href = 'login.html';
+    }
+  });
+
+  // Utility function to get current user
   async function getUser() {
+    if (currentUser) return currentUser;
+
     const { data: session } = await supabase.auth.getSession();
     if (!session || !session.user) {
-      window.location.href = "login.html";
+      window.location.href = 'login.html';
       return null;
     }
-    return session.user;
+    currentUser = session.user;
+    return currentUser;
   }
 
-  // ==================== Generate Account Number ====================
+  // ==================== Account Number Generator ====================
   function generateAccountNumber() {
     const prefix = "10"; // can vary for checking/savings
     const randomPart = Math.floor(10000000 + Math.random() * 90000000); // 8 digits
@@ -71,7 +87,7 @@
     e.preventDefault();
 
     const user = await getUser();
-    if (!user) return;
+    if (!user) return; // wait until user is loaded
 
     const type = document.getElementById('accountType').value;
     const deposit = parseFloat(document.getElementById('initialDeposit').value) || 0;
