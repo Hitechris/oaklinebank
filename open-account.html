@@ -42,93 +42,85 @@
 </div>
 
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // ==================== Supabase Config ====================
-  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
-  const supabase = createClient(supabaseUrl, supabaseKey);
+// ==================== Supabase Config ====================
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // ==================== Auth State ====================
-  let currentUser = null;
-
-  // Listen for auth state changes
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (session && session.user) {
-      currentUser = session.user;
-    } else {
-      // Not logged in, redirect
-      window.location.href = 'login.html';
+// ==================== Wait for session to be ready ====================
+async function waitForUser() {
+  let user = null;
+  for (let i = 0; i < 20; i++) { // try 20 times
+    const { data } = await supabase.auth.getSession();
+    if (data.session && data.session.user) {
+      user = data.session.user;
+      break;
     }
-  });
-
-  // Utility function to get current user
-  async function getUser() {
-    if (currentUser) return currentUser;
-
-    const { data: session } = await supabase.auth.getSession();
-    if (!session || !session.user) {
-      window.location.href = 'login.html';
-      return null;
-    }
-    currentUser = session.user;
-    return currentUser;
+    await new Promise(r => setTimeout(r, 100)); // wait 100ms
   }
-
-  // ==================== Account Number Generator ====================
-  function generateAccountNumber() {
-    const prefix = "10"; // can vary for checking/savings
-    const randomPart = Math.floor(10000000 + Math.random() * 90000000); // 8 digits
-    return prefix + randomPart; // 10-digit account number
+  if (!user) {
+    window.location.href = "login.html";
+    return null;
   }
+  return user;
+}
 
-  // ==================== Form Submission ====================
-  document.getElementById('openAccountForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// ==================== Account Number Generator ====================
+function generateAccountNumber() {
+  const prefix = "10";
+  const randomPart = Math.floor(10000000 + Math.random() * 90000000);
+  return prefix + randomPart;
+}
 
-    const user = await getUser();
-    if (!user) return; // wait until user is loaded
+// ==================== Form Submission ====================
+document.getElementById('openAccountForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const type = document.getElementById('accountType').value;
-    const deposit = parseFloat(document.getElementById('initialDeposit').value) || 0;
-    const accountNumber = generateAccountNumber();
-    const routingNumber = '021000021'; // demo routing number
+  const user = await waitForUser();
+  if (!user) return;
 
-    try {
-      // Insert new account
-      const { data: newAccount, error: accountError } = await supabase
-        .from('accounts')
-        .insert([{
-          user_id: user.id,
-          type: type,
-          balance: deposit,
-          account_number: accountNumber,
-          routing_number: routingNumber
-        }])
-        .select()
-        .single();
+  const type = document.getElementById('accountType').value;
+  const deposit = parseFloat(document.getElementById('initialDeposit').value) || 0;
+  const accountNumber = generateAccountNumber();
+  const routingNumber = '021000021';
 
-      if (accountError) throw accountError;
+  try {
+    // Insert account
+    const { data: newAccount, error: accountError } = await supabase
+      .from('accounts')
+      .insert([{
+        user_id: user.id,
+        type: type,
+        balance: deposit,
+        account_number: accountNumber,
+        routing_number: routingNumber
+      }])
+      .select()
+      .single();
 
-      // Record opening transaction if deposit > 0
-      if (deposit > 0) {
-        await supabase.from('transactions').insert([{
-          user_id: user.id,
-          account_id: newAccount.id,
-          type: 'deposit',
-          amount: deposit,
-          description: 'Initial deposit'
-        }]);
-      }
+    if (accountError) throw accountError;
 
-      alert(`Success! Your new ${type} account has been created.`);
-      window.location.href = 'dashboard.html';
-
-    } catch (err) {
-      console.error(err);
-      alert('Error creating account. Please try again.');
+    // Insert initial transaction if deposit > 0
+    if (deposit > 0) {
+      await supabase.from('transactions').insert([{
+        user_id: user.id,
+        account_id: newAccount.id,
+        type: 'deposit',
+        amount: deposit,
+        description: 'Initial deposit'
+      }]);
     }
-  });
+
+    alert(`Success! Your new ${type} account has been created.`);
+    window.location.href = 'dashboard.html';
+
+  } catch (err) {
+    console.error(err);
+    alert('Error creating account. Please try again.');
+  }
+});
 </script>
 
 </body>
