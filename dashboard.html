@@ -16,71 +16,14 @@
       padding-bottom: 40px;
     }
 
-    .loading-placeholder {
-      display: inline-block;
-      width: 120px;
-      height: 1em;
-      background: linear-gradient(90deg, #e0e0e0 25%, #cfcfcf 50%, #e0e0e0 75%);
-      background-size: 200% 100%;
-      animation: loadingShine 1.2s ease-in-out infinite;
-      border-radius: 4px;
-    }
-
-    @keyframes loadingShine {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
     .dark-mode { background-color: #121212; color: #eee; }
     .dark-mode .card, .dark-mode .balance-card { background-color: #1e1e1e; color: #fff; }
 
-    .header-container {
-      max-width: 960px;
-      margin: 1rem auto 0.5rem auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1.5rem;
+    .navbar {
+      background-color: #004080;
     }
-
-    .logo-placeholder { width: 70px; height: 70px; background-color: #004080; border-radius: 12px; }
-    .bank-name { font-weight: 800; font-size: 2.5rem; color: #004080; }
-
-    .marquee-banner {
-      background: #004080;
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 500;
-      padding: 6px 0;
-      text-align: center;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .marquee-text {
-      display: inline-block;
-      padding-left: 100%;
-      animation: marquee 15s linear infinite;
-    }
-
-    @keyframes marquee {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
-    }
-
-    .top-controls-left, .top-controls-right {
-      position: fixed;
-      top: 10px;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      z-index: 1000;
-    }
-    .top-controls-left { left: 10px; }
-    .top-controls-right { right: 10px; }
-
-    .btn-logout { background-color: #004080; border: none; color: white; }
-    .btn-logout:hover { background-color: #002f66; }
+    .navbar .nav-link, .navbar-brand, .navbar-toggler { color: white !important; }
+    .dropdown-menu a { color: #333 !important; }
 
     .hero {
       background: #004080;
@@ -88,9 +31,6 @@
       padding: 2rem;
       margin: 1.5rem auto;
       border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       max-width: 960px;
       font-size: 22px;
       font-weight: 600;
@@ -125,219 +65,156 @@
 </head>
 <body>
 
-  <!-- Top Left -->
-  <div class="top-controls-left">
-    <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
-      <i class="fas fa-moon"></i>
-    </button>
-  </div>
-
-  <!-- Top Right -->
-  <div class="top-controls-right">
-    <button id="logoutBtn" class="btn btn-logout btn-sm">Logout</button>
-  </div>
-
-  <!-- Header -->
-  <div class="header-container">
-    <div class="logo-placeholder" aria-label="Bank Logo"></div>
-    <a href="index.html" class="bank-name text-decoration-none">Oakline Bank</a>
-  </div>
-
-  <!-- Scrolling Banner -->
-  <div class="marquee-banner">
-    <div class="marquee-text">
-      🔐 Welcome to Oakline Bank — The Most Secure and Trusted Digital Bank. Your Finances. Our Priority. 💼
-    </div>
-  </div>
-
-  <!-- Hero Section -->
-  <div class="hero">
-    <div class="d-flex align-items-center gap-3">
-      <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-      <div>
-        <h5 class="mb-1">Welcome, <span id="userWelcome">User</span></h5>
-        <small>Last login: <span id="lastLogin">Just now</span></small>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="dashboard.html">Oakline Bank</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle"></i> <span id="userWelcome">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+              <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="transfer.html">Transfer</a></li>
+              <li><a class="dropdown-item" href="deposit.html">Deposit</a></li>
+              <li><a class="dropdown-item" href="withdrawal.html">Withdraw</a></li>
+              <li><a class="dropdown-item" href="main-menu.html">Main Menu</a></li>
+              <li><a class="dropdown-item" href="transactions.html">Transactions</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
+  </nav>
 
-  <!-- Manual Refresh -->
-  <div class="text-center my-3">
-    <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboardData()">
-      <i class="fas fa-sync-alt me-1"></i> Refresh Dashboard
-    </button>
+  <!-- Hero -->
+  <div class="hero d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-1">Welcome, <span id="userName">Loading...</span></h5>
+      <small>Last login: <span id="lastLogin">Just now</span></small>
+    </div>
   </div>
-
-  <div class="text-center mb-4">
-    <a href="open-account.html" class="btn btn-primary">
-      <i class="fas fa-plus-circle me-1"></i> Open a New Account
-    </a>
-  </div>
-
-  <!-- Balances -->
+    <!-- Balances Section -->
   <div class="balances">
     <div class="balance-card">
-      <h6>Checking Account</h6>
-      <div id="checkingBalance" class="amount loading-placeholder">$0.00</div>
-      <div class="mt-2">
-        <small>
-          Account #: <span id="checkingAccountNumber" class="loading-placeholder">****1023</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountChecking()" data-bs-toggle="tooltip" title="Show/Hide">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
-            <i class="fas fa-copy"></i>
-          </button>
-        </small><br />
-        Routing #: <span id="checkingRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
-          <i class="fas fa-copy"></i>
-        </button>
-      </div>
+      <h6>Available Balance</h6>
+      <div class="amount" id="balance">$0.00</div>
     </div>
-
     <div class="balance-card">
-      <h6>Savings Account</h6>
-      <div id="savingsBalance" class="amount loading-placeholder">$0.00</div>
-      <div class="mt-2">
-        <small>
-          Savings Account #: <span id="savingsAccountNumber" class="loading-placeholder">****7854</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountSavings()" data-bs-toggle="tooltip" title="Show/Hide">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
-            <i class="fas fa-copy"></i>
-          </button>
-        </small><br />
-        Routing #: <span id="savingsRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
-          <i class="fas fa-copy"></i>
-        </button>
-      </div>
+      <h6>Savings</h6>
+      <div class="amount" id="savings">$0.00</div>
+    </div>
+    <div class="balance-card">
+      <h6>Investments</h6>
+      <div class="amount" id="investments">$0.00</div>
     </div>
   </div>
+
   <!-- Recent Transactions -->
-  <div class="container my-4" style="max-width: 960px;">
-    <h5>Recent Transactions</h5>
-    <div id="transactionsList" class="list-group">
-      <div class="list-group-item loading-placeholder">Loading transactions...</div>
+  <div class="container mt-4" style="max-width:960px;">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-bold">
+        <i class="fas fa-receipt me-2"></i> Recent Transactions
+      </div>
+      <ul class="list-group list-group-flush" id="transactionsList">
+        <li class="list-group-item text-muted">Loading...</li>
+      </ul>
     </div>
   </div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.6.0/dist/umd/supabase.min.js"></script>
+  <script>
+    const supabaseUrl = "https://YOUR_PROJECT_ID.supabase.co";
+    const supabaseKey = "YOUR_ANON_KEY";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // ==================== Supabase Config ====================
-    const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // ==================== Dark Mode ====================
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
-
-    // ==================== Authentication Check ====================
-    async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+    // Fetch user session + profile
+    async function loadUserData() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
       if (!user) {
         window.location.href = "login.html";
-      } else {
-        document.getElementById('userWelcome').innerText = user.email;
-        document.getElementById('lastLogin').innerText = new Date(user.last_sign_in_at).toLocaleString();
-      }
-    }
-
-    checkUser();
-
-    // ==================== Logout ====================
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      window.location.href = "login.html";
-    });
-
-    // ==================== Balances ====================
-    async function loadBalances() {
-      // Replace with your actual table names if different
-      const { data: checking, error: errCheck } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('type', 'checking')
-        .eq('user_id', supabase.auth.getUser().data.user.id);
-
-      const { data: savings, error: errSave } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('type', 'savings')
-        .eq('user_id', supabase.auth.getUser().data.user.id);
-
-      if (checking && checking.length) {
-        document.getElementById('checkingBalance').innerText = `$${checking[0].balance.toFixed(2)}`;
-        document.getElementById('checkingAccountNumber').innerText = checking[0].account_number;
-      }
-
-      if (savings && savings.length) {
-        document.getElementById('savingsBalance').innerText = `$${savings[0].balance.toFixed(2)}`;
-        document.getElementById('savingsAccountNumber').innerText = savings[0].account_number;
-      }
-    }
-
-    // ==================== Transactions ====================
-    async function loadTransactions() {
-      const { data: transactions } = await supabase
-        .from('transactions')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      const list = document.getElementById('transactionsList');
-      list.innerHTML = '';
-
-      if (!transactions || transactions.length === 0) {
-        list.innerHTML = '<div class="list-group-item">No recent transactions.</div>';
         return;
       }
 
-      transactions.forEach(tx => {
-        const item = document.createElement('div');
-        item.className = 'list-group-item d-flex justify-content-between align-items-center';
-        item.innerHTML = `
-          <div>
-            <strong>${tx.type.toUpperCase()}</strong> - ${tx.description || ''}
-          </div>
-          <div>
-            ${tx.amount >= 0 ? `<span class="text-success">+$${tx.amount.toFixed(2)}</span>` 
-                              : `<span class="text-danger">-$${Math.abs(tx.amount).toFixed(2)}</span>`}
-          </div>
+      // Fetch profile info
+      const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("full_name, balance, savings, investments, last_login")
+        .eq("id", user.id)
+        .single();
+
+      // Update UI
+      document.getElementById("userWelcome").textContent = profile.full_name || "User";
+      document.getElementById("userName").textContent = profile.full_name || "User";
+      document.getElementById("balance").textContent = `$${(profile.balance || 0).toFixed(2)}`;
+      document.getElementById("savings").textContent = `$${(profile.savings || 0).toFixed(2)}`;
+      document.getElementById("investments").textContent = `$${(profile.investments || 0).toFixed(2)}`;
+      document.getElementById("lastLogin").textContent = profile.last_login || "Just now";
+
+      animateBalance("balance");
+    }
+
+    // Animate balance change
+    function animateBalance(id) {
+      const el = document.getElementById(id);
+      el.classList.add("animated-balance");
+      setTimeout(() => el.classList.remove("animated-balance"), 1000);
+    }
+
+    // Load last 5 transactions
+    async function loadTransactions() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return;
+
+      const { data: txs } = await supabaseClient
+        .from("transactions")
+        .select("id, type, amount, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      const list = document.getElementById("transactionsList");
+      list.innerHTML = "";
+
+      if (!txs || txs.length === 0) {
+        list.innerHTML = '<li class="list-group-item text-muted">No recent transactions.</li>';
+        return;
+      }
+
+      txs.forEach(tx => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between";
+        li.innerHTML = `
+          <span><i class="fas ${tx.type === 'deposit' ? 'fa-arrow-down text-success' : 'fa-arrow-up text-danger'}"></i>
+          ${tx.type.toUpperCase()}</span>
+          <span>$${tx.amount.toFixed(2)} <small class="text-muted">(${new Date(tx.created_at).toLocaleDateString()})</small></span>
         `;
-        list.appendChild(item);
+        list.appendChild(li);
       });
     }
 
-    // ==================== Refresh Dashboard ====================
-    async function refreshDashboardData() {
-      await loadBalances();
-      await loadTransactions();
-    }
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "login.html";
+    });
 
-    refreshDashboardData();
-
-    // ==================== Copy Account/Routing ====================
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      alert("Copied: " + text);
-    }
-
-    // ==================== Toggle Account Numbers ====================
-    function toggleAccountChecking() {
-      const el = document.getElementById('checkingAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
-    }
-
-    function toggleAccountSavings() {
-      const el = document.getElementById('savingsAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
-    }
+    // On page load
+    document.addEventListener("DOMContentLoaded", () => {
+      loadUserData();
+      loadTransactions();
+    });
   </script>
 </body>
-</html>  
+</html>
