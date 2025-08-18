@@ -1380,71 +1380,188 @@ function validateLogin() {
   </a>
 </nav>
 
-  <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+<!-- Supabase SDK -->
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-<script>
-  // Your Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
-    authDomain: "oakline-bank.firebaseapp.com",
-    projectId: "oakline-bank",
-    storageBucket: "oakline-bank.firebasestorage.app",
-    messagingSenderId: "199506974383",
-    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
-    measurementId: "G-XXRQF2N3XB"
-  };
+  // Supabase config
+  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  // ====================
+  // SIGNUP FUNCTION
+  // ====================
+  async function validateSignup() {
+    const firstName = document.getElementById('signupFirstName').value.trim();
+    const middleName = document.getElementById('signupMiddleName').value.trim();
+    const lastName = document.getElementById('signupLastName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const dob = document.getElementById('signupDOB').value.trim();
+    const accountType = document.getElementById('signupAccountType').value;
+    const ssn = document.getElementById('signupSSN').value.trim();
+    const city = document.getElementById('signupCity').value.trim();
+    const state = document.getElementById('signupState').value.trim();
+    const country = document.getElementById('signupCountry').value.trim();
+    const address = document.getElementById('signupAddress').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const securityQuestion = document.getElementById('signupSecurityQuestion').value;
+    const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
 
-<script>
-  // Your Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyAr4WIWv-sCc96kABTZuzlw67NiwnqTLfo",
-    authDomain: "oakline-bank.firebaseapp.com",
-    projectId: "oakline-bank",
-    storageBucket: "oakline-bank.firebasestorage.app",
-    messagingSenderId: "199506974383",
-    appId: "1:199506974383:web:3932cbd6bb2b0305b8265a",
-    measurementId: "G-XXRQF2N3XB"
-  };
+    const error = document.getElementById('passwordError');
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+    // Check all fields filled
+    if (
+      !firstName || !lastName || !email || !phone || !dob || !accountType || !ssn || !city ||
+      !state || !country || !address || !password || !confirmPassword ||
+      !securityQuestion || !securityAnswer
+    ) {
+      error.innerText = "Please fill out all required fields.";
+      error.style.display = "block";
+      return;
+    }
 
-  const auth = firebase.auth();
+    // Password checks
+    if (password.length < 6) {
+      error.innerText = "Password must be at least 6 characters.";
+      error.style.display = "block";
+      return;
+    }
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    if (!strongPassword.test(password)) {
+      error.innerText = "Password must include uppercase, lowercase, and a number.";
+      error.style.display = "block";
+      return;
+    }
+    if (password !== confirmPassword) {
+      error.innerText = "Passwords do not match.";
+      error.style.display = "block";
+      return;
+    }
 
-  auth.onAuthStateChanged(user => {
-    // Elements in navbar
+    // Clear error
+    error.style.display = "none";
+
+    // Sign up with Supabase
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    }, {
+      data: {
+        firstName,
+        middleName,
+        lastName,
+        phone,
+        dob,
+        accountType,
+        ssn,
+        city,
+        state,
+        country,
+        address,
+        securityQuestion,
+        securityAnswer
+      }
+    });
+
+    if (signUpError) {
+      error.innerText = signUpError.message;
+      error.style.display = "block";
+    } else {
+      alert("Sign-up successful! Please check your email for confirmation.");
+      closeModal('signupModal');
+    }
+  }
+
+  // ====================
+  // LOGIN FUNCTION
+  // ====================
+  async function validateLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
+    const error = document.getElementById('loginError');
+
+    if (!email || !password) {
+      error.innerText = "Please enter both email and password.";
+      error.style.display = "block";
+      return;
+    }
+
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (loginError) {
+      error.innerText = loginError.message;
+      error.style.display = "block";
+    } else {
+      error.style.display = "none";
+      alert(rememberMe ? "Welcome back! (remembered)" : "Login successful!");
+      closeModal('loginModal');
+      updateNavLinks();
+    }
+  }
+
+  // ====================
+  // LOGOUT FUNCTION
+  // ====================
+  async function logout() {
+    await supabase.auth.signOut();
+    updateNavLinks();
+  }
+
+  // ====================
+  // NAVIGATION LINK UPDATES
+  // ====================
+  function updateNavLinks() {
+    const user = supabase.auth.getUser();
+
     const loginLink = document.querySelector('nav.nav-links a[href="login.html"]');
     const signupLink = document.querySelector('nav.nav-links a[href="signup.html"]');
-
-    // Elements in footer
     const footerLoginLink = document.getElementById('footerLoginLink');
     const footerSignupLink = document.getElementById('footerSignupLink');
 
-    if (user) {
-      // Hide login/signup links when logged in
-      if (loginLink) loginLink.style.display = 'none';
-      if (signupLink) signupLink.style.display = 'none';
-      if (footerLoginLink) footerLoginLink.style.display = 'none';
-      if (footerSignupLink) footerSignupLink.style.display = 'none';
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (signupLink) signupLink.style.display = 'none';
+        if (footerLoginLink) footerLoginLink.style.display = 'none';
+        if (footerSignupLink) footerSignupLink.style.display = 'none';
+      } else {
+        if (loginLink) loginLink.style.display = 'inline';
+        if (signupLink) signupLink.style.display = 'inline';
+        if (footerLoginLink) footerLoginLink.style.display = 'inline';
+        if (footerSignupLink) footerSignupLink.style.display = 'inline';
+      }
+    });
+  }
 
-      // You can also hide or show other features here as needed
-    } else {
-      // Show login/signup links when logged out
-      if (loginLink) loginLink.style.display = 'inline';
-      if (signupLink) signupLink.style.display = 'inline';
-      if (footerLoginLink) footerLoginLink.style.display = 'inline';
-      if (footerSignupLink) footerSignupLink.style.display = 'inline';
+  // ====================
+  // FORGOT PASSWORD FUNCTION
+  // ====================
+  async function sendResetLink() {
+    const email = document.querySelector('#forgotModal input[type="email"]').value.trim();
+    if (!email) {
+      alert("Please enter your email.");
+      return;
     }
-  });
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Password reset link sent! Check your email.");
+      closeModal('forgotModal');
+    }
+  }
+
+  // Update links on page load
+  updateNavLinks();
 </script>
 </body>
 </html>
