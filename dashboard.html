@@ -21,26 +21,24 @@
     .top-controls-left, .top-controls-right { position: fixed; top: 10px; display: flex; gap: 0.5rem; align-items: center; z-index: 1000; }
     .top-controls-left { left: 10px; }
     .top-controls-right { right: 10px; }
-    .btn-logout { background-color: #004080; border: none; color: white; }
-    .btn-logout:hover { background-color: #002f66; }
   </style>
 </head>
 <body>
 
 <!-- Top Left: Dark Mode Toggle -->
 <div class="top-controls-left">
-  <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+  <button id="darkModeBtn" class="btn btn-outline-dark btn-sm" aria-label="Toggle dark mode">
     <i class="fas fa-moon"></i>
   </button>
 </div>
 
-<!-- Top Right: Dropdown Menu -->
-<div class="top-controls-right d-flex align-items-center gap-2">
+<!-- Top Right: Modern Icon-Only Dropdown -->
+<div class="top-controls-right">
   <div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-      <span id="userDropdownName">User</span>
+    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="mainMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fas fa-bars"></i>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mainMenuDropdown">
       <li><a class="dropdown-item" href="main-menu.html">Main Menu</a></li>
       <li><a class="dropdown-item" href="profile.html">Profile</a></li>
       <li><a class="dropdown-item" href="settings.html">Settings</a></li>
@@ -52,7 +50,6 @@
       <li><a class="dropdown-item text-danger" href="#" id="logoutDropdown">Logout</a></li>
     </ul>
   </div>
-  <button id="logoutBtn" class="btn btn-logout btn-sm">Logout</button>
 </div>
 
 <!-- Header -->
@@ -65,255 +62,249 @@
 <div class="marquee-banner">
   <div class="marquee-text">🔐 Welcome to Oakline Bank — The Most Secure and Trusted Digital Bank. Your Finances. Our Priority. 💼</div>
 </div>
+
   <style>
-    /* Hero Section */
-    .hero {
-      background: #004080;
-      color: white;
-      padding: 2rem;
-      margin: 1.5rem auto;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 960px;
-      font-size: 22px;
-      font-weight: 600;
-    }
+  /* Hero Section */
+  .hero {
+    background: #004080;
+    color: white;
+    padding: 2rem;
+    margin: 1.5rem auto;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 960px;
+    font-size: 22px;
+    font-weight: 600;
+  }
 
-    .balances {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-      max-width: 960px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+  .balances {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    .balance-card {
-      flex: 1;
-      background: #fff;
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      text-align: center;
-      min-width: 140px;
-      transition: transform 0.2s ease-in-out;
-    }
+  .balance-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+    min-width: 140px;
+    transition: transform 0.2s ease-in-out;
+  }
 
-    .balance-card:hover { transform: scale(1.02); }
+  .balance-card:hover { transform: scale(1.02); }
 
-    .balance-card h6 { font-size: 14.3px; margin-bottom: 0.25rem; color: #666; }
-    .balance-card .amount { font-size: 22.05px; font-weight: 600; color: #004080; }
-    .dark-mode .balance-card { background-color: #1e1e1e; color: #fff; }
-    .animated-balance { transition: all 0.4s ease-in-out; transform: scale(1.05); color: #28a745; }
-  </style>
+  .balance-card h6 { font-size: 14.3px; margin-bottom: 0.25rem; color: #666; }
+  .balance-card .amount { font-size: 22.05px; font-weight: 600; color: #004080; }
+  .dark-mode .balance-card { background-color: #1e1e1e; color: #fff; }
+  .animated-balance { transition: all 0.4s ease-in-out; transform: scale(1.05); color: #28a745; }
+</style>
 
-  <!-- Hero Section -->
-  <div class="hero">
-    <div class="d-flex align-items-center gap-3">
-      <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-      <div>
-        <h5 class="mb-1">Welcome, <span id="userWelcomeHero">User</span></h5>
-        <small>Last login: <span id="lastLoginHero">Just now</span></small>
-      </div>
+<!-- Hero Section -->
+<div class="hero">
+  <div class="d-flex align-items-center gap-3">
+    <img src="https://via.placeholder.com/48" alt="User profile photo" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+    <div>
+      <h5 class="mb-1">Welcome, <span id="userWelcomeHero">User</span></h5>
+      <small>Last login: <span id="lastLoginHero">Just now</span></small>
     </div>
   </div>
+</div>
 
-  <!-- Manual Refresh Button -->
-  <div class="text-center my-3">
-    <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboardData()">
-      <i class="fas fa-sync-alt me-1"></i> Refresh Dashboard
-    </button>
-  </div>
+<!-- Manual Refresh Button -->
+<div class="text-center my-3">
+  <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboardData()">
+    <i class="fas fa-sync-alt me-1"></i> Refresh Dashboard
+  </button>
+</div>
 
-  <!-- Open New Account Button -->
-  <div class="text-center mb-4">
-    <a href="open-account.html" class="btn btn-primary">
-      <i class="fas fa-plus-circle me-1"></i> Open a New Account
-    </a>
-  </div>
+<!-- Open New Account Button -->
+<div class="text-center mb-4">
+  <a href="open-account.html" class="btn btn-primary">
+    <i class="fas fa-plus-circle me-1"></i> Open a New Account
+  </a>
+</div>
 
-  <!-- Balances Section -->
-  <div class="balances">
-    <div class="balance-card">
-      <h6>Checking Account</h6>
-      <div id="checkingBalance" class="amount loading-placeholder">$0.00</div>
-      <div class="mt-2">
-        <small>
-          Account #: <span id="checkingAccountNumber" class="loading-placeholder">****1023</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountChecking()" data-bs-toggle="tooltip" title="Show/Hide">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
-            <i class="fas fa-copy"></i>
-          </button>
-        </small><br />
-        Routing #: <span id="checkingRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+<!-- Balances Section -->
+<div class="balances">
+  <div class="balance-card">
+    <h6>Checking Account</h6>
+    <div id="checkingBalance" class="amount loading-placeholder">$0.00</div>
+    <div class="mt-2">
+      <small>
+        Account #: <span id="checkingAccountNumber" class="loading-placeholder">****1023</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountChecking()" data-bs-toggle="tooltip" title="Show/Hide">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
           <i class="fas fa-copy"></i>
         </button>
-      </div>
+      </small><br />
+      Routing #: <span id="checkingRoutingNumber" class="loading-placeholder">021000021</span>
+      <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+        <i class="fas fa-copy"></i>
+      </button>
     </div>
+  </div>
 
-    <div class="balance-card">
-      <h6>Savings Account</h6>
-      <div id="savingsBalance" class="amount loading-placeholder">$0.00</div>
-      <div class="mt-2">
-        <small>
-          Savings Account #: <span id="savingsAccountNumber" class="loading-placeholder">****7854</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountSavings()" data-bs-toggle="tooltip" title="Show/Hide">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
-            <i class="fas fa-copy"></i>
-          </button>
-        </small><br />
-        Routing #: <span id="savingsRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+  <div class="balance-card">
+    <h6>Savings Account</h6>
+    <div id="savingsBalance" class="amount loading-placeholder">$0.00</div>
+    <div class="mt-2">
+      <small>
+        Savings Account #: <span id="savingsAccountNumber" class="loading-placeholder">****7854</span>
+        <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountSavings()" data-bs-toggle="tooltip" title="Show/Hide">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
           <i class="fas fa-copy"></i>
         </button>
-      </div>
+      </small><br />
+      Routing #: <span id="savingsRoutingNumber" class="loading-placeholder">021000021</span>
+      <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+        <i class="fas fa-copy"></i>
+      </button>
     </div>
   </div>
+</div>
 
-    <!-- Recent Transactions -->
-  <div class="container my-4" style="max-width: 960px;">
-    <h5>Recent Transactions</h5>
-    <div id="transactionsList" class="list-group">
-      <div class="list-group-item loading-placeholder">Loading transactions...</div>
-    </div>
+  <!-- Recent Transactions -->
+<div class="container my-4" style="max-width: 960px;">
+  <h5>Recent Transactions</h5>
+  <div id="transactionsList" class="list-group">
+    <div class="list-group-item loading-placeholder">Loading transactions...</div>
   </div>
+</div>
 
-  <!-- Supabase & Dashboard JS -->
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+<!-- Supabase & Dashboard JS -->
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // ==================== Supabase Config ====================
-    const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+  // ==================== Supabase Config ====================
+  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // ==================== Dark Mode ====================
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+  // ==================== Dark Mode ====================
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('oakline-dark-mode', document.body.classList.contains('dark-mode'));
+  }
 
-    // ==================== Authentication Check ====================
-    async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-        document.getElementById('userWelcomeHero').innerText = userName;
-        document.getElementById('lastLoginHero').innerText = new Date(user.last_sign_in_at).toLocaleString();
-        document.getElementById('userDropdownName').innerText = userName;
-      }
-    }
-    checkUser();
+  // Initialize dark mode from previous preference
+  if (localStorage.getItem('oakline-dark-mode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
 
-    // ==================== Logout ====================
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-      await supabase.auth.signOut();
+  // ==================== Authentication Check ====================
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       window.location.href = "login.html";
+    } else {
+      const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+      document.getElementById('userWelcomeHero').innerText = userName;
+    }
+  }
+  checkUser();
+
+  // ==================== Logout ====================
+  document.getElementById('logoutDropdown').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
+  });
+
+  // ==================== Load Balances ====================
+  async function loadBalances() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: checking } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('type', 'checking')
+      .eq('user_id', user.id);
+
+    const { data: savings } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('type', 'savings')
+      .eq('user_id', user.id);
+
+    if (checking && checking.length) {
+      document.getElementById('checkingBalance').innerText = `$${checking[0].balance.toFixed(2)}`;
+      document.getElementById('checkingAccountNumber').innerText = checking[0].account_number;
+    }
+
+    if (savings && savings.length) {
+      document.getElementById('savingsBalance').innerText = `$${savings[0].balance.toFixed(2)}`;
+      document.getElementById('savingsAccountNumber').innerText = savings[0].account_number;
+    }
+  }
+
+  // ==================== Load Transactions ====================
+  async function loadTransactions() {
+    const { data: transactions } = await supabase
+      .from('transactions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    const list = document.getElementById('transactionsList');
+    list.innerHTML = '';
+
+    if (!transactions || transactions.length === 0) {
+      list.innerHTML = '<div class="list-group-item">No recent transactions.</div>';
+      return;
+    }
+
+    transactions.forEach(tx => {
+      const item = document.createElement('div');
+      item.className = 'list-group-item d-flex justify-content-between align-items-center';
+      item.innerHTML = `
+        <div>
+          <strong>${tx.type.toUpperCase()}</strong> - ${tx.description || ''}
+        </div>
+        <div>
+          ${tx.amount >= 0 ? `<span class="text-success">+$${tx.amount.toFixed(2)}</span>` 
+                            : `<span class="text-danger">-$${Math.abs(tx.amount).toFixed(2)}</span>`}
+        </div>
+      `;
+      list.appendChild(item);
     });
+  }
 
-    document.getElementById('logoutDropdown')?.addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      window.location.href = "login.html";
-    });
+  // ==================== Refresh Dashboard ====================
+  async function refreshDashboardData() {
+    await loadBalances();
+    await loadTransactions();
+  }
+  refreshDashboardData();
 
-    // ==================== Load Balances ====================
-    async function loadBalances() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  // ==================== Copy Account/Routing ====================
+  function copyText(text) {
+    navigator.clipboard.writeText(text);
+    alert("Copied: " + text);
+  }
 
-      const { data: checking } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('type', 'checking')
-        .eq('user_id', user.id);
+  // ==================== Toggle Account Numbers ====================
+  function toggleAccountChecking() {
+    const el = document.getElementById('checkingAccountNumber');
+    el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
+  }
 
-      const { data: savings } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('type', 'savings')
-        .eq('user_id', user.id);
-
-      if (checking && checking.length) {
-        document.getElementById('checkingBalance').innerText = `$${checking[0].balance.toFixed(2)}`;
-        document.getElementById('checkingAccountNumber').innerText = checking[0].account_number;
-        document.getElementById('checkingAccountNumber').dataset.full = checking[0].account_number;
-      }
-
-      if (savings && savings.length) {
-        document.getElementById('savingsBalance').innerText = `$${savings[0].balance.toFixed(2)}`;
-        document.getElementById('savingsAccountNumber').innerText = savings[0].account_number;
-        document.getElementById('savingsAccountNumber').dataset.full = savings[0].account_number;
-      }
-    }
-
-    // ==================== Load Transactions ====================
-    async function loadTransactions() {
-      const { data: transactions } = await supabase
-        .from('transactions')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      const list = document.getElementById('transactionsList');
-      list.innerHTML = '';
-
-      if (!transactions || transactions.length === 0) {
-        list.innerHTML = '<div class="list-group-item">No recent transactions.</div>';
-        return;
-      }
-
-      transactions.forEach(tx => {
-        const item = document.createElement('div');
-        item.className = 'list-group-item d-flex justify-content-between align-items-center';
-        item.innerHTML = `
-          <div>
-            <strong>${tx.type.toUpperCase()}</strong> - ${tx.description || ''}
-          </div>
-          <div>
-            ${tx.amount >= 0 ? `<span class="text-success">+$${tx.amount.toFixed(2)}</span>` 
-                              : `<span class="text-danger">-$${Math.abs(tx.amount).toFixed(2)}</span>`}
-          </div>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    // ==================== Refresh Dashboard ====================
-    async function refreshDashboardData() {
-      await loadBalances();
-      await loadTransactions();
-    }
-    refreshDashboardData();
-
-    // ==================== Copy Account/Routing ====================
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      alert("Copied: " + text);
-    }
-
-    // ==================== Toggle Account Numbers ====================
-    function toggleAccountChecking() {
-      const el = document.getElementById('checkingAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.dataset.full.slice(-4);
-    }
-
-    function toggleAccountSavings() {
-      const el = document.getElementById('savingsAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.dataset.full.slice(-4);
-    }
-  </script>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+  function toggleAccountSavings() {
+    const el = document.getElementById('savingsAccountNumber');
+    el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
+  }
+</script>
 </body>
 </html>
