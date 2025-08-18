@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | Oakline Bank</title>
-
-  <!-- Fonts & Bootstrap -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
@@ -22,24 +20,10 @@
     button:hover { background-color: #003366; }
     .error { color: red; margin-bottom: 10px; display: none; }
 
-    /* Remember Me checkbox styling */
-    .remember {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .remember input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #003366;
-      margin-right: 10px;
-    }
-    .remember label {
-      font-weight: 500;
-      color: #003366;
-    }
+    .remember { display: flex; align-items: center; margin-bottom: 20px; }
+    .remember input[type="checkbox"] { width: 18px; height: 18px; accent-color: #003366; margin-right: 10px; }
+    .remember label { font-weight: 500; color: #003366; }
 
-    /* Dark mode */
     body.dark-mode { background-color: #121212; color: #e0e0e0; }
     body.dark-mode .form-container { background-color: #1a1a1a; color: #e0e0e0; }
     body.dark-mode input { background-color: #2a2a2a; color: #e0e0e0; border: 1px solid #555; }
@@ -48,7 +32,6 @@
 </head>
 <body>
 
-  <!-- ======= NAVBAR ======= -->
   <header class="navbar">
     <div class="logo">Oakline Bank</div>
     <div class="toggle-container">
@@ -59,7 +42,6 @@
     </div>
   </header>
 
-  <!-- ======= LOGIN FORM ======= -->
   <div class="form-container">
     <h2>Login to Oakline Bank</h2>
     <p class="error" id="loginError"></p>
@@ -87,6 +69,12 @@
     const toggle = document.getElementById('darkModeToggle');
     toggle.addEventListener('change', () => document.body.classList.toggle('dark-mode', toggle.checked));
 
+    // Check if already logged in
+    window.addEventListener("DOMContentLoaded", async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) window.location.href = "dashboard.html";
+    });
+
     // Login form
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -107,19 +95,18 @@
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // Remember Me storage
+        // Save session locally
         if (remember) {
-          localStorage.setItem("oaklineUser", JSON.stringify(data.user));
+          localStorage.setItem("oaklineUser", JSON.stringify(data.session));
         } else {
-          sessionStorage.setItem("oaklineUser", JSON.stringify(data.user));
+          sessionStorage.setItem("oaklineUser", JSON.stringify(data.session));
         }
 
-        alert("Login successful! Redirecting to dashboard...");
         window.location.href = "dashboard.html";
 
       } catch (err) {
         console.error("Login error:", err);
-        errorEl.innerText = err.message;
+        errorEl.innerText = err.message || "Invalid login credentials";
         errorEl.style.display = "block";
       }
     });
