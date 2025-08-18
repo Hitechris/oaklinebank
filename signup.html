@@ -27,7 +27,7 @@
 </head>
 <body>
 
-  <!-- ======= NAVBAR ======= -->
+  <!-- NAVBAR -->
   <header class="navbar">
     <div class="logo">Oakline Bank</div>
     <div class="toggle-container">
@@ -38,7 +38,7 @@
     </div>
   </header>
 
-  <!-- ======= SIGNUP FORM ======= -->
+  <!-- SIGNUP FORM -->
   <div class="form-container">
     <h2>Create Your Oakline Bank Account</h2>
     <p class="error" id="signupError"></p>
@@ -48,17 +48,12 @@
       <input type="text" id="signupLastName" placeholder="Last Name" required>
       <input type="email" id="signupEmail" placeholder="Email" required>
       <input type="tel" id="signupPhone" placeholder="Phone Number" required>
-      <input type="date" id="signupDOB" placeholder="Date of Birth" required>
+      <input type="date" id="signupDOB" required>
       <select id="signupAccountType" required>
         <option value="">Select Account Type</option>
         <option value="savings">Savings</option>
         <option value="checking">Checking</option>
       </select>
-      <input type="text" id="signupSSN" placeholder="SSN" required>
-      <input type="text" id="signupAddress" placeholder="Address" required>
-      <input type="text" id="signupCity" placeholder="City" required>
-      <input type="text" id="signupState" placeholder="State" required>
-      <input type="text" id="signupCountry" placeholder="Country" required>
       <input type="password" id="signupPassword" placeholder="Password" required>
       <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required>
       <select id="signupSecurityQuestion" required>
@@ -75,13 +70,16 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+    // --- Supabase Setup ---
     const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Dark mode toggle
     const toggle = document.getElementById('darkModeToggle');
     toggle.addEventListener('change', () => document.body.classList.toggle('dark-mode', toggle.checked));
 
+    // Signup form
     document.getElementById("signupForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errorEl = document.getElementById("signupError");
@@ -94,29 +92,18 @@
       const phone = document.getElementById('signupPhone').value.trim();
       const dob = document.getElementById('signupDOB').value;
       const accountType = document.getElementById('signupAccountType').value;
-      const ssn = document.getElementById('signupSSN').value.trim();
-      const address = document.getElementById('signupAddress').value.trim();
-      const city = document.getElementById('signupCity').value.trim();
-      const state = document.getElementById('signupState').value.trim();
-      const country = document.getElementById('signupCountry').value.trim();
       const password = document.getElementById('signupPassword').value;
       const confirmPassword = document.getElementById('signupConfirmPassword').value;
       const securityQuestion = document.getElementById('signupSecurityQuestion').value;
       const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
 
-      if (!firstName || !lastName || !email || !phone || !dob || !accountType || !ssn || !address || !city || !state || !country || !password || !confirmPassword || !securityQuestion || !securityAnswer) {
+      if (!firstName || !lastName || !email || !phone || !dob || !accountType || !password || !confirmPassword || !securityQuestion || !securityAnswer) {
         errorEl.innerText = "Please fill out all required fields.";
         errorEl.style.display = "block";
         return;
       }
       if (password.length < 6) {
         errorEl.innerText = "Password must be at least 6 characters.";
-        errorEl.style.display = "block";
-        return;
-      }
-      const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
-      if (!strongPassword.test(password)) {
-        errorEl.innerText = "Password must include uppercase, lowercase, and a number.";
         errorEl.style.display = "block";
         return;
       }
@@ -129,7 +116,7 @@
       try {
         const { data: user, error: signUpError } = await supabase.auth.signUp(
           { email, password },
-          { data: { firstName, middleName, lastName, phone, dob, accountType, ssn, address, city, state, country, securityQuestion, securityAnswer } }
+          { data: { firstName, middleName, lastName, phone, dob, accountType, securityQuestion, securityAnswer } }
         );
         if (signUpError) throw signUpError;
 
