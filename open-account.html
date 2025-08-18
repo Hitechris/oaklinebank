@@ -49,14 +49,14 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // ==================== Auth Check ====================
+  // ==================== Auth Check (fixed) ====================
   async function getUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session || !session.user) {
       window.location.href = "login.html";
       return null;
     }
-    return user;
+    return session.user;
   }
 
   // ==================== Generate Account Number ====================
@@ -94,7 +94,7 @@
 
       if (accountError) throw accountError;
 
-      // Record opening transaction
+      // Record opening transaction if deposit > 0
       if (deposit > 0) {
         await supabase.from('transactions').insert([{
           user_id: user.id,
