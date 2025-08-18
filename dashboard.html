@@ -182,15 +182,15 @@
       <div class="mt-2">
         <small>
           Account #: <span id="checkingAccountNumber" class="loading-placeholder">****1023</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountChecking()" data-bs-toggle="tooltip" title="Show/Hide">
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountChecking()" title="Show/Hide">
             <i class="fas fa-eye"></i>
           </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingAccountNumber').textContent)" title="Copy Account Number">
             <i class="fas fa-copy"></i>
           </button>
         </small><br />
         Routing #: <span id="checkingRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('checkingRoutingNumber').textContent)" title="Copy Routing">
           <i class="fas fa-copy"></i>
         </button>
       </div>
@@ -202,21 +202,21 @@
       <div class="mt-2">
         <small>
           Savings Account #: <span id="savingsAccountNumber" class="loading-placeholder">****7854</span>
-          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountSavings()" data-bs-toggle="tooltip" title="Show/Hide">
+          <button class="btn btn-sm btn-light ms-1" onclick="toggleAccountSavings()" title="Show/Hide">
             <i class="fas fa-eye"></i>
           </button>
-          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsAccountNumber').textContent)" data-bs-toggle="tooltip" title="Copy Account Number">
+          <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsAccountNumber').textContent)" title="Copy Account Number">
             <i class="fas fa-copy"></i>
           </button>
         </small><br />
         Routing #: <span id="savingsRoutingNumber" class="loading-placeholder">021000021</span>
-        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" data-bs-toggle="tooltip" title="Copy Routing">
+        <button class="btn btn-sm btn-light ms-1" onclick="copyText(document.getElementById('savingsRoutingNumber').textContent)" title="Copy Routing">
           <i class="fas fa-copy"></i>
         </button>
       </div>
     </div>
   </div>
-  <!-- Recent Transactions -->
+    <!-- Recent Transactions -->
   <div class="container mt-4">
     <h5 class="mb-3">Recent Transactions</h5>
     <ul id="recentTransactions" class="list-group">
@@ -304,7 +304,6 @@
     }
 
     async function initializeDashboard() {
-      // Get logged-in user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         alert("You must be logged in to access this page.");
@@ -312,8 +311,7 @@
         return;
       }
 
-      // Get user record
-      let { data: userData, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+      let { data: userData } = await supabase.from('users').select('*').eq('id', user.id).single();
       if (!userData) {
         const initialData = {
           id: user.id,
@@ -331,7 +329,6 @@
 
       window.userData = userData;
 
-      // Set UI
       const username = user.email.split("@")[0];
       document.getElementById("userWelcome").textContent = username;
       document.querySelector(".hero img.rounded-circle").src = userData.profileImage || "https://via.placeholder.com/48";
