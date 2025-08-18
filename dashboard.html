@@ -27,31 +27,32 @@
 </head>
 <body>
 
-<!-- Top Left -->
+<!-- Top Left: Dark Mode Toggle -->
 <div class="top-controls-left">
   <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
     <i class="fas fa-moon"></i>
   </button>
 </div>
 
-<!-- Top Right Dropdown -->
+<!-- Top Right: Dropdown Menu -->
 <div class="top-controls-right d-flex align-items-center gap-2">
   <div class="dropdown">
     <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
       <span id="userDropdownName">User</span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+      <li><a class="dropdown-item" href="main-menu.html">Main Menu</a></li>
       <li><a class="dropdown-item" href="profile.html">Profile</a></li>
       <li><a class="dropdown-item" href="settings.html">Settings</a></li>
       <li><a class="dropdown-item" href="transfer.html">Transfer</a></li>
       <li><a class="dropdown-item" href="deposit.html">Deposit</a></li>
       <li><a class="dropdown-item" href="withdrawal.html">Withdrawal</a></li>
-      <li><a class="dropdown-item" href="main-menu.html">Main Menu</a></li>
       <li><a class="dropdown-item" href="transactions.html">Transactions</a></li>
       <li><hr class="dropdown-divider"></li>
       <li><a class="dropdown-item text-danger" href="#" id="logoutDropdown">Logout</a></li>
     </ul>
   </div>
+  <button id="logoutBtn" class="btn btn-logout btn-sm">Logout</button>
 </div>
 
 <!-- Header -->
@@ -176,6 +177,7 @@
       </div>
     </div>
   </div>
+
     <!-- Recent Transactions -->
   <div class="container my-4" style="max-width: 960px;">
     <h5>Recent Transactions</h5>
@@ -207,12 +209,18 @@
         const userName = user.user_metadata?.full_name || user.email.split('@')[0];
         document.getElementById('userWelcomeHero').innerText = userName;
         document.getElementById('lastLoginHero').innerText = new Date(user.last_sign_in_at).toLocaleString();
+        document.getElementById('userDropdownName').innerText = userName;
       }
     }
     checkUser();
 
     // ==================== Logout ====================
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = "login.html";
+    });
+
+    document.getElementById('logoutDropdown')?.addEventListener('click', async () => {
       await supabase.auth.signOut();
       window.location.href = "login.html";
     });
@@ -237,11 +245,13 @@
       if (checking && checking.length) {
         document.getElementById('checkingBalance').innerText = `$${checking[0].balance.toFixed(2)}`;
         document.getElementById('checkingAccountNumber').innerText = checking[0].account_number;
+        document.getElementById('checkingAccountNumber').dataset.full = checking[0].account_number;
       }
 
       if (savings && savings.length) {
         document.getElementById('savingsBalance').innerText = `$${savings[0].balance.toFixed(2)}`;
         document.getElementById('savingsAccountNumber').innerText = savings[0].account_number;
+        document.getElementById('savingsAccountNumber').dataset.full = savings[0].account_number;
       }
     }
 
@@ -293,13 +303,17 @@
     // ==================== Toggle Account Numbers ====================
     function toggleAccountChecking() {
       const el = document.getElementById('checkingAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
+      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.dataset.full.slice(-4);
     }
 
     function toggleAccountSavings() {
       const el = document.getElementById('savingsAccountNumber');
-      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.innerText.slice(-4);
+      el.innerText = el.innerText.includes('*') ? el.dataset.full : '****' + el.dataset.full.slice(-4);
     }
   </script>
-  </body>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>
