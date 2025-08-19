@@ -60,6 +60,26 @@ async function testInsert() {
 }
 
 testInsert();
+  <script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+async function testConnection() {
+  try {
+    const { data, error } = await supabase.from('profiles').select('*').limit(1)
+    if (error) throw error
+    console.log('Supabase connection working! Sample row:', data)
+    alert('Supabase connection working! Check console for sample row.')
+  } catch (err) {
+    console.error('Supabase Connection Test Error:', err)
+    alert('Supabase Connection Test Failed: ' + err.message)
+  }
+}
+
+testConnection()
 </script>
 </body>
 </html>
