@@ -49,9 +49,10 @@
     <input type="text" id="username" placeholder="Username" required>
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
     <input type="text" id="ssn" placeholder="SSN" required>
     <input type="text" id="phone" placeholder="Phone Number" required>
-    <input type="text" id="street" placeholder="Street Address" required>
+    <input type="text" id="address" placeholder="Street Address" required>
     <input type="text" id="city" placeholder="City" required>
     <input type="text" id="state" placeholder="State" required>
     <input type="text" id="country" placeholder="Country" required>
@@ -68,8 +69,6 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -94,13 +93,21 @@ form.addEventListener("submit", async (e) => {
     username: document.getElementById('username').value.trim(),
     email: document.getElementById('email').value.trim(),
     password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirmPassword').value,
     ssn: document.getElementById('ssn').value.trim(),
     phone: document.getElementById('phone').value.trim(),
-    street: document.getElementById('street').value.trim(),
+    address: document.getElementById('address').value.trim(),
     city: document.getElementById('city').value.trim(),
     state: document.getElementById('state').value.trim(),
     country: document.getElementById('country').value.trim()
   };
+
+  // ✅ Check confirm password
+  if (userData.password !== userData.confirmPassword) {
+    errorEl.innerText = "Passwords do not match.";
+    errorEl.style.display = "block";
+    return;
+  }
 
   try {
     // 1️⃣ Create the user in Supabase Auth
@@ -125,7 +132,7 @@ form.addEventListener("submit", async (e) => {
         email: userData.email,
         ssn: userData.ssn,
         phone: userData.phone,
-        street: userData.street,
+        address: userData.address,
         city: userData.city,
         state: userData.state,
         country: userData.country
