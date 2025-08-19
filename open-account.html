@@ -1,127 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Open New Account - Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
-    .container { max-width: 480px; margin-top: 3rem; }
-    .header { text-align: center; margin-bottom: 2rem; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open New Account - Oakline Bank</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; padding: 40px 20px; transition: background-color 0.3s, color 0.3s; }
+  .dark-mode { background-color: #121212; color: #eee; }
+  .account-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
+  .dark-mode .account-box { background-color: #1e1e1e; color: #fff; }
+  h3 { color: #004080; margin-bottom: 20px; text-align: center; }
+  .btn-primary { background-color: #004080; border-color: #004080; }
+  .btn-primary:hover { background-color: #003366; }
+  .top-controls-left { position: fixed; top: 10px; left: 10px; z-index: 1000; }
+  .form-label { font-weight: 500; }
+  .form-select, .form-control { border-radius: 6px; border: 1px solid #ccc; padding: 8px 12px; }
+  #message { font-weight: 600; margin-top: 10px; text-align: center; }
+</style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h2>Open a New Account</h2>
-    <p class="text-muted">Create a Checking or Savings account</p>
+<!-- Dark Mode Toggle -->
+<div class="top-controls-left">
+  <button class="btn btn-outline-dark btn-sm" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+</div>
+
+<div class="account-box">
+  <h3>Open New Account</h3>
+
+  <div class="mb-3">
+    <label for="accountType" class="form-label">Account Type</label>
+    <select class="form-select" id="accountType">
+      <option value="checking">Checking</option>
+      <option value="savings">Savings</option>
+    </select>
   </div>
 
-  <form id="openAccountForm">
-    <div class="mb-3">
-      <label for="accountType" class="form-label">Account Type</label>
-      <select class="form-select" id="accountType" required>
-        <option value="">Select account type</option>
-        <option value="checking">Checking</option>
-        <option value="savings">Savings</option>
-      </select>
-    </div>
+  <div class="mb-3">
+    <label for="initialDeposit" class="form-label">Initial Deposit</label>
+    <input type="number" class="form-control" id="initialDeposit" placeholder="Enter initial deposit" />
+  </div>
 
-    <div class="mb-3">
-      <label for="initialDeposit" class="form-label">Initial Deposit ($)</label>
-      <input type="number" class="form-control" id="initialDeposit" min="0" value="0">
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100">
+  <div class="d-grid">
+    <button class="btn btn-primary" id="openAccountBtn">
       <i class="fas fa-plus-circle me-1"></i> Open Account
     </button>
-  </form>
+  </div>
+
+  <div id="message"></div>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// ==================== Supabase Config ====================
 const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // anon key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ==================== Wait for session to be ready ====================
-async function waitForUser() {
-  let user = null;
-  for (let i = 0; i < 20; i++) { // try 20 times
-    const { data } = await supabase.auth.getSession();
-    if (data.session && data.session.user) {
-      user = data.session.user;
-      break;
-    }
-    await new Promise(r => setTimeout(r, 100)); // wait 100ms
-  }
-  if (!user) {
+const message = document.getElementById("message");
+const openAccountBtn = document.getElementById("openAccountBtn");
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+}
+
+async function checkUser() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    alert("You must be logged in to open an account.");
     window.location.href = "login.html";
     return null;
   }
-  return user;
+  return session.user;
 }
 
-// ==================== Account Number Generator ====================
-function generateAccountNumber() {
-  const prefix = "10";
-  const randomPart = Math.floor(10000000 + Math.random() * 90000000);
-  return prefix + randomPart;
-}
-
-// ==================== Form Submission ====================
-document.getElementById('openAccountForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const user = await waitForUser();
+openAccountBtn.addEventListener("click", async () => {
+  const user = await checkUser();
   if (!user) return;
 
-  const type = document.getElementById('accountType').value;
-  const deposit = parseFloat(document.getElementById('initialDeposit').value) || 0;
-  const accountNumber = generateAccountNumber();
-  const routingNumber = '021000021';
+  const accountType = document.getElementById("accountType").value;
+  const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
 
-  try {
-    // Insert account
-    const { data: newAccount, error: accountError } = await supabase
-      .from('accounts')
-      .insert([{
-        user_id: user.id,
-        type: type,
-        balance: deposit,
-        account_number: accountNumber,
-        routing_number: routingNumber
-      }])
-      .select()
-      .single();
+  if (!initialDeposit || initialDeposit < 0) {
+    message.innerHTML = "<span class='text-danger'>Please enter a valid initial deposit.</span>";
+    return;
+  }
 
-    if (accountError) throw accountError;
+  // Generate a random account number (for demo)
+  const accountNumber = Math.floor(1000000000 + Math.random() * 9000000000);
+  const routingNumber = "011000015"; // Example routing number
 
-    // Insert initial transaction if deposit > 0
-    if (deposit > 0) {
-      await supabase.from('transactions').insert([{
-        user_id: user.id,
-        account_id: newAccount.id,
-        type: 'deposit',
-        amount: deposit,
-        description: 'Initial deposit'
-      }]);
-    }
+  const { data, error } = await supabase
+    .from('accounts')
+    .insert([{
+      user_id: user.id,
+      type: accountType,
+      balance: initialDeposit,
+      account_number: accountNumber,
+      routing_number: routingNumber,
+      created_at: new Date().toISOString()
+    }]);
 
-    alert(`Success! Your new ${type} account has been created.`);
-    window.location.href = 'dashboard.html';
-
-  } catch (err) {
-    console.error(err);
-    alert('Error creating account. Please try again.');
+  if (error) {
+    console.error(error);
+    message.innerHTML = "<span class='text-danger'>Failed to open account. Please try again.</span>";
+  } else {
+    message.innerHTML = "<span class='text-success'>Account successfully created!</span>";
+    document.getElementById("initialDeposit").value = "";
   }
 });
+
+// Check session on page load
+checkUser();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
