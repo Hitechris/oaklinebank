@@ -3,40 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supabase Test</title>
+<title>Supabase Test Insert</title>
 </head>
 <body>
-<h2>Supabase Connection Test</h2>
-<pre id="result">Testing...</pre>
+<h2>Supabase Test Insert</h2>
+<pre id="result">Running test...</pre>
 
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // --- Replace these with your actual project details ---
-  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
-  const resultEl = document.getElementById('result');
+const supabase = createClient(supabaseUrl, supabaseKey);
+const resultEl = document.getElementById('result');
 
-  async function testConnection() {
-    try {
-      // Try fetching current user (should be null if no one is logged in)
-      const { data: user, error } = await supabase.auth.getUser();
-      if (error) throw error;
+async function testInsert() {
+  try {
+    // 1️⃣ Create a dummy user in profiles
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .insert([{
+        id: crypto.randomUUID(), // random UUID for test
+        email: 'testuser@example.com',
+        username: 'testuser',
+        first_name: 'Test',
+        middle_name: 'T',
+        last_name: 'User',
+        ssn: '123-45-6789',
+        phone: '555-5555',
+        address: '123 Main St',
+        city: 'City',
+        state: 'State',
+        country: 'Country'
+      }]);
 
-      // Try fetching profiles table as a test
-      const { data: profiles, error: profilesError } = await supabase.from('profiles').select('*');
-      if (profilesError) throw profilesError;
+    if (profileError) throw profileError;
 
-      resultEl.innerText = `Supabase is working!\n\nCurrent user: ${JSON.stringify(user)}\nProfiles data: ${JSON.stringify(profiles)}`;
-    } catch (err) {
-      resultEl.innerText = `Error: ${err.message}`;
-      console.error(err);
-    }
+    const userId = profileData[0].id;
+
+    // 2️⃣ Create dummy accounts for the user
+    const { data: accountsData, error: accountsError } = await supabase
+      .from('accounts')
+      .insert([
+        { user_id: userId, type: 'checking', balance: 0, account_number: '6973833794', routing_number: '075915826' },
+        { user_id: userId, type: 'savings', balance: 0, account_number: '6973833795', routing_number: '075915826' }
+      ]);
+
+    if (accountsError) throw accountsError;
+
+    resultEl.innerText = `Test insert successful!\nProfile ID: ${userId}\nAccounts created: ${JSON.stringify(accountsData)}`;
+  } catch (err) {
+    resultEl.innerText = `Error: ${err.message}`;
+    console.error(err);
   }
+}
 
-  testConnection();
+testInsert();
 </script>
 </body>
 </html>
