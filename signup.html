@@ -52,7 +52,7 @@
     <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
     <input type="text" id="ssn" placeholder="SSN" required>
     <input type="text" id="phone" placeholder="Phone Number" required>
-    <input type="text" id="address" placeholder="Street Address" required>
+    <input type="text" id="address" placeholder="Address" required>
     <input type="text" id="city" placeholder="City" required>
     <input type="text" id="state" placeholder="State" required>
     <input type="text" id="country" placeholder="Country" required>
@@ -77,6 +77,15 @@ const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// --- Helper: SHA-256 Password Hash ---
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 // --- Form Submission ---
 const form = document.getElementById("signupForm");
 const errorEl = document.getElementById("signupError");
@@ -85,83 +94,82 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorEl.style.display = "none";
 
-  // Collect all form values
-  const userData = {
-    first_name: document.getElementById('firstName').value.trim(),
-    middle_name: document.getElementById('middleName').value.trim(),
-    last_name: document.getElementById('lastName').value.trim(),
-    username: document.getElementById('username').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    password: document.getElementById('password').value,
-    confirmPassword: document.getElementById('confirmPassword').value,
-    ssn: document.getElementById('ssn').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    address: document.getElementById('address').value.trim(),
-    city: document.getElementById('city').value.trim(),
-    state: document.getElementById('state').value.trim(),
-    country: document.getElementById('country').value.trim()
-  };
+  const firstName = document.getElementById('firstName').value.trim();
+  const middleName = document.getElementById('middleName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const ssn = document.getElementById('ssn').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const city = document.getElementById('city').value.trim();
+  const state = document.getElementById('state').value.trim();
+  const country = document.getElementById('country').value.trim();
 
-  // ✅ Check confirm password
-  if (userData.password !== userData.confirmPassword) {
-    errorEl.innerText = "Passwords do not match.";
+  if(password !== confirmPassword){
+    errorEl.innerText = "Passwords do not match!";
     errorEl.style.display = "block";
     return;
   }
 
   try {
-    // 1️⃣ Create the user in Supabase Auth
+    // 1️⃣ Create Supabase Auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: userData.email,
-      password: userData.password,
-      options: { data: { username: userData.username, full_name: `${userData.first_name} ${userData.middle_name} ${userData.last_name}` } }
+      email,
+      password,
+      options: { data: { username, full_name: `${firstName} ${middleName} ${lastName}` } }
     });
-    if (authError) throw authError;
+    if(authError) throw authError;
 
     const userId = authData.user.id;
 
-    // 2️⃣ Insert profile info into 'profiles' table
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert([{
-        id: userId,
-        first_name: userData.first_name,
-        middle_name: userData.middle_name,
-        last_name: userData.last_name,
-        username: userData.username,
-        email: userData.email,
-        ssn: userData.ssn,
-        phone: userData.phone,
-        address: userData.address,
-        city: userData.city,
-        state: userData.state,
-        country: userData.country
-      }]);
-    if (profileError) throw profileError;
+    // 2️⃣ Hash password for "profiles"
+    const hashedPassword = await hashPassword(password);
 
-    // 3️⃣ Generate account numbers (random 10-digit)
-    function generateAccountNumber() {
-      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    }
-    const routingNumber = '075915826'; // your permanent routing number
+    // 3️⃣ Insert into profiles
+    const { error: profileError } = await supabase.from("profiles").insert([{
+      id: userId,
+      email,
+      username,
+      "Password-hash": hashedPassword,
+      "first-name": firstName,
+      "middle-name": middleName,
+      "last-name": lastName,
+      ssn,
+      phone,
+      address,
+      city,
+      state,
+      country,
+      "created-at": new Date().toISOString()
+    }]);
+    if(profileError) throw profileError;
 
-    // 4️⃣ Insert checking and savings accounts
+    // 4️⃣ Generate account numbers
+    function generateAccountNumber(){ return Math.floor(1000000000 + Math.random()*9000000000).toString(); }
+    const routingNumber = '075915826';
+
+    // 5️⃣ Insert checking & savings accounts
     const accounts = [
       { user_id: userId, type: 'checking', balance: 0, account_number: generateAccountNumber(), routing_number: routingNumber },
       { user_id: userId, type: 'savings', balance: 0, account_number: generateAccountNumber(), routing_number: routingNumber }
     ];
-
     const { error: accountsError } = await supabase.from('accounts').insert(accounts);
-    if (accountsError) throw accountsError;
+    if(accountsError) throw accountsError;
 
-    // ✅ Signup success
+    // ✅ Success
     alert("Account successfully created! You can now login.");
     window.location.href = "login.html";
 
-  } catch (err) {
+  } catch(err){
     console.error(err);
     errorEl.innerText = "Signup failed: " + err.message;
     errorEl.style.display = "block";
   }
 });
 </script>
+</body>
+</html>
+  
