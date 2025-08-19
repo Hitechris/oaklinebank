@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase Signup/Login Test</title>
+</head>
+<body>
+<h2>Supabase Test</h2>
+
+<input id="email" placeholder="Email" type="email">
+<input id="password" placeholder="Password" type="password">
+<button id="signupBtn">Sign Up</button>
+<button id="loginBtn">Login</button>
+
+<p id="status"></p>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+// Use your credentials
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const statusEl = document.getElementById("status");
+
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  statusEl.textContent = "Signing up...";
+  
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  
+  if (error) {
+    statusEl.textContent = "Signup failed: " + error.message;
+  } else {
+    statusEl.textContent = "Signup successful! Check your email for confirmation.";
+  }
+});
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  statusEl.textContent = "Logging in...";
+  
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  
+  if (error) {
+    statusEl.textContent = "Login failed: " + error.message;
+  } else {
+    statusEl.textContent = "Login successful! User ID: " + data.user.id;
+  }
+});
+</script>
+</body>
+</html>
