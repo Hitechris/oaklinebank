@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | Oakline Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Roboto', sans-serif; background: #f9fbff; }
+.form-container { max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+input, button { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
+button { background: #003366; color: #fff; border: none; cursor: pointer; }
+button:hover { background: #0052cc; }
+.error { color: red; display: none; margin-bottom: 10px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Sign Up</h2>
+  <p class="error" id="signupError"></p>
+  <form id="signupForm">
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="middleName" placeholder="Middle Name">
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+    <button type="submit">Sign Up</button>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </form>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+// Your Supabase credentials
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const form = document.getElementById("signupForm");
+const errorEl = document.getElementById("signupError");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorEl.style.display = "none";
+
+  const first_name = document.getElementById('firstName').value.trim();
+  const middle_name = document.getElementById('middleName').value.trim();
+  const last_name = document.getElementById('lastName').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if(password !== confirmPassword){
+    errorEl.innerText = "Passwords do not match.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  try {
+    // 1️⃣ Sign up in Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username, full_name: `${first_name} ${middle_name} ${last_name}` } }
+    });
+    if(authError) throw authError;
+
+    const userId = authData.user.id;
+
+    // 2️⃣ Insert profile
+    const { error: profileError } = await supabase.from('profiles').insert([{
+      id: userId, email, username, first_name, middle_name, last_name
+    }]);
+    if(profileError) throw profileError;
+
+    alert("Signup successful! You can now login.");
+    window.location.href = "login.html";
+
+  } catch(err) {
+    console.error(err);
+    errorEl.innerText = "Signup failed: " + err.message;
+    errorEl.style.display = "block";
+  }
+});
+</script>
+</body>
+</html>
