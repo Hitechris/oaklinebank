@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | Oakline Bank</title>
+<style>
+body { font-family: 'Roboto', sans-serif; background: #f9fbff; }
+.form-container { max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+input, button { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
+button { background: #003366; color: #fff; border: none; cursor: pointer; }
+button:hover { background: #0052cc; }
+.error { color: red; display: none; margin-bottom: 10px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Login</h2>
+  <p class="error" id="loginError"></p>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const form = document.getElementById("loginForm");
+const errorEl = document.getElementById("loginError");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorEl.style.display = "none";
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+
+    window.location.href = "dashboard.html"; // redirect after login
+
+  } catch(err) {
+    console.error(err);
+    errorEl.innerText = "Login failed: " + err.message;
+    errorEl.style.display = "block";
+  }
+});
+</script>
+</body>
+</html>
