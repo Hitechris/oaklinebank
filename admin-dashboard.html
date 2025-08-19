@@ -46,16 +46,16 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-const supabaseKey = 'YOUR_ANON_KEY'; // Replace with your Supabase anon key
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // <-- Replace with your actual key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Logout
+// Logout button
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabase.auth.signOut();
   window.location.href = 'admin-login.html';
 });
 
-// Load total users & balances
+// Load users & balances
 async function loadUsers() {
   const { data: users, error } = await supabase.from('profiles').select('id, email, is_admin');
   if (error) return console.error(error);
@@ -80,10 +80,10 @@ async function loadUsers() {
 // Load pending deposits
 async function loadPendingDeposits() {
   const { data: deposits, error } = await supabase
-    .from('pendingDeposits')
+    .from('deposits')
     .select('*')
     .eq('status', 'Pending')
-    .order('date', { ascending: true });
+    .order('created_at', { ascending: true });
 
   const container = document.getElementById('pendingDepositsList');
   container.innerHTML = '';
@@ -99,8 +99,8 @@ async function loadPendingDeposits() {
     div.className = 'mb-3 p-2 border rounded d-flex justify-content-between align-items-center';
     div.innerHTML = `
       <div>
-        <strong>${dep.email}</strong> - ${dep.accountType} - $${dep.amount.toFixed(2)}
-        <br/><small>Submitted: ${new Date(dep.date).toLocaleString()}</small>
+        <strong>${dep.email}</strong> - ${dep.account_type} - $${dep.amount.toFixed(2)}
+        <br/><small>Submitted: ${new Date(dep.created_at).toLocaleString()}</small>
       </div>
       <div>
         <button class="btn btn-approve btn-sm me-1">Approve</button>
@@ -112,26 +112,30 @@ async function loadPendingDeposits() {
     const rejectBtn = div.querySelector('.btn-reject');
 
     approveBtn.addEventListener('click', async () => {
-      // Update user balance
-      const { data: account, error: accErr } = await supabase
+      // Get account
+      let { data: account, error: accErr } = await supabase
         .from('accounts')
         .select('*')
         .eq('user_id', dep.user_id)
-        .eq('type', dep.accountType)
+        .eq('type', dep.account_type)
         .single();
 
-      if (accErr) return console.error(accErr);
+      if (accErr) {
+        console.error(accErr);
+        alert('Error fetching user account.');
+        return;
+      }
 
+      // Update balance
       const newBalance = account.balance + dep.amount;
-
       await supabase
         .from('accounts')
         .update({ balance: newBalance })
         .eq('id', account.id);
 
-      // Mark deposit as approved
+      // Mark deposit approved
       await supabase
-        .from('pendingDeposits')
+        .from('deposits')
         .update({ status: 'Approved' })
         .eq('id', dep.id);
 
@@ -141,7 +145,7 @@ async function loadPendingDeposits() {
 
     rejectBtn.addEventListener('click', async () => {
       await supabase
-        .from('pendingDeposits')
+        .from('deposits')
         .update({ status: 'Rejected' })
         .eq('id', dep.id);
 
