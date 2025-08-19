@@ -10,13 +10,30 @@
 body { font-family: 'Roboto', sans-serif; background-color: #f9fbff; margin: 0; padding: 0; }
 a { text-decoration: none; color: #003366; }
 a:hover { color: #0052cc; }
-.form-container { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background-color: #003366; color: white; }
+.navbar .logo { font-size: 1.5rem; font-weight: bold; }
+.form-container { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.form-container h2 { text-align: center; margin-bottom: 20px; color: #003366; }
+input { margin-bottom: 15px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
 button { background-color: #0052cc; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-weight: bold; }
 button:hover { background-color: #003366; }
 .error { color: red; margin-bottom: 10px; display: none; text-align: center; }
+body.dark-mode { background-color: #121212; color: #e0e0e0; }
+body.dark-mode .form-container { background-color: #1a1a1a; color: #e0e0e0; }
 </style>
 </head>
 <body>
+
+<header class="navbar">
+  <div class="logo">Oakline Bank</div>
+  <div class="toggle-container">
+    <label class="switch">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</header>
+
 <div class="form-container">
   <h2>Login to Oakline Bank</h2>
   <p class="error" id="loginError"></p>
@@ -28,32 +45,33 @@ button:hover { background-color: #003366; }
   </form>
 </div>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+<script>
 const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById("loginForm");
-const errorEl = document.getElementById("loginError");
+const toggle = document.getElementById('darkModeToggle');
+toggle.addEventListener('change', () => document.body.classList.toggle('dark-mode', toggle.checked));
 
-form.addEventListener("submit", async (e) => {
+const form = document.getElementById('loginForm');
+const errorEl = document.getElementById('loginError');
+
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
   errorEl.style.display = "none";
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if(error) throw error;
 
-    // Login successful
+    // Redirect after login
     alert("Login successful!");
-    window.location.href = "dashboard.html"; // Replace with your dashboard page
-
-  } catch (err) {
+    window.location.href = "dashboard.html"; // replace with your dashboard page
+  } catch(err) {
     console.error(err);
     errorEl.innerText = "Login failed: " + err.message;
     errorEl.style.display = "block";
