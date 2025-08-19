@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supabase Key Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+</head>
+<body>
+<script>
+  const supabaseUrl = "https://ockhxxigrqmbuotkupfl.supabase.co";
+  const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw";
+
+  const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+  async function test() {
+    const { data, error } = await supabase.from('profiles').select('*').limit(1);
+    if(error) {
+      console.error("Error:", error.message);
+      alert("Supabase key test failed: " + error.message);
+    } else {
+      console.log("Success! Data:", data);
+      alert("Supabase connection working! Check console for data.");
+    }
+  }
+
+  test();
+</script>
+</body>
+</html>
