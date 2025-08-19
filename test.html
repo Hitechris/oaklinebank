@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase Test</title>
+</head>
+<body>
+<h2>Supabase Connection Test</h2>
+<pre id="result">Testing...</pre>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  // --- Replace these with your actual project details ---
+  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const resultEl = document.getElementById('result');
+
+  async function testConnection() {
+    try {
+      // Try fetching current user (should be null if no one is logged in)
+      const { data: user, error } = await supabase.auth.getUser();
+      if (error) throw error;
+
+      // Try fetching profiles table as a test
+      const { data: profiles, error: profilesError } = await supabase.from('profiles').select('*');
+      if (profilesError) throw profilesError;
+
+      resultEl.innerText = `Supabase is working!\n\nCurrent user: ${JSON.stringify(user)}\nProfiles data: ${JSON.stringify(profiles)}`;
+    } catch (err) {
+      resultEl.innerText = `Error: ${err.message}`;
+      console.error(err);
+    }
+  }
+
+  testConnection();
+</script>
+</body>
+</html>
