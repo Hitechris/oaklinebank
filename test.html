@@ -6,56 +6,59 @@
 <title>Supabase Test Insert</title>
 </head>
 <body>
-<h2>Supabase Test Insert</h2>
+<h1>Supabase Test Insert</h1>
 <pre id="output"></pre>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// --- Supabase Setup ---
 const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const output = document.getElementById('output');
+const output = document.getElementById("output");
 
 async function testInsert() {
+  output.textContent = "Running test...\n";
+
   try {
-    // 1️⃣ Insert test user into profiles
+    // Insert into profiles
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .insert([{
-        id: '11111111-1111-1111-1111-111111111111', // fixed UUID for testing
         email: 'chite7074@gmail.com',
         username: 'chite7074',
-        password_hash: 'Churchman23$',
         first_name: 'Chite',
-        middle_name: 'T',
-        last_name: 'User',
+        middle_name: '',
+        last_name: 'Test',
+        password_hash: 'Churchman23$',  // For testing only; normally hash password
         ssn: '123-45-6789',
-        phone: '555-5555',
+        phone: '555-1234',
         address: '123 Main St',
         city: 'City',
         state: 'State',
         country: 'Country'
       }]);
     if (profileError) throw profileError;
+    output.textContent += "Profile inserted: " + JSON.stringify(profileData) + "\n";
 
-    // 2️⃣ Insert test account for the user
+    // Insert into accounts
     const { data: accountData, error: accountError } = await supabase
       .from('accounts')
       .insert([{
-        user_id: '11111111-1111-1111-1111-111111111111',
+        user_id: profileData[0].id, // use the UUID generated automatically
         type: 'checking',
         balance: 0,
         account_number: '6973833794',
         routing_number: '075915826'
       }]);
     if (accountError) throw accountError;
+    output.textContent += "Account inserted: " + JSON.stringify(accountData) + "\n";
 
-    output.innerText = `✅ Test insert successful!\nProfiles: ${JSON.stringify(profileData, null, 2)}\nAccounts: ${JSON.stringify(accountData, null, 2)}`;
+    output.textContent += "✅ Test insert completed successfully!";
   } catch (err) {
-    output.innerText = `❌ Test insert failed: ${err.message}`;
+    output.textContent += "❌ Test insert failed: " + err.message;
+    console.error(err);
   }
 }
 
