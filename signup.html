@@ -4,38 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign Up | Oakline Bank</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <style>
-body { font-family: 'Roboto', sans-serif; background: #f9fbff; }
-.form-container { max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-input, button { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
-button { background: #003366; color: #fff; border: none; cursor: pointer; }
-button:hover { background: #0052cc; }
-.error { color: red; display: none; margin-bottom: 10px; text-align: center; }
+body { font-family: 'Roboto', sans-serif; background-color: #f9fbff; margin: 0; padding: 0; }
+a { text-decoration: none; color: #003366; }
+a:hover { color: #0052cc; }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background-color: #003366; color: white; }
+.navbar .logo { font-size: 1.5rem; font-weight: bold; }
+.form-container { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.form-container h2 { text-align: center; margin-bottom: 20px; color: #003366; }
+input { margin-bottom: 15px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
+button { background-color: #0052cc; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; font-weight: bold; }
+button:hover { background-color: #003366; }
+.error { color: red; margin-bottom: 10px; display: none; text-align: center; }
 </style>
 </head>
 <body>
 
+<header class="navbar">
+  <div class="logo">Oakline Bank</div>
+</header>
+
 <div class="form-container">
-  <h2>Sign Up</h2>
+  <h2>Create Your Account</h2>
   <p class="error" id="signupError"></p>
   <form id="signupForm">
-    <input type="text" id="firstName" placeholder="First Name" required>
-    <input type="text" id="middleName" placeholder="Middle Name">
-    <input type="text" id="lastName" placeholder="Last Name" required>
-    <input type="text" id="username" placeholder="Username" required>
+    <input type="text" id="fullName" placeholder="Full Name" required>
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
     <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
     <button type="submit">Sign Up</button>
-    <p>Already have an account? <a href="login.html">Login</a></p>
+    <p class="mt-3 text-center">Already have an account? <a href="login.html">Login</a></p>
   </form>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Your Supabase credentials
 const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -47,10 +53,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorEl.style.display = "none";
 
-  const first_name = document.getElementById('firstName').value.trim();
-  const middle_name = document.getElementById('middleName').value.trim();
-  const last_name = document.getElementById('lastName').value.trim();
-  const username = document.getElementById('username').value.trim();
+  const fullName = document.getElementById('fullName').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
@@ -62,26 +65,22 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    // 1️⃣ Sign up in Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username, full_name: `${first_name} ${middle_name} ${last_name}` } }
+      options: { data: { full_name: fullName } }
     });
     if(authError) throw authError;
 
+    // Insert profile
     const userId = authData.user.id;
-
-    // 2️⃣ Insert profile
-    const { error: profileError } = await supabase.from('profiles').insert([{
-      id: userId, email, username, first_name, middle_name, last_name
-    }]);
+    const { error: profileError } = await supabase.from('profiles').insert([{ id: userId, email, full_name: fullName }]);
     if(profileError) throw profileError;
 
-    alert("Signup successful! You can now login.");
+    alert("Signup successful! Please check your email for confirmation.");
     window.location.href = "login.html";
 
-  } catch(err) {
+  } catch(err){
     console.error(err);
     errorEl.innerText = "Signup failed: " + err.message;
     errorEl.style.display = "block";
