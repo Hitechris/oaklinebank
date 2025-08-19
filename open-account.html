@@ -4,22 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Open Account | Oakline Bank</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <style>
-body { font-family: 'Roboto', sans-serif; background: #f9fbff; }
-.form-container { max-width: 500px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-input, select, button { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
-button { background: #003366; color: #fff; border: none; cursor: pointer; }
-button:hover { background: #0052cc; }
-.error { color: red; display: none; margin-bottom: 10px; text-align: center; }
+body { font-family: 'Roboto', sans-serif; background-color: #f9fbff; margin:0; padding:0; }
+a { text-decoration: none; color: #003366; }
+a:hover { color: #0052cc; }
+.navbar { display:flex; justify-content: space-between; align-items:center; padding:15px 40px; background-color:#003366; color:white; }
+.navbar .logo { font-size:1.5rem; font-weight:bold; }
+.form-container { max-width: 600px; margin:50px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+.form-container h2 { text-align:center; margin-bottom:20px; color:#003366; }
+input, select { margin-bottom:15px; padding:10px; width:100%; border-radius:6px; border:1px solid #ccc; }
+button { background-color:#0052cc; color:white; padding:12px; width:100%; border:none; border-radius:6px; font-weight:bold; }
+button:hover { background-color:#003366; }
+.error { color:red; margin-bottom:10px; display:none; text-align:center; }
 </style>
 </head>
 <body>
 
+<header class="navbar">
+  <div class="logo">Oakline Bank</div>
+</header>
+
 <div class="form-container">
-  <h2>Open Your Bank Account</h2>
-  <p class="error" id="accountError"></p>
-  <form id="accountForm">
+  <h2>Open Your Full Bank Account</h2>
+  <p class="error" id="openAccountError"></p>
+  <form id="openAccountForm">
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="middleName" placeholder="Middle Name">
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="text" id="username" placeholder="Username" required>
     <input type="text" id="ssn" placeholder="SSN" required>
     <input type="text" id="phone" placeholder="Phone Number" required>
     <input type="text" id="address" placeholder="Address" required>
@@ -35,7 +49,7 @@ button:hover { background: #0052cc; }
       <option value="both">Both</option>
     </select>
 
-    <button type="submit">Create Account</button>
+    <button type="submit">Open Account</button>
   </form>
 </div>
 
@@ -46,13 +60,27 @@ const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById("accountForm");
-const errorEl = document.getElementById("accountError");
+const form = document.getElementById("openAccountForm");
+const errorEl = document.getElementById("openAccountError");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorEl.style.display = "none";
 
+  const session = supabase.auth.getSession();
+  const { data: { session: currentSession } } = await session;
+  if(!currentSession) {
+    errorEl.innerText = "You must be logged in to open an account.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  const userId = currentSession.user.id;
+
+  const first_name = document.getElementById('firstName').value.trim();
+  const middle_name = document.getElementById('middleName').value.trim();
+  const last_name = document.getElementById('lastName').value.trim();
+  const username = document.getElementById('username').value.trim();
   const ssn = document.getElementById('ssn').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const address = document.getElementById('address').value.trim();
@@ -68,13 +96,14 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    const user = supabase.auth.getUser(); // get logged-in user
-    const { data: { user: currentUser } } = await user;
-    if(!currentUser) throw new Error("No logged-in user found.");
+    // 1️⃣ Insert full profile
+    const { error: profileError } = await supabase.from('profiles').update({
+      first_name, middle_name, last_name, username, ssn, phone, address, city, state, country
+    }).eq('id', userId);
+    if(profileError) throw profileError;
 
-    const userId = currentUser.id;
-    const routingNumber = "075915826";
-
+    // 2️⃣ Generate accounts
+    const routingNumber = '075915826';
     const generateAccountNumber = () => Math.floor(1000000000 + Math.random() * 9000000000).toString();
     const accounts = [];
     if(account_type === 'checking' || account_type === 'both') accounts.push({ user_id: userId, type: 'checking', balance:0, account_number: generateAccountNumber(), routing_number:routingNumber });
@@ -85,18 +114,12 @@ form.addEventListener("submit", async (e) => {
       if(accountsError) throw accountsError;
     }
 
-    // Update profile with full info
-    const { error: profileError } = await supabase.from('profiles').update({
-      ssn, phone, address, city, state, country
-    }).eq('id', userId);
-    if(profileError) throw profileError;
-
-    alert("Bank account(s) created successfully!");
+    alert("Your accounts have been successfully created!");
     window.location.href = "dashboard.html";
 
   } catch(err){
     console.error(err);
-    errorEl.innerText = "Failed to create account: " + err.message;
+    errorEl.innerText = "Error opening account: " + err.message;
     errorEl.style.display = "block";
   }
 });
