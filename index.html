@@ -651,12 +651,12 @@
     </div>
   </div>
 
-  <script type="module">
+<script type="module">
   import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // ======= SUPABASE CONFIG =======
-  const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYnVvdGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+  // ======= NEW SUPABASE CONFIG =======
+  const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // ======= MODAL FUNCTIONS =======
@@ -687,7 +687,6 @@
     const securityAnswer = document.getElementById('signupSecurityAnswer').value.trim();
     const error = document.getElementById('passwordError');
 
-    // Validate fields
     if (!firstName || !lastName || !email || !phone || !dob || !accountType || !ssn || !city ||
         !state || !country || !address || !password || !confirmPassword || !securityQuestion || !securityAnswer) {
       error.innerText = "Please fill out all required fields.";
@@ -713,7 +712,6 @@
     }
     error.style.display = "none";
 
-    // Sign up with Supabase
     const { data, error: signUpError } = await supabase.auth.signUp(
       { email, password },
       { data: { firstName, middleName, lastName, phone, dob, accountType, ssn, city, state, country, address, securityQuestion, securityAnswer } }
