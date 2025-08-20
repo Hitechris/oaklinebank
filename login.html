@@ -69,12 +69,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 3️⃣ Fetch account info
-  const { data: accountRow, error: accountError } = await supabase
-    .from('accounts')
-    .select('*')
-    .eq('auth_id', authData.user.id)
-    .single();
+// 3️⃣ Fetch account info
+const { data: accountRow, error: accountError } = await supabase
+  .from('accounts')
+  .select('*')
+  .eq('user_id', authData.user.id)  // <-- corrected line
+  .single();
 
   if (accountError) {
     msg.innerText = accountError.message;
