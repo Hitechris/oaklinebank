@@ -32,7 +32,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+const supabaseKey = 'YOUR_SUPABASE_KEY_HERE';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const form = document.getElementById('loginForm');
@@ -79,11 +79,13 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 4️⃣ Display welcome and accounts
+  // 4️⃣ Display welcome and accounts separately
   msg.innerHTML = `<strong>Welcome, ${userRow.full_name}!</strong>`;
   msg.className = 'text-success mt-2';
 
+  let totalBalance = 0;
   accounts.forEach(acc => {
+    totalBalance += acc.balance;
     const accHtml = `
       <div class="card p-2 mb-2">
         <strong>${acc.account_type} Account</strong><br>
@@ -94,8 +96,13 @@ form.addEventListener('submit', async (e) => {
     accountsDiv.innerHTML += accHtml;
   });
 
-  // Optional: redirect after login
-  // setTimeout(() => { window.location.href = 'dashboard.html'; }, 3000);
+  const totalHtml = `<div class="alert alert-info mt-2">
+    Total Balance: $${totalBalance.toFixed(2)}
+  </div>`;
+  accountsDiv.innerHTML += totalHtml;
+
+  // 5️⃣ Redirect to dashboard after 3 seconds
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 3000);
 });
 </script>
 
