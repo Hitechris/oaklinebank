@@ -6,72 +6,76 @@
 <title>Open Account | Oakline Bank</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-  body { background: #f8f9fa; }
-  .card { width: 600px; max-width: 95%; }
-  #manualCityDiv { display: none; }
+  body { background-color: #f5f5f5; }
+  .card { max-width: 600px; margin: auto; }
 </style>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
 
 <div class="card p-4 shadow">
-  <h4 class="mb-3 text-center">Open a New Account</h4>
+  <h4 class="mb-3 text-center">Open a Bank Account</h4>
   <form id="openAccountForm">
-    <div class="row g-3">
-      <div class="col-md-4">
-        <label class="form-label">First Name</label>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="firstName" class="form-label">First Name</label>
         <input type="text" id="firstName" class="form-control" required>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Middle Name</label>
+      <div class="col">
+        <label for="middleName" class="form-label">Middle Name</label>
         <input type="text" id="middleName" class="form-control">
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Last Name</label>
+      <div class="col">
+        <label for="lastName" class="form-label">Last Name</label>
         <input type="text" id="lastName" class="form-control" required>
       </div>
     </div>
 
-    <div class="mt-3">
-      <label class="form-label">Address</label>
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
       <input type="text" id="address" class="form-control" required>
     </div>
 
-    <div class="row g-3 mt-3">
-      <div class="col-md-6">
-        <label class="form-label">State</label>
-        <select id="state" class="form-select" required></select>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="state" class="form-label">State</label>
+        <select id="state" class="form-select" required>
+          <option value="">Select State</option>
+          <!-- US States will be populated dynamically -->
+        </select>
       </div>
-      <div class="col-md-6">
-        <label class="form-label">City</label>
-        <select id="city" class="form-select"></select>
-        <div id="manualCityDiv" class="mt-2">
-          <input type="text" id="manualCity" class="form-control" placeholder="Enter your city">
-        </div>
+      <div class="col">
+        <label for="city" class="form-label">City</label>
+        <select id="city" class="form-select" required>
+          <option value="">Select City</option>
+          <!-- Cities populated dynamically based on state -->
+        </select>
+        <input type="text" id="manualCity" class="form-control mt-2" placeholder="Enter city if not listed">
       </div>
     </div>
 
-    <div class="row g-3 mt-3">
-      <div class="col-md-6">
-        <label class="form-label">SSN</label>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="ssn" class="form-label">SSN</label>
         <input type="text" id="ssn" class="form-control" required>
       </div>
-      <div class="col-md-6">
-        <label class="form-label">Date of Birth</label>
+      <div class="col">
+        <label for="dob" class="form-label">Date of Birth</label>
         <input type="date" id="dob" class="form-control" required>
       </div>
     </div>
 
-    <div class="mt-3">
-      <label class="form-label">Account Type</label>
+    <div class="mb-3">
+      <label for="accountType" class="form-label">Account Type</label>
       <select id="accountType" class="form-select" required>
+        <option value="">Select Account Type</option>
         <option value="Checking">Checking</option>
         <option value="Savings">Savings</option>
         <option value="Both">Both</option>
       </select>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100 mt-4">Create Account</button>
-    <div id="openAccountMessage" class="mt-2 text-center"></div>
+    <button type="submit" class="btn btn-primary w-100">Open Account</button>
+    <div id="openAccountMessage" class="mt-3 text-center"></div>
   </form>
 </div>
 
@@ -82,57 +86,46 @@ const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// States and sample cities
-const statesWithCities = {
-  "Alabama":["Birmingham","Montgomery","Mobile","Huntsville","Tuscaloosa","Hoover","Dothan","Decatur","Auburn","Madison","Florence","Gadsden","Vestavia Hills","Prattville","Phenix City","Alabaster","Opelika","Homewood","Northport","Anniston"],
-  "Alaska":["Anchorage","Fairbanks","Juneau","Sitka","Ketchikan","Wasilla","Kenai","Kodiak","Bethel","Palmer","Valdez","Homer","Kotzebue","Barrow","Dillingham","Nome","Seward","Wrangell","Cordova"],
-  "Arizona":["Phoenix","Tucson","Mesa","Chandler","Glendale","Scottsdale","Gilbert","Tempe","Peoria","Surprise","Yuma","Avondale","Goodyear","Buckeye","Flagstaff","Lake Havasu City","Casa Grande","Sierra Vista","Maricopa"],
-  // ... continue all 50 states with at least 15-20 cities
-};
+// Populate US states
+const states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
 
-// Populate states dropdown
 const stateSelect = document.getElementById('state');
-for (const state in statesWithCities) {
+states.forEach(st => {
   const option = document.createElement('option');
-  option.value = state;
-  option.text = state;
-  stateSelect.add(option);
-}
+  option.value = st;
+  option.text = st;
+  stateSelect.appendChild(option);
+});
 
-const citySelect = document.getElementById('city');
-const manualCityDiv = document.getElementById('manualCityDiv');
-const manualCityInput = document.getElementById('manualCity');
+const citiesByState = {
+  "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim"],
+  "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Plano","Corpus Christi","Laredo"],
+  "Florida": ["Miami","Orlando","Tampa","Jacksonville","Tallahassee","Fort Lauderdale","St. Petersburg"],
+  // ... add at least 15-20 cities for each state
+};
 
 stateSelect.addEventListener('change', () => {
   const selectedState = stateSelect.value;
-  citySelect.innerHTML = "";
-  manualCityDiv.style.display = "none";
-  
-  const cities = statesWithCities[selectedState] || [];
-  cities.forEach(city => {
-    const option = document.createElement('option');
-    option.value = city;
-    option.text = city;
-    citySelect.add(option);
-  });
+  const citySelect = document.getElementById('city');
+  citySelect.innerHTML = '<option value="">Select City</option>';
 
-  // Add "Other" option for manual entry
-  const otherOption = document.createElement('option');
-  otherOption.value = "Other";
-  otherOption.text = "Other";
-  citySelect.add(otherOption);
-});
-
-citySelect.addEventListener('change', () => {
-  if (citySelect.value === "Other") {
-    manualCityDiv.style.display = "block";
-    manualCityInput.required = true;
-  } else {
-    manualCityDiv.style.display = "none";
-    manualCityInput.required = false;
+  if (citiesByState[selectedState]) {
+    citiesByState[selectedState].forEach(city => {
+      const option = document.createElement('option');
+      option.value = city;
+      option.text = city;
+      citySelect.appendChild(option);
+    });
   }
 });
+</script>
 
+<!-- Messages for feedback -->
+<div id="openAccountMessage" class="mt-2 text-center"></div>
+
+<!-- Script to handle form submission -->
+<script type="module">
+// Continue from Part 1
 const form = document.getElementById('openAccountForm');
 const msg = document.getElementById('openAccountMessage');
 
@@ -140,35 +133,44 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.innerText = '';
 
-  const user = supabase.auth.user();
-  if (!user) {
-    msg.innerText = "You must be logged in to open an account.";
-    msg.className = "text-danger mt-2";
-    return;
-  }
-
   const first_name = document.getElementById('firstName').value.trim();
   const middle_name = document.getElementById('middleName').value.trim();
   const last_name = document.getElementById('lastName').value.trim();
   const address = document.getElementById('address').value.trim();
+  let city = document.getElementById('city').value;
+  const manualCity = document.getElementById('manualCity').value.trim();
   const state = document.getElementById('state').value;
-  const city = citySelect.value === "Other" ? manualCityInput.value.trim() : citySelect.value;
   const ssn = document.getElementById('ssn').value.trim();
   const dob = document.getElementById('dob').value;
-  const accountType = document.getElementById('accountType').value;
+  const account_type = document.getElementById('accountType').value;
 
-  const accountsToCreate = [];
-  if(accountType === "Both"){
-    accountsToCreate.push("Checking");
-    accountsToCreate.push("Savings");
-  } else {
-    accountsToCreate.push(accountType);
+  // Use manual city if entered
+  if (manualCity) city = manualCity;
+
+  if (!state || !city || !account_type) {
+    msg.innerText = 'Please fill all required fields.';
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // Generate random account number
+  function generateAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  }
+
+  // Get logged-in user
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (!userData.user) {
+    msg.innerText = 'You must be logged in to open an account.';
+    msg.className = 'text-danger mt-2';
+    return;
   }
 
   try {
-    for(const type of accountsToCreate){
+    if (account_type === 'Both') {
+      // Create Checking
       await supabase.from('accounts').insert([{
-        user_id: user.id,
+        user_id: userData.user.id,
         first_name,
         middle_name,
         last_name,
@@ -177,23 +179,57 @@ form.addEventListener('submit', async (e) => {
         state,
         ssn,
         dob,
-        account_type: type,
-        account_number: Math.floor(Math.random()*9000000000)+1000000000, // random 10-digit
+        account_type: 'Checking',
+        account_number: generateAccountNumber(),
+        routing_number: '075915826',
+        balance: 0
+      }]);
+
+      // Create Savings
+      await supabase.from('accounts').insert([{
+        user_id: userData.user.id,
+        first_name,
+        middle_name,
+        last_name,
+        address,
+        city,
+        state,
+        ssn,
+        dob,
+        account_type: 'Savings',
+        account_number: generateAccountNumber(),
+        routing_number: '075915826',
+        balance: 0
+      }]);
+    } else {
+      await supabase.from('accounts').insert([{
+        user_id: userData.user.id,
+        first_name,
+        middle_name,
+        last_name,
+        address,
+        city,
+        state,
+        ssn,
+        dob,
+        account_type,
+        account_number: generateAccountNumber(),
         routing_number: '075915826',
         balance: 0
       }]);
     }
-    msg.innerText = "Account(s) created successfully!";
-    msg.className = "text-success mt-2";
+
+    msg.innerText = 'Account(s) created successfully!';
+    msg.className = 'text-success mt-2';
     form.reset();
-    citySelect.innerHTML = ""; // reset cities
   } catch (error) {
     msg.innerText = error.message;
-    msg.className = "text-danger mt-2";
+    msg.className = 'text-danger mt-2';
   }
 });
 </script>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
