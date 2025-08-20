@@ -74,24 +74,8 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 3️⃣ Create default account in public.accounts
-  const { error: accountError } = await supabase
-    .from('accounts')
-    .insert([{
-      auth_id: authData.user.id,
-      account_type: 'Checking',
-      balance: 0
-    }]);
-
-  if (accountError) {
-    msg.innerText = 'User created, but failed to create default bank account.';
-    msg.className = 'text-warning mt-2';
-    return;
-  }
-
-  msg.innerText = 'Account created! Check your email for confirmation.';
-  msg.className = 'text-success mt-2';
-  form.reset();
+  // ✅ Redirect to open-account page
+  window.location.href = 'open-account.html';
 });
 </script>
 
