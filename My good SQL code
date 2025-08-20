@@ -1,0 +1,73 @@
+If you want, I can write the exact policy SQL and a fully working signup + login code for your current users table so it works without errors.
+
+
+Perfect — let’s fix this once and for all. Since your users table is:
+
+CREATE TABLE public.users (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp without time zone NOT NULL DEFAULT now(),
+  full_name text,
+  email text,
+  auth_id uuid,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+
+
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow insert for signup"
+ON public.users
+FOR INSERT
+TO public
+WITH CHECK (true);
+
+CREATE POLICY "Allow select for authenticated users"
+ON public.users
+FOR SELECT
+TO authenticated
+USING (auth_id = auth.uid());
+
+
+const { data: authData, error: authError } = await supabase.auth.signUp({
+  email,
+  password
+});
+
+if (authError) {
+  msg.innerText = authError.message;
+  msg.className = 'text-danger mt-2';
+  return;
+}
+
+// Insert user info into public.users table
+const { error: dbError } = await supabase
+  .from('users')
+  .insert([{
+    full_name: fullName,
+    email,
+    auth_id: authData.user.id,        // links to Supabase Auth
+    created_at: new Date().toISOString()
+  }]);
+
+
+
+
+
+const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+  email,
+  password
+});
+
+if (loginError) {
+  msg.innerText = loginError.message;
+  msg.className = 'text-danger mt-2';
+  return;
+}
+
+// Successfully logged in
+msg.innerText = 'Logged in!';
+msg.className = 'text-success mt-2';
+
+
+
