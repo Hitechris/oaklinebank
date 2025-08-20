@@ -44,7 +44,6 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // Sign in with Supabase Auth
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
@@ -56,8 +55,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // Redirect to dashboard on successful login
-  window.location.href = 'dashboard.html';
+  // Redirect to dashboard or home after successful login
+  msg.innerText = 'Login successful! Redirecting...';
+  msg.className = 'text-success mt-2';
+  setTimeout(() => {
+    window.location.href = 'dashboard.html';
+  }, 1000);
 });
 </script>
 
