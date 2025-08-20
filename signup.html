@@ -44,12 +44,12 @@ const msg = document.getElementById('signupMessage');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.innerText = '';
-  
+
   const fullName = document.getElementById('fullName').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // 1️⃣ Sign up with Supabase Auth
+  // 1️⃣ Create user in Supabase Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password
@@ -61,13 +61,13 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2️⃣ Insert into public.users using auth_id for RLS
+  // 2️⃣ Insert extra info into public.users table (RLS compatible)
   const { error: dbError } = await supabase
     .from('users')
     .insert([{
       full_name: fullName,
       email,
-      auth_id: authData.user.id,   // must match policy
+      auth_id: authData.user.id,
       created_at: new Date().toISOString()
     }]);
 
