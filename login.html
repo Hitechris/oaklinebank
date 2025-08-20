@@ -44,23 +44,52 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  // 1️⃣ Log in user via Supabase Auth
+  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
     email,
     password
   });
 
-  if (error) {
-    msg.innerText = error.message;
+  if (authError) {
+    msg.innerText = authError.message;
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  // Redirect to dashboard or home after successful login
-  msg.innerText = 'Login successful! Redirecting...';
+  // 2️⃣ Fetch user row
+  const { data: userRow, error: userError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_id', authData.user.id)
+    .single();
+
+  if (userError) {
+    msg.innerText = userError.message;
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // 3️⃣ Fetch account info
+  const { data: accountRow, error: accountError } = await supabase
+    .from('accounts')
+    .select('*')
+    .eq('auth_id', authData.user.id)
+    .single();
+
+  if (accountError) {
+    msg.innerText = accountError.message;
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // 4️⃣ Display welcome message
+  msg.innerHTML = `
+    Welcome, <strong>${userRow.full_name}</strong>!<br>
+    Account Type: ${accountRow.account_type}<br>
+    Balance: $${accountRow.balance.toFixed(2)}
+  `;
   msg.className = 'text-success mt-2';
-  setTimeout(() => {
-    window.location.href = 'dashboard.html';
-  }, 1000);
+  form.reset();
 });
 </script>
 
