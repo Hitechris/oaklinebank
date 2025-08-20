@@ -4,125 +4,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Open Account | Oakline Bank</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body { font-family: 'Roboto', sans-serif; background-color: #f9fbff; margin:0; padding:0; }
-a { text-decoration: none; color: #003366; }
-a:hover { color: #0052cc; }
-.navbar { display:flex; justify-content: space-between; align-items:center; padding:15px 40px; background-color:#003366; color:white; }
-.navbar .logo { font-size:1.5rem; font-weight:bold; }
-.form-container { max-width: 600px; margin:50px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-.form-container h2 { text-align:center; margin-bottom:20px; color:#003366; }
-input, select { margin-bottom:15px; padding:10px; width:100%; border-radius:6px; border:1px solid #ccc; }
-button { background-color:#0052cc; color:white; padding:12px; width:100%; border:none; border-radius:6px; font-weight:bold; }
-button:hover { background-color:#003366; }
-.error { color:red; margin-bottom:10px; display:none; text-align:center; }
+  body {
+    background: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
+  }
+  .card {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 50px;
+    border-radius: 10px;
+  }
+  h4 {
+    color: #0d6efd;
+  }
 </style>
 </head>
 <body>
-
-<header class="navbar">
-  <div class="logo">Oakline Bank</div>
-</header>
-
-<div class="form-container">
-  <h2>Open Your Full Bank Account</h2>
-  <p class="error" id="openAccountError"></p>
+<div class="card p-4 shadow">
+  <h4 class="mb-4 text-center">Open Your Oakline Bank Account</h4>
   <form id="openAccountForm">
-    <input type="text" id="firstName" placeholder="First Name" required>
-    <input type="text" id="middleName" placeholder="Middle Name">
-    <input type="text" id="lastName" placeholder="Last Name" required>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="text" id="ssn" placeholder="SSN" required>
-    <input type="text" id="phone" placeholder="Phone Number" required>
-    <input type="text" id="address" placeholder="Address" required>
-    <input type="text" id="city" placeholder="City" required>
-    <input type="text" id="state" placeholder="State" required>
-    <input type="text" id="country" placeholder="Country" required>
 
-    <label for="accountType">Select Account Type:</label>
-    <select id="accountType" required>
-      <option value="">--Select--</option>
-      <option value="checking">Checking</option>
-      <option value="savings">Savings</option>
-      <option value="both">Both</option>
-    </select>
+    <div class="row mb-3">
+      <div class="col">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" id="firstName" class="form-control" required>
+      </div>
+      <div class="col">
+        <label for="middleName" class="form-label">Middle Name</label>
+        <input type="text" id="middleName" class="form-control">
+      </div>
+      <div class="col">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" id="lastName" class="form-control" required>
+      </div>
+    </div>
 
-    <button type="submit">Open Account</button>
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input type="text" id="address" class="form-control" required>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <label for="state" class="form-label">State</label>
+        <select id="state" class="form-select" required>
+          <option value="">Select State</option>
+          <option value="Alabama">Alabama</option>
+          <option value="Alaska">Alaska</option>
+          <option value="Arizona">Arizona</option>
+          <option value="Arkansas">Arkansas</option>
+          <option value="California">California</option>
+          <option value="Colorado">Colorado</option>
+          <option value="Connecticut">Connecticut</option>
+          <option value="Delaware">Delaware</option>
+          <option value="Florida">Florida</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Hawaii">Hawaii</option>
+          <option value="Idaho">Idaho</option>
+          <option value="Illinois">Illinois</option>
+          <option value="Indiana">Indiana</option>
+          <option value="Iowa">Iowa</option>
+          <option value="Kansas">Kansas</option>
+          <option value="Kentucky">Kentucky</option>
+          <option value="Louisiana">Louisiana</option>
+          <option value="Maine">Maine</option>
+          <option value="Maryland">Maryland</option>
+          <option value="Massachusetts">Massachusetts</option>
+          <option value="Michigan">Michigan</option>
+          <option value="Minnesota">Minnesota</option>
+          <option value="Mississippi">Mississippi</option>
+          <option value="Missouri">Missouri</option>
+          <option value="Montana">Montana</option>
+          <option value="Nebraska">Nebraska</option>
+          <option value="Nevada">Nevada</option>
+          <option value="New Hampshire">New Hampshire</option>
+          <option value="New Jersey">New Jersey</option>
+          <option value="New Mexico">New Mexico</option>
+          <option value="New York">New York</option>
+          <option value="North Carolina">North Carolina</option>
+          <option value="North Dakota">North Dakota</option>
+          <option value="Ohio">Ohio</option>
+          <option value="Oklahoma">Oklahoma</option>
+          <option value="Oregon">Oregon</option>
+          <option value="Pennsylvania">Pennsylvania</option>
+          <option value="Rhode Island">Rhode Island</option>
+          <option value="South Carolina">South Carolina</option>
+          <option value="South Dakota">South Dakota</option>
+          <option value="Tennessee">Tennessee</option>
+          <option value="Texas">Texas</option>
+          <option value="Utah">Utah</option>
+          <option value="Vermont">Vermont</option>
+          <option value="Virginia">Virginia</option>
+          <option value="Washington">Washington</option>
+          <option value="West Virginia">West Virginia</option>
+          <option value="Wisconsin">Wisconsin</option>
+          <option value="Wyoming">Wyoming</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="city" class="form-label">City</label>
+        <select id="city" class="form-select" required>
+          <option value="">Select City</option>
+          <!-- Cities will populate dynamically based on state -->
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <label for="ssn" class="form-label">SSN</label>
+        <input type="text" id="ssn" class="form-control" required>
+      </div>
+      <div class="col">
+        <label for="dob" class="form-label">Date of Birth</label>
+        <input type="date" id="dob" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="accountType" class="form-label">Account Type</label>
+      <select id="accountType" class="form-select" required>
+        <option value="">Select Account Type</option>
+        <option value="Checking">Checking</option>
+        <option value="Savings">Savings</option>
+        <option value="Both">Both</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Open Account</button>
+    <div id="formMessage" class="mt-2 text-center"></div>
   </form>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+// ✅ Use your Supabase credentials
+const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById("openAccountForm");
-const errorEl = document.getElementById("openAccountError");
+const form = document.getElementById('openAccountForm');
+const msg = document.getElementById('formMessage');
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errorEl.style.display = "none";
+const stateSelect = document.getElementById('state');
+const citySelect = document.getElementById('city');
 
-  const session = supabase.auth.getSession();
-  const { data: { session: currentSession } } = await session;
-  if(!currentSession) {
-    errorEl.innerText = "You must be logged in to open an account.";
-    errorEl.style.display = "block";
-    return;
-  }
+// Example cities per state (add 15–20 each)
+const stateCities = {
+  "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim","Santa Ana","Riverside","Stockton","Irvine","Chula Vista","Fremont","San Bernardino","Modesto","Fontana","Oxnard"],
+  "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Corpus Christi","Plano","Laredo","Lubbock","Garland","Irving","Amarillo","Grand Prairie","Brownsville","Pasadena","McKinney","Mesquite","Killeen"],
+  "New York": ["New York City","Buffalo","Rochester","Yonkers","Syracuse","Albany","New Rochelle","Mount Vernon","Schenectady","Utica","White Plains","Hempstead","Troy","Niagara Falls","Binghamton","Freeport","Valley Stream","Long Beach","Poughkeepsie","Middletown"],
+  // ... add all other states similarly
+};
 
-  const userId = currentSession.user.id;
-
-  const first_name = document.getElementById('firstName').value.trim();
-  const middle_name = document.getElementById('middleName').value.trim();
-  const last_name = document.getElementById('lastName').value.trim();
-  const username = document.getElementById('username').value.trim();
-  const ssn = document.getElementById('ssn').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const address = document.getElementById('address').value.trim();
-  const city = document.getElementById('city').value.trim();
-  const state = document.getElementById('state').value.trim();
-  const country = document.getElementById('country').value.trim();
-  const account_type = document.getElementById('accountType').value;
-
-  if(!account_type){
-    errorEl.innerText = "Please select an account type.";
-    errorEl.style.display = "block";
-    return;
-  }
-
-  try {
-    // 1️⃣ Insert full profile
-    const { error: profileError } = await supabase.from('profiles').update({
-      first_name, middle_name, last_name, username, ssn, phone, address, city, state, country
-    }).eq('id', userId);
-    if(profileError) throw profileError;
-
-    // 2️⃣ Generate accounts
-    const routingNumber = '075915826';
-    const generateAccountNumber = () => Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    const accounts = [];
-    if(account_type === 'checking' || account_type === 'both') accounts.push({ user_id: userId, type: 'checking', balance:0, account_number: generateAccountNumber(), routing_number:routingNumber });
-    if(account_type === 'savings' || account_type === 'both') accounts.push({ user_id: userId, type: 'savings', balance:0, account_number: generateAccountNumber(), routing_number:routingNumber });
-
-    if(accounts.length){
-      const { error: accountsError } = await supabase.from('accounts').insert(accounts);
-      if(accountsError) throw accountsError;
-    }
-
-    alert("Your accounts have been successfully created!");
-    window.location.href = "dashboard.html";
-
-  } catch(err){
-    console.error(err);
-    errorEl.innerText = "Error opening account: " + err.message;
-    errorEl.style.display = "block";
+// Populate city dropdown when state changes
+stateSelect.addEventListener('change', () => {
+  const selectedState = stateSelect.value;
+  citySelect.innerHTML = '<option value="">Select City</option>';
+  if(stateCities[selectedState]){
+    stateCities[selectedState].forEach(city => {
+      const opt = document.createElement('option');
+      opt.value = city;
+      opt.textContent = city;
+      citySelect.appendChild(opt);
+    });
   }
 });
+
+// Form submit
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.innerText = '';
+
+  // Get logged-in user
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if(userError || !user){
+    msg.innerText = "Please login first.";
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // Collect form values
+  const accountData = {
+    user_id: user.id,
+    first_name: document.getElementById('firstName').value.trim(),
+    middle_name: document.getElementById('middleName').value.trim(),
+    last_name: document.getElementById('lastName').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    state: document.getElementById('state').value,
+    city: document.getElementById('city').value,
+    ssn: document.getElementById('ssn').value.trim(),
+    dob: document.getElementById('dob').value,
+    account_type: document.getElementById('accountType').value,
+    account_number: Math.floor(1000000000 + Math.random() * 9000000000).toString(), // random 10-digit
+    routing_number: '075915826'
+  };
+
+  // Insert into accounts table
+  const { error: insertError } = await supabase
+    .from('accounts')
+    .insert([accountData]);
+
+  if(insertError){
+    msg.innerText = insertError.message;
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  msg.innerText = "Account opened successfully!";
+  msg.className = 'text-success mt-2';
+  form.reset();
+});
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
