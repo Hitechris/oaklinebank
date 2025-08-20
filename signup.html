@@ -29,50 +29,50 @@
 </div>
 
 <script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById('signupForm');
-const msg = document.getElementById('signupMessage');
+  const form = document.getElementById('signupForm');
+  const msg = document.getElementById('signupMessage');
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  msg.innerText = '';
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.innerText = '';
 
-  const fullName = document.getElementById('fullName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-  // 1️⃣ Create user in Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password
+    // 1️⃣ Create user in Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (authError) {
+      msg.innerText = authError.message;
+      msg.className = 'text-danger mt-2';
+      return;
+    }
+
+    // 2️⃣ Insert extra info into your public.users table
+    const { error: dbError } = await supabase
+      .from('users')
+      .insert([{ auth_id: authData.user.id, full_name: fullName, email }]);
+
+    if (dbError) {
+      msg.innerText = dbError.message;
+      msg.className = 'text-danger mt-2';
+      return;
+    }
+
+    msg.innerText = 'Account created! Check your email for confirmation.';
+    msg.className = 'text-success mt-2';
+    form.reset();
   });
-
-  if (authError) {
-    msg.innerText = authError.message;
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  // 2️⃣ Insert into public.users (do NOT supply id; Supabase generates it)
-  const { error: dbError } = await supabase
-    .from('users')
-    .insert([{ full_name: fullName, email }]);
-
-  if (dbError) {
-    msg.innerText = dbError.message;
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  msg.innerText = 'Account created! Check your email for confirmation.';
-  msg.className = 'text-success mt-2';
-  form.reset();
-});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
