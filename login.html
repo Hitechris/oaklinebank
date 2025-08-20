@@ -1,111 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | Oakline Bank</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
 
-<div class="card p-4 shadow" style="width: 400px;">
-  <h4 class="mb-3 text-center">Login</h4>
-  <form id="loginForm">
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" required>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary w-100">Login</button>
-    <div class="mt-2 text-center">
-      Don't have an account? <a href="signup.html" class="text-decoration-none">Sign Up</a>
-    </div>
-    <div id="loginMessage" class="mt-3 text-center"></div>
-    <div id="accountsInfo" class="mt-3"></div>
-  </form>
-</div>
+  <div class="card p-4 shadow" style="width: 400px;">
+    <h4 class="mb-3 text-center">Login</h4>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <div class="mt-2 text-center">
+        Don't have an account? <a href="signup.html" class="text-decoration-none">Sign Up</a>
+      </div>
+      <div id="loginMessage" class="mt-3 text-center"></div>
+      <div id="accountsInfo" class="mt-3"></div>
+    </form>
+  </div>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-const supabase = createClient(supabaseUrl, supabaseKey);
+    // ✅ Your Supabase project settings
+    const supabaseUrl = "https://arvuoabjhqdkxhsswybx.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8";
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById('loginForm');
-const msg = document.getElementById('loginMessage');
-const accountsDiv = document.getElementById('accountsInfo');
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("loginMessage");
+    const accountsDiv = document.getElementById("accountsInfo");
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  msg.innerText = '';
-  accountsDiv.innerHTML = '';
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.innerText = "";
+      accountsDiv.innerHTML = "";
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-  // 1️⃣ Log in user via Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-  if (authError) {
-    msg.innerText = authError.message;
-    msg.className = 'text-danger mt-2';
-    return;
-  }
+      // 1️⃣ Authenticate with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      if (authError) {
+        msg.innerText = authError.message;
+        msg.className = "text-danger mt-2";
+        return;
+      }
 
-  // 2️⃣ Fetch user row
-  const { data: userRow, error: userError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('auth_id', authData.user.id)
-    .single();
-  if (userError) {
-    msg.innerText = userError.message;
-    msg.className = 'text-danger mt-2';
-    return;
-  }
+      // 2️⃣ Fetch user row (no .single() to avoid coercion error)
+      const { data: userRows, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("auth_id", authData.user.id);
 
-  // 3️⃣ Fetch all accounts
-  const { data: accounts, error: accountsError } = await supabase
-    .from('accounts')
-    .select('*')
-    .eq('user_id', authData.user.id);
+      if (userError || !userRows || userRows.length === 0) {
+        msg.innerText = "User record not found in users table.";
+        msg.className = "text-danger mt-2";
+        return;
+      }
 
-  if (accountsError || !accounts || accounts.length === 0) {
-    msg.innerText = 'No bank accounts found. Please complete Open Account.';
-    msg.className = 'text-warning mt-2';
-    return;
-  }
+      const userRow = userRows[0]; // ✅ Pick the first record
 
-  // 4️⃣ Display welcome and accounts separately
-  msg.innerHTML = `<strong>Welcome, ${userRow.full_name}!</strong>`;
-  msg.className = 'text-success mt-2';
+      // 3️⃣ Fetch bank accounts
+      const { data: accounts, error: accountsError } = await supabase
+        .from("accounts")
+        .select("*")
+        .eq("user_id", authData.user.id);
 
-  let totalBalance = 0;
-  accounts.forEach(acc => {
-    totalBalance += acc.balance;
-    const accHtml = `
-      <div class="card p-2 mb-2">
-        <strong>${acc.account_type} Account</strong><br>
-        Account Number: ${acc.account_number}<br>
-        Routing Number: ${acc.routing_number}<br>
-        Balance: $${acc.balance.toFixed(2)}
-      </div>`;
-    accountsDiv.innerHTML += accHtml;
-  });
+      if (accountsError || !accounts || accounts.length === 0) {
+        msg.innerText = "No bank accounts found. Please complete Open Account.";
+        msg.className = "text-warning mt-2";
+        return;
+      }
 
-  const totalHtml = `<div class="alert alert-info mt-2">
-    Total Balance: $${totalBalance.toFixed(2)}
-  </div>`;
-  accountsDiv.innerHTML += totalHtml;
+      // 4️⃣ Show welcome + accounts
+      msg.innerHTML = `<strong>Welcome, ${userRow.full_name}!</strong>`;
+      msg.className = "text-success mt-2";
 
-  // 5️⃣ Redirect to dashboard after 3 seconds
-  setTimeout(() => { window.location.href = 'dashboard.html'; }, 3000);
-});
-</script>
+      let totalBalance = 0;
+      accounts.forEach((acc) => {
+        totalBalance += acc.balance;
+        accountsDiv.innerHTML += `
+          <div class="card p-2 mb-2">
+            <strong>${acc.account_type} Account</strong><br>
+            Account Number: ${acc.account_number}<br>
+            Routing Number: ${acc.routing_number}<br>
+            Balance: $${acc.balance.toFixed(2)}
+          </div>`;
+      });
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      accountsDiv.innerHTML += `
+        <div class="alert alert-info mt-2">
+          Total Balance: $${totalBalance.toFixed(2)}
+        </div>`;
+
+      // 5️⃣ Redirect to dashboard after 3 sec
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 3000);
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
