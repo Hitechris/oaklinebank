@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supabase API Test</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Supabase Client Test</title>
 </head>
 <body>
-<h2>Supabase API Test</h2>
-<pre id="output"></pre>
+  <h2>Supabase Client Test</h2>
+  <pre id="result">Running test...</pre>
 
-<script>
-const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+  <script>
+    const supabaseUrl = 'https://ockhxxigrqmbuotkupfl.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ja2h4eGlncnFtYm91dGt1cGZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEzNzYsImV4cCI6MjA3MTA4NzM3Nn0.ZQaEXgJ2jLFFErI3eTY53cMaQrf1w19GhuGyN31WAOw';
 
-const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-async function testConnection() {
-    try {
-        const { data, error } = await supabase.from('profiles').select().limit(1);
-        const output = document.getElementById('output');
-        if (error) {
-            output.textContent = 'Error: ' + error.message;
-        } else {
-            output.textContent = 'Success! Sample row: ' + JSON.stringify(data);
-        }
-    } catch (err) {
-        document.getElementById('output').textContent = 'Unexpected error: ' + err.message;
+    const resultEl = document.getElementById('result');
+
+    async function testSupabase() {
+      try {
+        // Simple test query
+        const { data, error } = await supabase.from('profiles').select('*').limit(1);
+        if(error) throw error;
+        resultEl.textContent = '✅ Supabase connection working!\nSample row: ' + JSON.stringify(data);
+      } catch(err) {
+        resultEl.textContent = '❌ Supabase connection failed:\n' + err.message;
+      }
     }
-}
 
-testConnection();
-</script>
+    testSupabase();
+  </script>
 </body>
 </html>
