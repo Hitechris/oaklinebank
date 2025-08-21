@@ -9,7 +9,7 @@
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
 
 <div class="card p-4 shadow" style="width: 400px;">
-  <h4 class="mb-3 text-center">Login</h4>
+  <h4 class="mb-3 text-center">Login to Your Account</h4>
   <form id="loginForm">
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
@@ -20,11 +20,11 @@
       <input type="password" class="form-control" id="password" required>
     </div>
     <button type="submit" class="btn btn-primary w-100">Login</button>
+    <div class="mt-2 text-center">
+      Don't have an account? <a href="signup.html" class="text-decoration-none">Sign Up</a>
+    </div>
     <div id="loginMessage" class="mt-2 text-center"></div>
   </form>
-  <div class="mt-2 text-center">
-    Don't have an account? <a href="signup.html" class="text-decoration-none">Sign Up</a>
-  </div>
 </div>
 
 <script type="module">
@@ -44,39 +44,32 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // 1️⃣ Sign in
-  const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+  // Log in the user
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (loginError) {
-    msg.innerText = loginError.message;
+  if (error || !user) {
+    msg.innerText = error?.message || 'Login failed';
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  const user = loginData.user;
-
-  if (!user) {
-    msg.innerText = 'Login failed. Please try again.';
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  // 2️⃣ Check if user has an account
+  // Check if user has any accounts
   const { data: accounts, error: accError } = await supabase
     .from('accounts')
     .select('*')
     .eq('user_id', user.id);
 
   if (accError) {
-    msg.innerText = 'Error checking account: ' + accError.message;
+    msg.innerText = 'Error checking accounts: ' + accError.message;
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  // 3️⃣ Redirect based on account existence
   if (!accounts || accounts.length === 0) {
+    // No accounts yet, redirect to open-account
     window.location.href = 'open-account.html';
   } else {
+    // User already has accounts, redirect to dashboard
     window.location.href = 'dashboard.html';
   }
 });
