@@ -44,32 +44,71 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // Log in the user
-  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
+  // 1️⃣ Log in the user
+  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error || !user) {
-    msg.innerText = error?.message || 'Login failed';
+  if (authError) {
+    msg.innerText = authError.message;
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  // Check if user has any accounts
+  const user = authData.user;
+  if (!user) {
+    msg.innerText = 'Login failed. Please try again.';
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // 2️⃣ Ensure the user exists in the users table
+  let { data: existingUser, error: userError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
+  if (userError) {
+    msg.innerText = userError.message;
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  if (!existingUser) {
+    // Insert new user (you can adjust fields as needed)
+    const { data: newUser, error: insertError } = await supabase
+      .from('users')
+      .insert([{
+        auth_id: user.id,
+        email: user.email,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .maybeSingle();
+
+    if (insertError) {
+      msg.innerText = insertError.message;
+      msg.className = 'text-danger mt-2';
+      return;
+    }
+    existingUser = newUser;
+  }
+
+  // 3️⃣ Check if user has an account
   const { data: accounts, error: accError } = await supabase
     .from('accounts')
     .select('*')
     .eq('user_id', user.id);
 
   if (accError) {
-    msg.innerText = 'Error checking accounts: ' + accError.message;
+    msg.innerText = accError.message;
     msg.className = 'text-danger mt-2';
     return;
   }
 
+  // 4️⃣ Redirect based on account existence
   if (!accounts || accounts.length === 0) {
-    // No accounts yet, redirect to open-account
     window.location.href = 'open-account.html';
   } else {
-    // User already has accounts, redirect to dashboard
     window.location.href = 'dashboard.html';
   }
 });
