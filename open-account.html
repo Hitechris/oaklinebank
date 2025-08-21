@@ -35,15 +35,20 @@
       </div>
       <div class="mb-3">
         <label for="state" class="form-label">State</label>
-        <input type="text" id="state" class="form-control" required>
+        <select id="state" class="form-select"></select>
+        <input type="text" id="manualState" class="form-control mt-2" placeholder="Or enter your state manually">
       </div>
       <div class="mb-3">
         <label for="city" class="form-label">City</label>
-        <input type="text" id="city" class="form-control" required>
+        <select id="city" class="form-select"></select>
+        <input type="text" id="manualCity" class="form-control mt-2" placeholder="Or enter your city manually">
       </div>
       <button type="submit" class="btn btn-primary w-100">Open Account</button>
       <div id="openAccountMessage" class="mt-2 text-center"></div>
     </form>
+    <div class="text-center mt-3">
+      <a href="dashboard.html" class="text-decoration-none">Back to Dashboard</a>
+    </div>
   </div>
 </div>
 
@@ -54,12 +59,50 @@ const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// States & cities mapping
+const states = {
+  "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim","Santa Ana","Riverside","Stockton","Chula Vista","Irvine"],
+  "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Corpus Christi","Plano","Laredo","Lubbock","Garland","Irving","Amarillo","Grand Prairie"],
+  "New York": ["New York City","Buffalo","Rochester","Yonkers","Syracuse","Albany","New Rochelle","Mount Vernon","Schenectady","Utica","White Plains","Hempstead","Troy","Niagara Falls","Binghamton","Freeport"]
+};
+
+const stateSelect = document.getElementById('state');
+const citySelect = document.getElementById('city');
+const manualStateInput = document.getElementById('manualState');
+const manualCityInput = document.getElementById('manualCity');
+
+for (let st in states) {
+  const opt = document.createElement('option');
+  opt.value = st;
+  opt.innerText = st;
+  stateSelect.appendChild(opt);
+}
+
+stateSelect.addEventListener('change', () => {
+  const selectedState = stateSelect.value;
+  citySelect.innerHTML = '';
+  manualCityInput.value = '';
+  manualCityInput.disabled = false;
+
+  if (states[selectedState]) {
+    states[selectedState].forEach(city => {
+      const opt = document.createElement('option');
+      opt.value = city;
+      opt.innerText = city;
+      citySelect.appendChild(opt);
+    });
+  }
+});
+
+manualStateInput.addEventListener('input', () => {
+  stateSelect.disabled = !!manualStateInput.value.trim();
+});
+manualCityInput.addEventListener('input', () => {
+  citySelect.disabled = !!manualCityInput.value.trim();
+});
+
 const form = document.getElementById('openAccountForm');
 const msg = document.getElementById('openAccountMessage');
-
-function generateAccountNumber() {
-  return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -69,8 +112,13 @@ form.addEventListener('submit', async (e) => {
   const ssn = document.getElementById('ssn').value.trim();
   const dob = document.getElementById('dob').value;
   const address = document.getElementById('address').value.trim();
-  const state = document.getElementById('state').value.trim();
-  const city = document.getElementById('city').value.trim();
+  let state = stateSelect.value.trim();
+  let city = citySelect.value.trim();
+  const manualState = manualStateInput.value.trim();
+  const manualCity = manualCityInput.value.trim();
+
+  if (manualState) state = manualState;
+  if (manualCity) city = manualCity;
 
   if (!account_type || !ssn || !dob || !address || !state || !city) {
     msg.innerText = 'Please fill all required fields.';
@@ -78,10 +126,14 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  function generateAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  }
+
   // Get logged-in user
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
-    msg.innerText = 'You must be logged in.';
+    msg.innerText = 'You must be logged in to open an account.';
     msg.className = 'text-danger mt-2';
     return;
   }
@@ -89,51 +141,23 @@ form.addEventListener('submit', async (e) => {
   try {
     const accountsToCreate = [];
     if (account_type === 'Both') {
-      accountsToCreate.push({
-        user_id: user.id,
-        account_type: 'Checking',
-        account_number: generateAccountNumber(),
-        routing_number: '075915826',
-        balance: 0,
-        ssn,
-        dob,
-        address,
-        city,
-        state
-      });
-      accountsToCreate.push({
-        user_id: user.id,
-        account_type: 'Savings',
-        account_number: generateAccountNumber(),
-        routing_number: '075915826',
-        balance: 0,
-        ssn,
-        dob,
-        address,
-        city,
-        state
-      });
+      accountsToCreate.push({ user_id: user.id, account_type: 'Checking', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state });
+      accountsToCreate.push({ user_id: user.id, account_type: 'Savings', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state });
     } else {
-      accountsToCreate.push({
-        user_id: user.id,
-        account_type,
-        account_number: generateAccountNumber(),
-        routing_number: '075915826',
-        balance: 0,
-        ssn,
-        dob,
-        address,
-        city,
-        state
-      });
+      accountsToCreate.push({ user_id: user.id, account_type, account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state });
     }
 
-    const { data, error } = await supabase.from('accounts').insert(accountsToCreate);
-    if (error) throw error;
+    await supabase.from('accounts').insert(accountsToCreate);
 
     msg.innerText = 'Account(s) created successfully!';
     msg.className = 'text-success mt-2';
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    form.reset();
+
+    // Redirect to dashboard after successful account creation
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 1500);
+
   } catch (error) {
     msg.innerText = error.message;
     msg.className = 'text-danger mt-2';
