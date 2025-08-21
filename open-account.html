@@ -3,50 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open Account | Oakline Bank</title>
+<title>Login | Oakline Bank</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
 
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-  <div class="card shadow p-4" style="width: 500px;">
-    <h4 class="mb-3 text-center">Open a Bank Account</h4>
-    <form id="openAccountForm">
-      <div class="mb-3">
-        <label for="accountType" class="form-label">Account Type</label>
-        <select id="accountType" class="form-select" required>
-          <option value="">Select Type</option>
-          <option value="Checking">Checking</option>
-          <option value="Savings">Savings</option>
-          <option value="Both">Both</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="ssn" class="form-label">SSN</label>
-        <input type="text" id="ssn" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="dob" class="form-label">Date of Birth</label>
-        <input type="date" id="dob" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="address" class="form-label">Address</label>
-        <input type="text" id="address" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="state" class="form-label">State</label>
-        <select id="state" class="form-select"></select>
-        <input type="text" id="manualState" class="form-control mt-2" placeholder="Or enter your state manually">
-      </div>
-      <div class="mb-3">
-        <label for="city" class="form-label">City</label>
-        <select id="city" class="form-select"></select>
-        <input type="text" id="manualCity" class="form-control mt-2" placeholder="Or enter your city manually">
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Open Account</button>
-      <div id="openAccountMessage" class="mt-2 text-center"></div>
-    </form>
-  </div>
+<div class="card p-4 shadow" style="width: 400px;">
+  <h4 class="mb-3 text-center">Login to Your Account</h4>
+  <form id="loginForm">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+    <div class="mt-2 text-center">
+      Don't have an account? <a href="signup.html" class="text-decoration-none">Sign Up</a>
+    </div>
+    <div id="loginMessage" class="mt-2 text-center"></div>
+  </form>
 </div>
 
 <script type="module">
@@ -56,102 +34,82 @@ const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// States & cities mapping
-const states = {
-  "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim","Santa Ana","Riverside","Stockton","Chula Vista","Irvine"],
-  "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Corpus Christi","Plano","Laredo","Lubbock","Garland","Irving","Amarillo","Grand Prairie"],
-  "New York": ["New York City","Buffalo","Rochester","Yonkers","Syracuse","Albany","New Rochelle","Mount Vernon","Schenectady","Utica","White Plains","Hempstead","Troy","Niagara Falls","Binghamton","Freeport"]
-};
-
-// Populate state dropdown
-const stateSelect = document.getElementById('state');
-const citySelect = document.getElementById('city');
-const manualStateInput = document.getElementById('manualState');
-const manualCityInput = document.getElementById('manualCity');
-
-for (let st in states) {
-  const opt = document.createElement('option');
-  opt.value = st;
-  opt.innerText = st;
-  stateSelect.appendChild(opt);
-}
-
-stateSelect.addEventListener('change', () => {
-  const selectedState = stateSelect.value;
-  citySelect.innerHTML = '';
-  manualCityInput.value = '';
-  manualCityInput.disabled = false;
-
-  if (states[selectedState]) {
-    states[selectedState].forEach(city => {
-      const opt = document.createElement('option');
-      opt.value = city;
-      opt.innerText = city;
-      citySelect.appendChild(opt);
-    });
-  }
-});
-
-manualStateInput.addEventListener('input', () => {
-  stateSelect.disabled = !!manualStateInput.value.trim();
-});
-manualCityInput.addEventListener('input', () => {
-  citySelect.disabled = !!manualCityInput.value.trim();
-});
-
-const form = document.getElementById('openAccountForm');
-const msg = document.getElementById('openAccountMessage');
+const form = document.getElementById('loginForm');
+const msg = document.getElementById('loginMessage');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.innerText = '';
 
-  const account_type = document.getElementById('accountType').value;
-  const ssn = document.getElementById('ssn').value.trim();
-  const dob = document.getElementById('dob').value;
-  const address = document.getElementById('address').value.trim();
-  let state = stateSelect.value.trim();
-  let city = citySelect.value.trim();
-  const manualState = manualStateInput.value.trim();
-  const manualCity = manualCityInput.value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-  if (manualState) state = manualState;
-  if (manualCity) city = manualCity;
+  // 1️⃣ Log in the user
+  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (!account_type || !ssn || !dob || !address || !state || !city) {
-    msg.innerText = 'Please fill all required fields.';
+  if (authError) {
+    msg.innerText = authError.message;
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  function generateAccountNumber() {
-    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  }
-
-  // Ensure user is logged in
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) {
-    msg.innerText = 'You must be logged in to open an account.';
+  const user = authData.user;
+  if (!user) {
+    msg.innerText = 'Login failed. Please try again.';
     msg.className = 'text-danger mt-2';
     return;
   }
 
-  try {
-    const accountsToCreate = [];
-    if (account_type === 'Both') {
-      accountsToCreate.push({ user_id: user.id, account_type: 'Checking', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
-      accountsToCreate.push({ user_id: user.id, account_type: 'Savings', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
-    } else {
-      accountsToCreate.push({ user_id: user.id, account_type, account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
+  // 2️⃣ Ensure the user exists in the users table
+  let { data: existingUser, error: userError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
+  if (userError) {
+    msg.innerText = userError.message;
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  if (!existingUser) {
+    // Insert new user (you can adjust fields as needed)
+    const { data: newUser, error: insertError } = await supabase
+      .from('users')
+      .insert([{
+        auth_id: user.id,
+        email: user.email,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .maybeSingle();
+
+    if (insertError) {
+      msg.innerText = insertError.message;
+      msg.className = 'text-danger mt-2';
+      return;
     }
+    existingUser = newUser;
+  }
 
-    await supabase.from('accounts').insert(accountsToCreate);
+  // 3️⃣ Check if user has an account
+  const { data: accounts, error: accError } = await supabase
+    .from('accounts')
+    .select('*')
+    .eq('user_id', user.id);
 
-    // Redirect to dashboard after successful creation
-    window.location.href = 'dashboard.html';
-  } catch (error) {
-    msg.innerText = error.message;
+  if (accError) {
+    msg.innerText = accError.message;
     msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  // 4️⃣ Redirect based on account existence
+  if (!accounts || accounts.length === 0) {
+    window.location.href = 'open-account.html';
+  } else {
+    window.location.href = 'dashboard.html';
   }
 });
 </script>
