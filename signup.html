@@ -25,7 +25,7 @@
     </div>
     <div class="mb-3">
       <label for="phoneNumber" class="form-label">Phone Number</label>
-      <input type="text" class="form-control" id="phoneNumber">
+      <input type="text" class="form-control" id="phoneNumber" required>
     </div>
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
@@ -47,7 +47,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+const supabaseKey = 'YOUR_SUPABASE_KEY'; // replace with your anon key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const form = document.getElementById('signupForm');
@@ -64,29 +64,27 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  try {
-    const { data: authData, error: authError } = await supabase.auth.signUp(
-      { email, password },
-      { redirectTo: 'https://www.theoaklinebank.com/login.html' }
-    );
+  // Signup using Supabase Auth
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password
+  }, {
+    redirectTo: 'https://www.theoaklinebank.com/login.html' // redirect after email confirmation
+  });
 
-    if (authError) {
-      msg.innerText = authError.message;
-      msg.className = 'text-danger mt-2';
-      return;
-    }
-
-    msg.innerHTML = `
-      Signup successful!<br>
-      A confirmation email has been sent to <strong>${email}</strong>.<br>
-      Please confirm your email, then login to continue opening your bank account.
-    `;
-    msg.className = 'text-success mt-2';
-
-  } catch (err) {
-    msg.innerText = err.message;
+  if (authError) {
+    msg.innerText = authError.message;
     msg.className = 'text-danger mt-2';
+    return;
   }
+
+  // Show message to user
+  msg.innerHTML = `
+    Signup successful!<br>
+    Please check your email (${email}) to confirm your account.<br>
+    Then login to complete your bank account opening.
+  `;
+  msg.className = 'text-success mt-2';
 });
 </script>
 
