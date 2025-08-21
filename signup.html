@@ -1,90 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign Up | Oakline Bank</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
+<body class="bg-light">
 
-<div class="card p-4 shadow" style="width: 400px;">
-  <h4 class="mb-3 text-center">Create Your Account</h4>
-  <form id="signupForm">
-    <div class="mb-3">
-      <label for="firstName" class="form-label">First Name</label>
-      <input type="text" class="form-control" id="firstName" required>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Create Your Oakline Bank Account</h4>
+        </div>
+        <div class="card-body">
+          <form id="signupForm">
+            <div class="mb-3">
+              <label for="firstName" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="firstName" required>
+            </div>
+            <div class="mb-3">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="lastName" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+          </form>
+          <div class="mt-3 text-center">
+            <a href="login.html">Already have an account? Log in</a>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="middleName" class="form-label">Middle Name</label>
-      <input type="text" class="form-control" id="middleName">
-    </div>
-    <div class="mb-3">
-      <label for="lastName" class="form-label">Last Name</label>
-      <input type="text" class="form-control" id="lastName" required>
-    </div>
-    <div class="mb-3">
-      <label for="phoneNumber" class="form-label">Phone Number</label>
-      <input type="text" class="form-control" id="phoneNumber" required>
-    </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" required>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-    <div class="mt-2 text-center">
-      Already have an account? <a href="login.html" class="text-decoration-none">Login</a>
-    </div>
-    <div id="signupMessage" class="mt-2 text-center"></div>
-  </form>
+  </div>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'https://arvuoabjhqdkxhsswybx.supabase.co'; // replace with your anon key
+// Your Supabase credentials
+const supabaseUrl = "https://arvuoabjhqdkxhsswybx.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById('signupForm');
-const msg = document.getElementById('signupMessage');
-
-form.addEventListener('submit', async (e) => {
+// Form handling
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  msg.innerText = '';
 
-  const first_name = document.getElementById('firstName').value.trim();
-  const middle_name = document.getElementById('middleName').value.trim();
-  const last_name = document.getElementById('lastName').value.trim();
-  const phone_number = document.getElementById('phoneNumber').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  // Signup using Supabase Auth
+  // Create auth user
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password
-  }, {
-    redirectTo: 'https://www.theoaklinebank.com/login.html' // redirect after email confirmation
   });
 
   if (authError) {
-    msg.innerText = authError.message;
-    msg.className = 'text-danger mt-2';
+    alert("Error signing up: " + authError.message);
     return;
   }
 
-  // Show message to user
-  msg.innerHTML = `
-    Signup successful!<br>
-    Please check your email (${email}) to confirm your account.<br>
-    Then login to complete your bank account opening.
-  `;
-  msg.className = 'text-success mt-2';
+  const user = authData.user;
+
+  // Insert into users table
+  const { error: insertError } = await supabase
+    .from("users")
+    .insert([
+      { id: user.id, first_name: firstName, last_name: lastName, email: email }
+    ]);
+
+  if (insertError) {
+    alert("Error saving profile: " + insertError.message);
+    return;
+  }
+
+  alert("Sign-up successful! You can now log in.");
+  window.location.href = "login.html";
 });
 </script>
 
