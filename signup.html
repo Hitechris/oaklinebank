@@ -46,6 +46,7 @@
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+// Supabase credentials
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -56,6 +57,7 @@ const msg = document.getElementById('signupMessage');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.innerText = '';
+  msg.className = '';
 
   const first_name = document.getElementById('firstName').value.trim();
   const middle_name = document.getElementById('middleName').value.trim();
@@ -64,31 +66,30 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // Sign up with Supabase Auth and send confirmation email
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password
-  }, {
-    // Redirect after email confirmation
-    redirectTo: 'https://www.theoaklinebank.com/open-account.html'
-  });
+  try {
+    // 1️⃣ Sign up with Supabase Auth and send confirmation email
+    const { data: authData, error: authError } = await supabase.auth.signUp(
+      { email, password },
+      { redirectTo: 'https://www.theoaklinebank.com/login.html' } // redirect after confirmation
+    );
 
-  if (authError) {
-    msg.innerText = authError.message;
+    if (authError) throw authError;
+
+    // 2️⃣ Show message to check email
+    msg.innerHTML = `
+      <div class="text-success">
+        Signup successful!<br>
+        A confirmation email has been sent to <strong>${email}</strong>.<br>
+        Please confirm your email before logging in.
+      </div>
+    `;
+
+    // 3️⃣ Optional: store user info after email confirmed (can do on first login)
+    // This ensures the user table only has verified users
+  } catch (error) {
+    msg.innerText = error.message;
     msg.className = 'text-danger mt-2';
-    return;
   }
-
-  // Show message to check email for confirmation
-  msg.innerHTML = `
-    Signup successful!<br>
-    Please check your email (${email}) to confirm your account.
-    After confirmation, you will be redirected to open your bank account.
-  `;
-  msg.className = 'text-success mt-2';
-
-  // Do NOT insert into users table yet
-  // Wait until the user confirms their email and logs in
 });
 </script>
 
