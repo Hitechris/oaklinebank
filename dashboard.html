@@ -28,7 +28,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+const supabaseKey = 'YOUR_ANON_KEY_HERE';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const welcomeMsg = document.getElementById('welcomeMsg');
@@ -53,7 +53,7 @@ async function loadDashboard() {
     return;
   }
 
-  // Fetch user profile from 'users' table
+  // Fetch user profile from 'users' table using auth_id
   const { data: userProfile, error: profileError } = await supabase
     .from('users')
     .select('*')
@@ -62,24 +62,22 @@ async function loadDashboard() {
 
   if (profileError || !userProfile) {
     welcomeMsg.innerText = 'Welcome, User!';
-    // Redirect to open-account if no profile found
-    window.location.href = 'open-account.html';
+    accountsContainer.innerHTML = '<div class="alert alert-warning">No bank accounts found. Please open an account.</div>';
+    totalBalanceDiv.innerHTML = '';
     return;
   } else {
     welcomeMsg.innerText = `Welcome, ${userProfile.first_name} ${userProfile.last_name}!`;
   }
 
-  // Fetch accounts using the correct user_id from your users table
+  // Fetch accounts for this user using users.id
   const { data: accounts, error: accError } = await supabase
     .from('accounts')
     .select('*')
-    .eq('user_id', userProfile.id); // <-- use userProfile.id, not user.id
+    .eq('user_id', userProfile.id);
 
   if (accError || !accounts || accounts.length === 0) {
     accountsContainer.innerHTML = '<div class="alert alert-warning">No bank accounts found. Please open an account.</div>';
     totalBalanceDiv.innerHTML = '';
-    // Optionally redirect to open-account
-    // window.location.href = 'open-account.html';
     return;
   }
 
@@ -99,6 +97,7 @@ async function loadDashboard() {
 
   totalBalanceDiv.innerHTML = `<div class="alert alert-info">Total Balance: $${totalBalance.toFixed(2)}</div>`;
 }
+
 // Load dashboard on page load
 loadDashboard();
 </script>
