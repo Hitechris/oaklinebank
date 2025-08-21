@@ -48,7 +48,6 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const form = document.getElementById('signupForm');
@@ -65,11 +64,14 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // 1️⃣ Sign up with Supabase Auth (Email Confirmation enabled)
-  const { data: authData, error: authError } = await supabase.auth.signUp(
-    { email, password },
-    { redirectTo: 'https://www.theoaklinebank.com/open-account.html' } // after email confirmation
-  );
+  // Sign up with Supabase Auth and send confirmation email
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password
+  }, {
+    // Redirect after email confirmation
+    redirectTo: 'https://www.theoaklinebank.com/open-account.html'
+  });
 
   if (authError) {
     msg.innerText = authError.message;
@@ -77,28 +79,16 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2️⃣ Insert basic user info into users table
-  const { error: dbError } = await supabase
-    .from('users')
-    .insert([{
-      first_name,
-      middle_name,
-      last_name,
-      phone_number,
-      email,
-      auth_id: authData.user.id,
-      created_at: new Date().toISOString()
-    }]);
-
-  if (dbError) {
-    msg.innerText = dbError.message;
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  // 3️⃣ Inform user to check their email
-  msg.innerHTML = 'Signup successful! Please check your email to confirm your account. After confirmation, you can log in and open your bank account.';
+  // Show message to check email for confirmation
+  msg.innerHTML = `
+    Signup successful!<br>
+    Please check your email (${email}) to confirm your account.
+    After confirmation, you will be redirected to open your bank account.
+  `;
   msg.className = 'text-success mt-2';
+
+  // Do NOT insert into users table yet
+  // Wait until the user confirms their email and logs in
 });
 </script>
 
