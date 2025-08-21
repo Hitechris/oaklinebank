@@ -24,87 +24,70 @@
       Don’t have an account? <a href="signup.html">Sign Up</a>
     </div>
     <div id="loginMessage" class="mt-3 text-center"></div>
-    <div id="accountsInfo" class="mt-3"></div>
   </form>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://arvuoabjhqdkxhsswybx.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8";
+const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const form = document.getElementById("loginForm");
-const msg = document.getElementById("loginMessage");
-const accountsDiv = document.getElementById("accountsInfo");
+const form = document.getElementById('loginForm');
+const msg = document.getElementById('loginMessage');
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  msg.innerText = "";
-  accountsDiv.innerHTML = "";
+  msg.innerText = '';
+  msg.className = '';
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-  // 1️⃣ Sign in with Supabase Auth
+  // 1️⃣ Sign in
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+
   if (authError) {
     msg.innerText = authError.message;
-    msg.className = "text-danger";
+    msg.className = 'text-danger';
     return;
   }
 
   const userId = authData.user.id;
 
-  // 2️⃣ Fetch user profile from "users" table using maybeSingle()
-  const { data: userRow, error: userError } = await supabase
-    .from("users")
-    .select("*")
-    .eq("auth_id", userId)
+  // 2️⃣ Fetch user profile
+  const { data: userProfile, error: userError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('auth_id', userId)
     .maybeSingle();
 
-  if (userError || !userRow) {
-    msg.innerText = "User record not found in users table. Please complete Open Account.";
-    msg.className = "text-warning";
+  if (userError || !userProfile) {
+    msg.innerText = 'User profile not found. Please complete sign-up.';
+    msg.className = 'text-warning';
     return;
   }
 
-  // 3️⃣ Fetch all accounts
+  // 3️⃣ Optional: check if accounts exist
   const { data: accounts, error: accError } = await supabase
-    .from("accounts")
-    .select("*")
-    .eq("user_id", userId);
+    .from('accounts')
+    .select('*')
+    .eq('user_id', userId);
 
-  if (accError || !accounts || accounts.length === 0) {
-    msg.innerText = "No bank accounts found. Please complete Open Account.";
-    msg.className = "text-warning";
+  if (accError) {
+    msg.innerText = 'Error fetching accounts.';
+    msg.className = 'text-danger';
     return;
   }
 
-  // 4️⃣ Display welcome and accounts
-  msg.innerHTML = `<strong>Welcome, ${userRow.full_name}!</strong>`;
-  msg.className = "text-success";
+  // 4️⃣ Display success message and redirect
+  msg.innerHTML = `<strong>Welcome, ${userProfile.full_name}!</strong> Redirecting to dashboard...`;
+  msg.className = 'text-success';
 
-  let totalBalance = 0;
-  accounts.forEach(acc => {
-    totalBalance += acc.balance;
-    accountsDiv.innerHTML += `
-      <div class="card p-2 mb-2">
-        <strong>${acc.account_type} Account</strong><br>
-        Account Number: ${acc.account_number}<br>
-        Routing Number: ${acc.routing_number}<br>
-        Balance: $${acc.balance.toFixed(2)}
-      </div>`;
-  });
-
-  accountsDiv.innerHTML += `
-    <div class="alert alert-info mt-2">
-      Total Balance: $${totalBalance.toFixed(2)}
-    </div>`;
-
-  // 5️⃣ Redirect to dashboard after 3s
-  setTimeout(() => { window.location.href = "dashboard.html"; }, 3000);
+  setTimeout(() => {
+    window.location.href = 'dashboard.html';
+  }, 2000);
 });
 </script>
 
