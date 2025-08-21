@@ -59,14 +59,13 @@ const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// States & cities mapping
+// States & cities
 const states = {
   "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim","Santa Ana","Riverside","Stockton","Chula Vista","Irvine"],
   "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Corpus Christi","Plano","Laredo","Lubbock","Garland","Irving","Amarillo","Grand Prairie"],
   "New York": ["New York City","Buffalo","Rochester","Yonkers","Syracuse","Albany","New Rochelle","Mount Vernon","Schenectady","Utica","White Plains","Hempstead","Troy","Niagara Falls","Binghamton","Freeport"]
 };
 
-// Populate state dropdown
 const stateSelect = document.getElementById('state');
 const citySelect = document.getElementById('city');
 const manualStateInput = document.getElementById('manualState');
@@ -80,11 +79,10 @@ for (let st in states) {
 }
 
 stateSelect.addEventListener('change', () => {
-  const selectedState = stateSelect.value;
   citySelect.innerHTML = '';
   manualCityInput.value = '';
   manualCityInput.disabled = false;
-
+  const selectedState = stateSelect.value;
   if (states[selectedState]) {
     states[selectedState].forEach(city => {
       const opt = document.createElement('option');
@@ -95,12 +93,8 @@ stateSelect.addEventListener('change', () => {
   }
 });
 
-manualStateInput.addEventListener('input', () => {
-  stateSelect.disabled = !!manualStateInput.value.trim();
-});
-manualCityInput.addEventListener('input', () => {
-  citySelect.disabled = !!manualCityInput.value.trim();
-});
+manualStateInput.addEventListener('input', () => stateSelect.disabled = !!manualStateInput.value.trim());
+manualCityInput.addEventListener('input', () => citySelect.disabled = !!manualCityInput.value.trim());
 
 const form = document.getElementById('openAccountForm');
 const msg = document.getElementById('openAccountMessage');
@@ -127,15 +121,23 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  function generateAccountNumber() {
-    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  }
-
+  // Ensure user is logged in
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
-    msg.innerText = 'You must be logged in to open an account.';
+    msg.innerText = 'You must be logged in and email confirmed to open an account.';
     msg.className = 'text-danger mt-2';
     return;
+  }
+
+  // Ensure user email is confirmed
+  if (!user.email_confirmed_at) {
+    msg.innerText = 'Please confirm your email before opening an account.';
+    msg.className = 'text-danger mt-2';
+    return;
+  }
+
+  function generateAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
   }
 
   try {
@@ -147,13 +149,14 @@ form.addEventListener('submit', async (e) => {
       accountsToCreate.push({ user_id: user.id, account_type, account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
     }
 
-    await supabase.from('accounts').insert(accountsToCreate);
+    const { error } = await supabase.from('accounts').insert(accountsToCreate);
+    if (error) throw error;
 
     msg.innerText = 'Account(s) created successfully!';
     msg.className = 'text-success mt-2';
     form.reset();
   } catch (error) {
-    msg.innerText = error.message;
+    msg.innerText = `Error creating account: ${error.message}`;
     msg.className = 'text-danger mt-2';
   }
 });
