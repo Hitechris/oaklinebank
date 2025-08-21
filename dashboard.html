@@ -62,19 +62,24 @@ async function loadDashboard() {
 
   if (profileError || !userProfile) {
     welcomeMsg.innerText = 'Welcome, User!';
+    // Redirect to open-account if no profile found
+    window.location.href = 'open-account.html';
+    return;
   } else {
     welcomeMsg.innerText = `Welcome, ${userProfile.first_name} ${userProfile.last_name}!`;
   }
 
-  // Fetch accounts
+  // Fetch accounts using the correct user_id from your users table
   const { data: accounts, error: accError } = await supabase
     .from('accounts')
     .select('*')
-    .eq('user_id', user.id);
+    .eq('user_id', userProfile.id); // <-- use userProfile.id, not user.id
 
   if (accError || !accounts || accounts.length === 0) {
     accountsContainer.innerHTML = '<div class="alert alert-warning">No bank accounts found. Please open an account.</div>';
     totalBalanceDiv.innerHTML = '';
+    // Optionally redirect to open-account
+    // window.location.href = 'open-account.html';
     return;
   }
 
@@ -94,7 +99,6 @@ async function loadDashboard() {
 
   totalBalanceDiv.innerHTML = `<div class="alert alert-info">Total Balance: $${totalBalance.toFixed(2)}</div>`;
 }
-
 // Load dashboard on page load
 loadDashboard();
 </script>
