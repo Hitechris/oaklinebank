@@ -48,6 +48,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const form = document.getElementById('signupForm');
@@ -64,8 +65,11 @@ form.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // 1️⃣ Sign up with Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+  // 1️⃣ Sign up with Supabase Auth (Email Confirmation enabled)
+  const { data: authData, error: authError } = await supabase.auth.signUp(
+    { email, password },
+    { redirectTo: 'https://www.theoaklinebank.com/open-account.html' } // after email confirmation
+  );
 
   if (authError) {
     msg.innerText = authError.message;
@@ -73,7 +77,7 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2️⃣ Insert user info into users table
+  // 2️⃣ Insert basic user info into users table
   const { error: dbError } = await supabase
     .from('users')
     .insert([{
@@ -92,8 +96,9 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // ✅ Redirect to open account page
-  window.location.href = 'open-account.html';
+  // 3️⃣ Inform user to check their email
+  msg.innerHTML = 'Signup successful! Please check your email to confirm your account. After confirmation, you can log in and open your bank account.';
+  msg.className = 'text-success mt-2';
 });
 </script>
 
