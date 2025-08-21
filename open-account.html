@@ -1,164 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open Account | Oakline Bank</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Account | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-light">
-
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-  <div class="card shadow p-4" style="width: 500px;">
-    <h4 class="mb-3 text-center">Open a Bank Account</h4>
-    <form id="openAccountForm">
-      <div class="mb-3">
-        <label for="accountType" class="form-label">Account Type</label>
-        <select id="accountType" class="form-select" required>
-          <option value="">Select Type</option>
-          <option value="Checking">Checking</option>
-          <option value="Savings">Savings</option>
-          <option value="Both">Both</option>
-        </select>
+  <div class="container mt-5">
+    <div class="card shadow">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Open an Account</h3>
+        <form id="openAccountForm">
+          <div class="mb-3">
+            <label class="form-label">Account Type</label>
+            <select class="form-select" id="accountType" required>
+              <option value="">Select an option</option>
+              <option value="Checking">Checking</option>
+              <option value="Savings">Savings</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">SSN</label>
+            <input type="text" id="ssn" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" id="dob" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <input type="text" id="address" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">City</label>
+            <input type="text" id="city" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">State</label>
+            <input type="text" id="state" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          <div id="message" class="mt-3 text-center"></div>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="ssn" class="form-label">SSN</label>
-        <input type="text" id="ssn" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="dob" class="form-label">Date of Birth</label>
-        <input type="date" id="dob" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="address" class="form-label">Address</label>
-        <input type="text" id="address" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="state" class="form-label">State</label>
-        <select id="state" class="form-select"></select>
-        <input type="text" id="manualState" class="form-control mt-2" placeholder="Or enter your state manually">
-      </div>
-      <div class="mb-3">
-        <label for="city" class="form-label">City</label>
-        <select id="city" class="form-select"></select>
-        <input type="text" id="manualCity" class="form-control mt-2" placeholder="Or enter your city manually">
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Open Account</button>
-      <div id="openAccountMessage" class="mt-2 text-center"></div>
-    </form>
-    <div class="text-center mt-3">
-      <a href="dashboard.html" class="text-decoration-none">Back to Dashboard</a>
     </div>
   </div>
-</div>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <script>
+    const supabaseUrl = "https://YOUR-PROJECT.supabase.co";
+    const supabaseKey = "YOUR-ANON-KEY";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-const supabase = createClient(supabaseUrl, supabaseKey);
+    document.getElementById("openAccountForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("message");
+      msg.textContent = "Processing...";
 
-// States & cities mapping
-const states = {
-  "California": ["Los Angeles","San Francisco","San Diego","Sacramento","San Jose","Fresno","Long Beach","Oakland","Bakersfield","Anaheim","Santa Ana","Riverside","Stockton","Chula Vista","Irvine"],
-  "Texas": ["Houston","Dallas","Austin","San Antonio","Fort Worth","El Paso","Arlington","Corpus Christi","Plano","Laredo","Lubbock","Garland","Irving","Amarillo","Grand Prairie"],
-  "New York": ["New York City","Buffalo","Rochester","Yonkers","Syracuse","Albany","New Rochelle","Mount Vernon","Schenectady","Utica","White Plains","Hempstead","Troy","Niagara Falls","Binghamton","Freeport"]
-};
+      try {
+        // Step 1: Get logged in auth user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          msg.textContent = "You must be logged in to open an account.";
+          msg.className = "text-danger mt-2";
+          return;
+        }
 
-// Populate state dropdown
-const stateSelect = document.getElementById('state');
-const citySelect = document.getElementById('city');
-const manualStateInput = document.getElementById('manualState');
-const manualCityInput = document.getElementById('manualCity');
+        // Step 2: Fetch corresponding row in users table
+        const { data: userRow, error: userRowError } = await supabase
+          .from("users")
+          .select("id")
+          .eq("auth_id", user.id)
+          .single();
 
-for (let st in states) {
-  const opt = document.createElement('option');
-  opt.value = st;
-  opt.innerText = st;
-  stateSelect.appendChild(opt);
-}
+        if (userRowError || !userRow) {
+          console.error("User lookup error:", userRowError);
+          msg.textContent = "User profile not found. Please complete sign-up.";
+          msg.className = "text-danger mt-2";
+          return;
+        }
 
-stateSelect.addEventListener('change', () => {
-  const selectedState = stateSelect.value;
-  citySelect.innerHTML = '';
-  manualCityInput.value = '';
-  manualCityInput.disabled = false;
+        const dbUserId = userRow.id; // correct user_id
 
-  if (states[selectedState]) {
-    states[selectedState].forEach(city => {
-      const opt = document.createElement('option');
-      opt.value = city;
-      opt.innerText = city;
-      citySelect.appendChild(opt);
+        // Step 3: Collect form data
+        const account_type = document.getElementById("accountType").value;
+        const ssn = document.getElementById("ssn").value;
+        const dob = document.getElementById("dob").value;
+        const address = document.getElementById("address").value;
+        const city = document.getElementById("city").value;
+        const state = document.getElementById("state").value;
+
+        // Step 4: Generate account number
+        function generateAccountNumber() {
+          return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+        }
+
+        const newAccount = {
+          user_id: dbUserId,
+          account_type,
+          account_number: generateAccountNumber(),
+          routing_number: "075915826",
+          balance: 0,
+          ssn,
+          dob,
+          address,
+          city,
+          state,
+          created_at: new Date().toISOString()
+        };
+
+        // Step 5: Insert into accounts table
+        const { error: insertError } = await supabase.from("accounts").insert([newAccount]);
+
+        if (insertError) {
+          console.error("Insert error:", insertError);
+          msg.textContent = "Error creating account: " + insertError.message;
+          msg.className = "text-danger mt-2";
+          return;
+        }
+
+        msg.textContent = "Account successfully created!";
+        msg.className = "text-success mt-2";
+        setTimeout(() => window.location.href = "dashboard.html", 2000);
+
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        msg.textContent = "An unexpected error occurred.";
+        msg.className = "text-danger mt-2";
+      }
     });
-  }
-});
-
-manualStateInput.addEventListener('input', () => {
-  stateSelect.disabled = !!manualStateInput.value.trim();
-});
-manualCityInput.addEventListener('input', () => {
-  citySelect.disabled = !!manualCityInput.value.trim();
-});
-
-const form = document.getElementById('openAccountForm');
-const msg = document.getElementById('openAccountMessage');
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  msg.innerText = '';
-
-  const account_type = document.getElementById('accountType').value;
-  const ssn = document.getElementById('ssn').value.trim();
-  const dob = document.getElementById('dob').value;
-  const address = document.getElementById('address').value.trim();
-  let state = stateSelect.value.trim();
-  let city = citySelect.value.trim();
-  const manualState = manualStateInput.value.trim();
-  const manualCity = manualCityInput.value.trim();
-
-  if (manualState) state = manualState;
-  if (manualCity) city = manualCity;
-
-  if (!account_type || !ssn || !dob || !address || !state || !city) {
-    msg.innerText = 'Please fill all required fields.';
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  function generateAccountNumber() {
-    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  }
-
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) {
-    msg.innerText = 'You must be logged in to open an account.';
-    msg.className = 'text-danger mt-2';
-    return;
-  }
-
-  try {
-    const accountsToCreate = [];
-    if (account_type === 'Both') {
-      accountsToCreate.push({ user_id: user.id, account_type: 'Checking', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
-      accountsToCreate.push({ user_id: user.id, account_type: 'Savings', account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
-    } else {
-      accountsToCreate.push({ user_id: user.id, account_type, account_number: generateAccountNumber(), routing_number: '075915826', balance: 0, ssn, dob, address, city, state, created_at: new Date().toISOString() });
-    }
-
-    await supabase.from('accounts').insert(accountsToCreate);
-
-    msg.innerText = 'Account(s) created successfully!';
-    msg.className = 'text-success mt-2';
-    form.reset();
-  } catch (error) {
-    msg.innerText = error.message;
-    msg.className = 'text-danger mt-2';
-  }
-});
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </script>
 </body>
 </html>
