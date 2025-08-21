@@ -19,6 +19,7 @@
   <h3 id="welcomeMsg"></h3>
   <div id="accountsContainer" class="mt-4"></div>
   <div id="totalBalance" class="mt-3"></div>
+  <div id="openAccountContainer" class="mt-4 text-center"></div>
 </div>
 
 <script type="module">
@@ -32,10 +33,11 @@ const welcomeMsg = document.getElementById('welcomeMsg');
 const accountsContainer = document.getElementById('accountsContainer');
 const totalBalanceDiv = document.getElementById('totalBalance');
 const logoutBtn = document.getElementById('logoutBtn');
+const openAccountContainer = document.getElementById('openAccountContainer');
 
 async function loadDashboard() {
+  // Get logged-in user
   const { data: { user }, error: userError } = await supabase.auth.getUser();
-
   if (userError || !user) {
     window.location.href = 'login.html';
     return;
@@ -48,24 +50,29 @@ async function loadDashboard() {
     .eq('auth_id', user.id)
     .maybeSingle();
 
-  if (profileError || !userProfile) {
-    welcomeMsg.innerText = 'Welcome, user!';
-  } else {
-    welcomeMsg.innerText = `Welcome, ${userProfile.full_name}!`;
-  }
+  const fullName = userProfile ? `${userProfile.first_name} ${userProfile.middle_name || ''} ${userProfile.last_name}`.trim() : 'User';
+  welcomeMsg.innerText = `Welcome, ${fullName}!`;
 
-  // Fetch accounts
+  // Fetch user accounts
   const { data: accounts, error: accError } = await supabase
     .from('accounts')
     .select('*')
     .eq('user_id', user.id);
 
-  if (accError || !accounts || accounts.length === 0) {
-    accountsContainer.innerHTML = '<div class="alert alert-warning">No bank accounts found. Please open an account.</div>';
+  if (accError) {
+    accountsContainer.innerHTML = `<div class="alert alert-danger">Error fetching accounts: ${accError.message}</div>`;
     totalBalanceDiv.innerHTML = '';
     return;
   }
 
+  if (!accounts || accounts.length === 0) {
+    accountsContainer.innerHTML = '<div class="alert alert-warning">No bank accounts found. Please open an account.</div>';
+    totalBalanceDiv.innerHTML = '';
+    openAccountContainer.innerHTML = `<a href="open-account.html" class="btn btn-primary">Open Your Bank Account</a>`;
+    return;
+  }
+
+  // Show accounts and total balance
   let totalBalance = 0;
   accountsContainer.innerHTML = '';
   accounts.forEach(acc => {
@@ -81,8 +88,10 @@ async function loadDashboard() {
   });
 
   totalBalanceDiv.innerHTML = `<div class="alert alert-info">Total Balance: $${totalBalance.toFixed(2)}</div>`;
+  openAccountContainer.innerHTML = ''; // Hide button if accounts exist
 }
 
+// Logout
 logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
