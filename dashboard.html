@@ -1,97 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | Oakline Bank</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
 </head>
 <body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container">
+      <a class="navbar-brand" href="#">Oakline Bank</a>
+      <button class="btn btn-outline-light" id="logout-btn">Logout</button>
+    </div>
+  </nav>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">Oakline Bank</a>
-    <button class="btn btn-outline-light ms-auto" id="logoutBtn">Logout</button>
-  </div>
-</nav>
-
-<div class="container py-5">
-  <h2 id="welcomeMessage" class="mb-4 text-center"></h2>
-  
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          Account Summary
-        </div>
-        <div class="card-body">
-          <p><strong>Account Type:</strong> <span id="accountType"></span></p>
-          <p><strong>Account Number:</strong> <span id="accountNumber"></span></p>
-          <p><strong>Balance:</strong> $<span id="balance"></span></p>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h3 class="text-center mb-4">Welcome to Your Dashboard</h3>
+            <div id="user-info" class="text-center">
+              <p>Loading your account...</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <script>
+    const supabaseUrl = "https://arvuoabjhqdkxhsswybx.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8'; // replace with your anon key
-const supabase = createClient(supabaseUrl, supabaseKey);
+    const userInfoDiv = document.getElementById("user-info");
+    const logoutBtn = document.getElementById("logout-btn");
 
-// Elements
-const welcomeMessage = document.getElementById("welcomeMessage");
-const accountType = document.getElementById("accountType");
-const accountNumber = document.getElementById("accountNumber");
-const balance = document.getElementById("balance");
-const logoutBtn = document.getElementById("logoutBtn");
+    async function loadUser() {
+      // ✅ Get logged-in user
+      const { data: { user }, error } = await supabaseClient.auth.getUser();
+      if (error || !user) {
+        userInfoDiv.innerHTML = `<div class="alert alert-danger">You must log in first.</div>`;
+        setTimeout(() => window.location.href = "login.html", 1500);
+        return;
+      }
 
-// Check auth session
-const { data: { user }, error: authError } = await supabase.auth.getUser();
+      // ✅ Fetch user details from "users" table
+      const { data, error: fetchError } = await supabaseClient
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-if (!user) {
-  window.location.href = "login.html";
-}
+      if (fetchError) {
+        userInfoDiv.innerHTML = `<div class="alert alert-danger">${fetchError.message}</div>`;
+        return;
+      }
 
-// Fetch user info
-const { data: userData, error: userError } = await supabase
-  .from("users")
-  .select("first_name, last_name")
-  .eq("id", user.id)
-  .single();
+      // ✅ Display account info
+      userInfoDiv.innerHTML = `
+        <h4>Hello, ${data.full_name}</h4>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Phone:</strong> ${data.phone}</p>
+        <p><strong>Address:</strong> ${data.address}</p>
+        <p><strong>Date of Birth:</strong> ${data.dob}</p>
+        <p><strong>Account Type:</strong> ${data.account_type}</p>
+      `;
+    }
 
-if (userError) {
-  welcomeMessage.innerText = "Error loading profile.";
-} else {
-  welcomeMessage.innerText = `Welcome, ${userData.first_name} ${userData.last_name}`;
-}
+    // ✅ Logout function
+    logoutBtn.addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "login.html";
+    });
 
-// Fetch account info
-const { data: accountData, error: accountError } = await supabase
-  .from("accounts")
-  .select("account_type, account_number, balance")
-  .eq("user_id", user.id)
-  .single();
-
-if (accountError) {
-  accountType.innerText = "N/A";
-  accountNumber.innerText = "N/A";
-  balance.innerText = "0.00";
-} else {
-  accountType.innerText = accountData.account_type;
-  accountNumber.innerText = accountData.account_number;
-  balance.innerText = accountData.balance.toFixed(2);
-}
-
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  window.location.href = "login.html";
-});
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    loadUser();
+  </script>
 </body>
 </html>
