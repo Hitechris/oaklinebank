@@ -29,7 +29,7 @@ serve(async (req) => {
       state,
       postal_code,
       ssn,
-      account_types // note plural
+      account_types // Array of account types
     } = body;
 
     if (!first_name || !last_name || !dob || !phone || !email || !address || !city || !state || !postal_code || !ssn || !account_types?.length) {
