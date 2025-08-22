@@ -66,8 +66,15 @@
           account_type: formData.get("account_type"),
         };
 
+        // Your Edge Function URL (service_role key is hidden server-side)
+        const EDGE_FUNCTION_URL = "https://arvuoabjhqdkxhsswybx.supabase.co/functions/v1/createAccount";
+
         try {
-          const response = await fetch("https://arvuoabjhqdkxhsswybx.functions.supabase.co/createAccount", {
+          messageDiv.textContent = "Submitting...";
+          messageDiv.className = "message";
+          messageDiv.style.display = "block";
+
+          const response = await fetch(EDGE_FUNCTION_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
@@ -78,17 +85,14 @@
           if (response.ok) {
             messageDiv.textContent = `Account created successfully! Your Account Number: ${result.account.account_number}`;
             messageDiv.className = "message success";
-            messageDiv.style.display = "block";
             form.reset();
           } else {
             messageDiv.textContent = `Error: ${result.error}`;
             messageDiv.className = "message error";
-            messageDiv.style.display = "block";
           }
         } catch (err) {
           messageDiv.textContent = `Error: ${err.message}`;
           messageDiv.className = "message error";
-          messageDiv.style.display = "block";
         }
       });
     });
