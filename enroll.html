@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enroll | Oakline Bank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.7.0/dist/supabase.min.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f6f9;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .form-title {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #004080;
+    }
+    .btn-primary {
+      background-color: #004080;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #0066cc;
+    }
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .message.success { background-color: #d4edda; color: #155724; }
+    .message.error { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2 class="form-title">Online Banking Enrollment</h2>
+    <form id="enrollForm">
+      <div class="mb-3">
+        <input type="text" class="form-control" name="accountNumber" placeholder="Account Number" required>
+      </div>
+      <div class="mb-3">
+        <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" name="ssnLast4" placeholder="Last 4 digits of SSN" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="password" placeholder="Password" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm Password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Enroll & Verify Email</button>
+      <a href="index.html" class="btn btn-outline-primary w-100 mt-2">Back to Open Account</a>
+      <a href="login.html" class="btn btn-outline-success w-100 mt-2">Go to Login</a>
+    </form>
+
+    <div id="message" class="message" style="display: none;"></div>
+    <button id="resendBtn" class="btn btn-warning w-100 mt-2" style="display: none;">Resend Verification Email</button>
+  </div>
+
+  <script>
+    // Initialize Supabase
+    const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
+    const supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    const form = document.getElementById('enrollForm');
+    const messageDiv = document.getElementById('message');
+    const resendBtn = document.getElementById('resendBtn');
+    let lastEmail = '';
+
+    function showMessage(text, type='success') {
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const accountNumber = formData.get('accountNumber').trim();
+      const email = formData.get('email').trim();
+      const ssnLast4 = formData.get('ssnLast4').trim();
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirmPassword');
+
+      if (password !== confirmPassword) {
+        showMessage('Passwords do not match!', 'error');
+        return;
+      }
+
+      // Verify account number, email, and last 4 digits of SSN
+      const { data: accounts, error } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('account_number', accountNumber)
+        .eq('email', email)
+        .like('ssn', `%${ssnLast4}`);
+
+      if (error) {
+        showMessage('Error verifying account: ' + error.message, 'error');
+        return;
+      }
+
+      if (!accounts || accounts.length === 0) {
+        showMessage('No matching account found. Please check your details.', 'error');
+        return;
+      }
+
+      // Sign up user in Supabase Auth
+      const { data: user, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password
+      });
+
+      if (signUpError) {
+        showMessage('Error signing up: ' + signUpError.message, 'error');
+        return;
+      }
+
+      showMessage(`Enrollment successful! A verification email has been sent to ${email}. Please check your inbox.`, 'success');
+      resendBtn.style.display = 'block';
+      lastEmail = email;
+      form.reset();
+    });
+
+    // Resend verification email
+    resendBtn.addEventListener('click', async () => {
+      if (!lastEmail) return;
+      const { data, error } = await supabase.auth.admin.resendVerificationEmail(lastEmail);
+      if (error) {
+        showMessage('Error resending email: ' + error.message, 'error');
+      } else {
+        showMessage(`Verification email resent to ${lastEmail}.`, 'success');
+      }
+    });
+  </script>
+</body>
+</html>
