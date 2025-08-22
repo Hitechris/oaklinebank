@@ -2,11 +2,10 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Load credentials from environment variables
+// Load sensitive keys from environment variables
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY")!;
 
-// Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 serve(async (req) => {
@@ -19,7 +18,6 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-
     const {
       first_name,
       middle_name,
@@ -32,45 +30,53 @@ serve(async (req) => {
       state,
       postal_code,
       ssn,
-      account_type
+      account_types // <-- array of selected account types
     } = body;
 
-    if (!first_name || !last_name || !dob || !phone || !email || !address || !city || !state || !postal_code || !ssn || !account_type) {
+    // Basic validation
+    if (!first_name || !last_name || !dob || !phone || !email || !address || !city || !state || !postal_code || !ssn || !account_types || account_types.length === 0) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const account_number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    const insertedAccounts = [];
 
-    const { data, error } = await supabase
-      .from("accounts")
-      .insert([{
-        first_name,
-        middle_name,
-        last_name,
-        dob,
-        phone,
-        email,
-        address,
-        city,
-        state,
-        postal_code,
-        ssn,
-        account_type,
-        account_number,
-      }])
-      .select();
+    for (const account_type of account_types) {
+      // Generate a random 10-digit account number
+      const account_number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      const { data, error } = await supabase
+        .from("accounts")
+        .insert([{
+          first_name,
+          middle_name,
+          last_name,
+          dob,
+          phone,
+          email,
+          address,
+          city,
+          state,
+          postal_code,
+          ssn,
+          account_type,
+          account_number,
+        }])
+        .select();
+
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      insertedAccounts.push(data[0]);
     }
 
-    return new Response(JSON.stringify({ account: data[0] }), {
+    return new Response(JSON.stringify({ accounts: insertedAccounts }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
