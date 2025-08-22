@@ -3,8 +3,10 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 // Use environment variables for security
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY")!;
+// NEW
+const SUPABASE_URL = Deno.env.get("PROJECT_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_KEY")!;
+
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 serve(async (req) => {
