@@ -50,10 +50,10 @@
   </div>
 
   <script>
-    // Initialize Supabase
+    // Initialize Supabase properly
     const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-    const supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
     const form = document.getElementById('openAccountForm');
 
@@ -61,7 +61,6 @@
       e.preventDefault();
       const formData = new FormData(form);
 
-      // Collect multiple account types
       const accountTypes = [];
       form.querySelectorAll('input[name="accountType"]:checked').forEach(cb => accountTypes.push(cb.value));
       if(accountTypes.length === 0){
@@ -69,34 +68,37 @@
         return;
       }
 
-      // Generate unique 10-digit account number
-      const accountNumber = 'OB-' + Math.floor(1000000000 + Math.random() * 9000000000);
+      // Loop through each selected account type and create an account
+      for(const type of accountTypes){
+        const accountNumber = 'OB-' + Math.floor(1000000000 + Math.random() * 9000000000);
 
-      const { data, error } = await supabase.from('accounts').insert([
-        {
-          first_name: formData.get('firstName'),
-          middle_name: formData.get('middleName'),
-          last_name: formData.get('lastName'),
-          dob: formData.get('dob'),
-          phone: formData.get('phone'),
-          email: formData.get('email'),
-          address: formData.get('address'),
-          city: formData.get('city'),
-          state: formData.get('state'),
-          postal_code: formData.get('postalCode'),
-          ssn: formData.get('ssn'),
-          account_type: accountTypes.join(', '),
-          account_number: accountNumber,
-          routing_number: '075915826'
+        const { data, error } = await supabase.from('accounts').insert([
+          {
+            first_name: formData.get('firstName'),
+            middle_name: formData.get('middleName'),
+            last_name: formData.get('lastName'),
+            dob: formData.get('dob'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            state: formData.get('state'),
+            postal_code: formData.get('postalCode'),
+            ssn: formData.get('ssn'),
+            account_type: type,
+            account_number: accountNumber,
+            routing_number: '075915826'
+          }
+        ]);
+
+        if(error){
+          alert('Error creating account: ' + error.message);
+          return;
         }
-      ]);
-
-      if (error) {
-        alert('Error: ' + error.message);
-      } else {
-        alert('Account created successfully! Your account number is: ' + accountNumber + '. You can now proceed to enroll in online banking.');
-        form.reset();
       }
+
+      alert('Accounts created successfully!');
+      form.reset();
     });
   </script>
 </body>
