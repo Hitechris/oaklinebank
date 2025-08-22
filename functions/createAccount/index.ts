@@ -2,11 +2,11 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Supabase project credentials
-const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
-const SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTY1NDkzOSwiZXhwIjoyMDcxMjMwOTM5fQ.I9_3iTRgMYjhXyIFRjo9mFEjXqYrLO0mUV76y6ALgYk";
+// Load credentials from environment variables
+const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co"; // your project URL
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!; // secret stored in Supabase
 
-// Initialize Supabase client with service_role key
+// Initialize Supabase client with service role key
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 serve(async (req) => {
@@ -20,7 +20,6 @@ serve(async (req) => {
 
     const body = await req.json();
 
-    // Required fields from your table
     const {
       first_name,
       middle_name,
@@ -36,7 +35,6 @@ serve(async (req) => {
       account_type
     } = body;
 
-    // Basic validation
     if (!first_name || !last_name || !dob || !phone || !email || !address || !city || !state || !postal_code || !ssn || !account_type) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
@@ -44,10 +42,8 @@ serve(async (req) => {
       });
     }
 
-    // Optionally generate a random account number (you can adjust logic)
     const account_number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
-    // Insert into the accounts table
     const { data, error } = await supabase
       .from("accounts")
       .insert([{
@@ -65,7 +61,7 @@ serve(async (req) => {
         account_type,
         account_number,
       }])
-      .select(); // returns inserted row
+      .select();
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
