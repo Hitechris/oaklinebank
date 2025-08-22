@@ -10,73 +10,89 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
-    body { background-color:#f9fbff; color:#333; line-height:1.6; }
-    a { text-decoration:none; color:inherit; }
-    button { cursor:pointer; }
-    img { max-width:100%; display:block; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+    body { background-color: #f9fbff; color: #333; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
+    img { max-width: 100%; display: block; }
 
     /* ======= NAVBAR ======= */
-    header.navbar { display:flex; justify-content:space-between; align-items:center; padding:15px 40px; background-color:#003366; color:white; position:sticky; top:0; z-index:1000; }
-    .navbar .logo { font-size:1.5rem; font-weight:bold; }
-    .nav-links { display:flex; align-items:center; gap:20px; }
-    .nav-links a { color:white; font-weight:500; transition:0.3s; }
-    .nav-links a:hover { color:#ffcc00; }
-    .menu-toggle { display:none; background:none; border:none; font-size:1.5rem; color:white; }
-
-    .toggle-container { display:flex; align-items:center; margin-left:20px; }
-    .switch { position:relative; display:inline-block; width:40px; height:20px; }
-    .switch input { opacity:0; width:0; height:0; }
-    .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:20px; }
-    .slider:before { position:absolute; content:""; height:16px; width:16px; left:2px; bottom:2px; background-color:white; transition:.4s; border-radius:50%; }
-    input:checked + .slider { background-color:#0052cc; }
-    input:checked + .slider:before { transform:translateX(20px); }
-
-    /* ======= HERO SECTION ======= */
-    .hero { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; padding:100px 40px; color:white; text-align:center; background-size:cover; background-position:center; position:relative; }
-    .hero h1 { font-size:3rem; margin-bottom:20px; }
-    .hero p { font-size:1.2rem; margin-bottom:30px; }
-    .hero button, .hero a { background-color:#ffcc00; color:#003366; border:none; padding:14px 28px; border-radius:6px; font-weight:bold; transition:0.3s; }
-    .hero button:hover, .hero a:hover { background-color:#ffd633; }
-
-    /* ======= FEATURES SECTION ======= */
-    #features { padding:80px 40px; background-color:#f9fbff; text-align:center; }
-    #features h2 { font-size:2.5rem; color:#003366; margin-bottom:40px; }
-    #features div[style*="flex: 1 1 200px"] { background-color:white; border-radius:10px; padding:20px; transition: transform 0.3s, box-shadow 0.3s; }
-    #features div[style*="flex: 1 1 200px"]:hover { transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
-    #features img { margin-bottom:15px; }
-
-    /* ======= RESPONSIVE ======= */
-    @media(max-width:768px) {
-      .nav-links { display:none; flex-direction:column; background-color:#003366; position:absolute; top:60px; right:0; width:200px; padding:20px; }
-      .nav-links.active { display:flex; }
-      .menu-toggle { display:block; }
-      .hero h1 { font-size:2rem; }
-      #features div[style*="flex: 1 1 200px"] { max-width:100%; }
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background-color: #003366;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
+    .navbar .logo { font-size: 1.5rem; font-weight: bold; }
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-links a { color: white; font-weight: 500; transition: 0.3s; }
+    .nav-links a:hover { color: #ffcc00; }
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: white; }
+
+    /* Dark mode toggle */
+    .toggle-container { display: flex; align-items: center; margin-left: 20px; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #0052cc; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* ======= HERO ======= */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      padding: 120px 20px;
+      background: url('https://images.unsplash.com/photo-1592496001024-3d77128b8d30?auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+    }
+    .hero h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+    .hero p { font-size: 1.3rem; margin-bottom: 30px; text-shadow: 1px 1px 6px rgba(0,0,0,0.5); }
+    .hero a { background-color: #ffcc00; color: #003366; border: none; padding: 14px 28px; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+    .hero a:hover { background-color: #ffd633; }
+
+    /* ======= FEATURES ======= */
+    #features { padding: 80px 20px; background-color: #f9fbff; text-align: center; }
+    #features h2 { font-size: 2.5rem; color: #003366; margin-bottom: 50px; }
+    .feature-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+    .feature-card {
+      flex: 1 1 220px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .feature-card img { margin-bottom: 15px; height: 80px; object-fit: contain; }
+    .feature-card h4 { margin-bottom: 10px; color: #003366; }
+    .feature-card p { font-size: 0.95rem; }
+
+    @media(max-width:768px){.nav-links{display:none;flex-direction:column;position:absolute;top:60px;right:0;width:200px;padding:20px;background-color:#003366;}.nav-links.active{display:flex;}.menu-toggle{display:block;}.hero h1{font-size:2rem;}.feature-card{max-width:100%;}}
   </style>
 
-  <!-- Force HTTPS -->
-  <script>
-    (function() {
-      const host = "www.theoaklinebank.com";
-      if (window.location.host !== host || window.location.protocol !== "https:") {
-        window.location.href = "https://" + host + window.location.pathname + window.location.search;
-      }
-    })();
-  </script>
 </head>
 <body>
 
-  <!-- ======= HEADER / NAVBAR ======= -->
+  <!-- ======= NAVBAR ======= -->
   <header class="navbar">
     <div class="logo">Oakline Bank</div>
     <nav class="nav-links">
       <a href="index.html">Home</a>
-      <a href="#features">Features</a>
+      <a href="#features">Services</a>
       <a href="#testimonials">Testimonials</a>
       <a href="contact.html">Contact</a>
       <a href="login.html" id="navLoginLink">Login</a>
+      <!-- Sign Up removed -->
       <div class="toggle-container">
         <label class="switch">
           <input type="checkbox" id="darkModeToggle">
@@ -88,41 +104,118 @@
   </header>
 
   <!-- ======= HERO SECTION ======= -->
-  <section class="hero" id="heroSection">
-    <div>
-      <h1>Welcome to Oakline Bank</h1>
-      <p>Modern Banking for Everyday Life. Secure, Fast, and Reliable.</p>
-      <a href="login.html">Get Started</a>
-    </div>
+  <section class="hero">
+    <h1>Welcome to Oakline Bank</h1>
+    <p>Modern Banking for Everyday Life. Secure, Fast, and Reliable.</p>
+    <a href="login.html">Get Started</a>
   </section>
 
   <!-- ======= FEATURES SECTION ======= -->
   <section id="features">
     <h2>Our Services</h2>
-    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
-      <div style="flex:1 1 200px;">
-        <img src="https://images.unsplash.com/photo-1596496050421-cae3f494b49c?auto=format&fit=crop&w=150&q=80" alt="Savings">
+    <div class="feature-grid">
+      <div class="feature-card">
+        <img src="https://images.unsplash.com/photo-1600267167893-7c4e0e7d6574?auto=format&fit=crop&w=500&q=60" alt="Smart Savings">
         <h4>Smart Savings</h4>
         <p>High interest rates and easy withdrawals.</p>
       </div>
-      <div style="flex:1 1 200px;">
-        <img src="https://images.unsplash.com/photo-1581091012184-9b6783ff184e?auto=format&fit=crop&w=150&q=80" alt="Loans">
+      <div class="feature-card">
+        <img src="https://images.unsplash.com/photo-1581091012184-8b0313ee24ff?auto=format&fit=crop&w=500&q=60" alt="Easy Loans">
         <h4>Easy Loans</h4>
         <p>Fast approval and competitive rates.</p>
       </div>
-      <div style="flex:1 1 200px;">
-        <img src="https://images.unsplash.com/photo-1612831455545-2332e9f0ef4e?auto=format&fit=crop&w=150&q=80" alt="Cards">
+      <div class="feature-card">
+        <img src="https://images.unsplash.com/photo-1585238342027-1d90e6b9ecaf?auto=format&fit=crop&w=500&q=60" alt="Debit & Credit Cards">
         <h4>Debit & Credit Cards</h4>
         <p>Secure cards accepted worldwide.</p>
       </div>
-      <div style="flex:1 1 200px;">
-        <img src="https://images.unsplash.com/photo-1612831663592-5d0b2e6c3a6d?auto=format&fit=crop&w=150&q=80" alt="Crypto">
+      <div class="feature-card">
+        <img src="https://images.unsplash.com/photo-1612197528822-c7460c1e831c?auto=format&fit=crop&w=500&q=60" alt="Crypto Wallet">
         <h4>Crypto Wallet</h4>
         <p>Buy, sell, and store cryptocurrencies safely.</p>
       </div>
     </div>
   </section>
 
+  <!-- ======= END OF PART 1 ======= -->
+    <!-- ======= TESTIMONIALS ======= -->
+  <section id="testimonials" class="testimonials" style="padding:80px 20px; background-color:#e6f0ff; text-align:center;">
+    <h2>What Our Customers Say</h2>
+    <div class="testimonial-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:30px;">
+      <div class="testimonial-card" style="background:white; padding:20px; border-radius:10px; width:250px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John D" style="border-radius:50%; margin-bottom:15px; width:60px; height:60px;">
+        <p>"Oakline Bank makes my finances easy and transparent!"</p>
+        <div class="name">John D.</div>
+      </div>
+      <div class="testimonial-card" style="background:white; padding:20px; border-radius:10px; width:250px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Sarah K" style="border-radius:50%; margin-bottom:15px; width:60px; height:60px;">
+        <p>"Fast support and amazing online services."</p>
+        <div class="name">Sarah K.</div>
+      </div>
+      <div class="testimonial-card" style="background:white; padding:20px; border-radius:10px; width:250px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <img src="https://randomuser.me/api/portraits/men/56.jpg" alt="Mike L" style="border-radius:50%; margin-bottom:15px; width:60px; height:60px;">
+        <p>"I love using the Oakline crypto wallet."</p>
+        <div class="name">Mike L.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= LOAN CALCULATOR ======= -->
+  <section class="calculator" style="padding:80px 20px; text-align:center;">
+    <h2>Loan Calculator</h2>
+    <input type="number" id="loanAmount" placeholder="Loan Amount ($)">
+    <input type="number" id="loanInterest" placeholder="Interest Rate (%)">
+    <input type="number" id="loanYears" placeholder="Years">
+    <button onclick="calculateLoan()">Calculate</button>
+    <p id="loanResult"></p>
+  </section>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="footer" style="background-color:#003366; color:white; padding:40px 20px;">
+    <div class="footer-container" style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:30px;">
+      <div>
+        <h3>Oakline Bank</h3>
+        <p>Modern Banking for Everyday Life</p>
+        <p>Banking Made Simple and Safe.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul style="list-style:none; padding:0;">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="login.html" id="footerLoginLink">Login</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#features">Services</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact Us</h4>
+        <p>Email: support@oaklinebank.com</p>
+        <p>Phone: (800) 123-4567</p>
+        <p>123 Oakline Ave, Financial City, USA</p>
+      </div>
+      <div>
+        <h4>Follow Us</h4>
+        <div style="display:flex; gap:10px;">
+          <a href="#"><img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook"></a>
+          <a href="#"><img src="https://cdn-icons-png.flaticon.com/24/733/733579.png" alt="Twitter"></a>
+          <a href="#"><img src="https://cdn-icons-png.flaticon.com/24/733/733558.png" alt="Instagram"></a>
+          <a href="#"><img src="https://cdn-icons-png.flaticon.com/24/733/733561.png" alt="LinkedIn"></a>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:30px; border-top:1px solid rgba(255,255,255,0.3); padding-top:20px; text-align:center;">
+      <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ======= BOTTOM NAV ======= -->
+  <nav class="bottom-nav" style="position:fixed; bottom:0; left:0; width:100%; background-color:#003366; display:flex; justify-content:space-around; padding:10px 0; z-index:1000;">
+    <a href="index.html"><img src="https://cdn-icons-png.flaticon.com/24/25/25694.png" alt="Home"><span>Main</span></a>
+    <a href="login.html"><img src="https://cdn-icons-png.flaticon.com/24/25/25695.png" alt="Login"><span>Login</span></a>
+    <a href="contact.html"><img src="https://cdn-icons-png.flaticon.com/24/25/25696.png" alt="Contact"><span>Contact</span></a>
+  </nav>
+
+  <!-- ======= SCRIPTS ======= -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -130,180 +223,38 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // ======= HERO BACKGROUND ROTATION =======
-    const heroSection = document.getElementById('heroSection');
-    const heroImages = [
-      "https://images.unsplash.com/photo-1581090700227-1a33e8f08120?auto=format&fit=crop&w=1600&q=80",
-      "https://images.unsplash.com/photo-1561414927-6a6c6b1a6e43?auto=format&fit=crop&w=1600&q=80",
-      "https://images.unsplash.com/photo-1556742040-3a1e7b4a57d0?auto=format&fit=crop&w=1600&q=80",
-      "https://images.unsplash.com/photo-1605902711622-cfb43c4431d3?auto=format&fit=crop&w=1600&q=80"
-    ];
-    let currentHero = 0;
-    function updateHeroBackground() {
-      heroSection.style.background = `linear-gradient(-45deg, rgba(0,51,102,0.6), rgba(0,82,204,0.6), rgba(0,127,255,0.6), rgba(0,51,102,0.6)), url('${heroImages[currentHero]}') no-repeat center center/cover`;
-      currentHero = (currentHero + 1) % heroImages.length;
+    // Dark mode toggle
+    document.getElementById('darkModeToggle').addEventListener('change', e => {
+      document.body.classList.toggle('dark-mode', e.target.checked);
+    });
+
+    // Loan calculator
+    function calculateLoan() {
+      const principal = parseFloat(document.getElementById('loanAmount').value);
+      const rate = parseFloat(document.getElementById('loanInterest').value)/100/12;
+      const months = parseFloat(document.getElementById('loanYears').value)*12;
+      const result = document.getElementById('loanResult');
+      if(!principal || !rate || !months){ result.innerText="Please fill all fields."; return; }
+      const monthly = (principal*rate)/(1-Math.pow(1+rate,-months));
+      result.innerText=`Monthly Payment: $${monthly.toFixed(2)}`;
     }
-    updateHeroBackground();
-    setInterval(updateHeroBackground, 10000);
 
-    <!-- ======= TESTIMONIALS SECTION ======= -->
-<section id="testimonials" class="container py-5">
-  <h2 class="text-center mb-4">What Our Customers Say</h2>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1581090700227-1a33e8f08120?auto=format&fit=crop&w=1600&q=80" class="card-img-top" alt="Customer 1">
-        <div class="card-body">
-          <p class="card-text">"Oakline Bank has transformed my banking experience. The mobile app is intuitive, and the customer service is exceptional."</p>
-          <h5 class="card-title">John Doe</h5>
-          <p class="card-text"><small class="text-muted">Entrepreneur</small></p>
-        </div>
-      </div>
-    </div>
-    <!-- Add more testimonials as needed -->
-  </div>
-</section>
-
-<!-- ======= LOAN CALCULATOR SECTION ======= -->
-<section id="loan-calculator" class="container py-5">
-  <h2 class="text-center mb-4">Loan Repayment Calculator</h2>
-  <form id="calculator-form">
-    <div class="mb-3">
-      <label for="loanAmount" class="form-label">Loan Amount ($)</label>
-      <input type="number" class="form-control" id="loanAmount" required>
-    </div>
-    <div class="mb-3">
-      <label for="interestRate" class="form-label">Annual Interest Rate (%)</label>
-      <input type="number" class="form-control" id="interestRate" required>
-    </div>
-    <div class="mb-3">
-      <label for="loanTerm" class="form-label">Loan Term (years)</label>
-      <input type="number" class="form-control" id="loanTerm" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Calculate</button>
-  </form>
-  <div id="loanResult" class="mt-4" style="display: none;">
-    <h4>Estimated Monthly Payment: $<span id="monthlyPayment"></span></h4>
-  </div>
-</section>
-
-<!-- ======= FOOTER ======= -->
-<footer class="bg-dark text-white text-center py-4">
-  <p>&copy; 2025 Oakline Bank. All rights reserved.</p>
-  <p><a href="privacy.html" class="text-white">Privacy Policy</a> | <a href="terms.html" class="text-white">Terms of Service</a></p>
-</footer>
-
-<!-- ======= BOTTOM NAVIGATION ======= -->
-<nav class="navbar navbar-dark fixed-bottom bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#heroSection">Home</a>
-    <a class="navbar-brand" href="#features">Features</a>
-    <a class="navbar-brand" href="#testimonials">Testimonials</a>
-    <a class="navbar-brand" href="contact.html">Contact</a>
-  </div>
-</nav>
-
-<!-- ======= LOGIN MODAL ======= -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="loginModalLabel">Login</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="loginForm">
-          <div class="mb-3">
-            <label for="loginEmail" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="loginEmail" required>
-          </div>
-          <div class="mb-3">
-            <label for="loginPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="loginPassword" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <div class="mt-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ======= FORGOT PASSWORD MODAL ======= -->
-<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="resetPasswordForm">
-          <div class="mb-3">
-            <label for="resetEmail" class="form-label">Enter your email address</label>
-            <input type="email" class="form-control" id="resetEmail" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Send Reset Link</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Loan Calculator
-  document.getElementById('calculator-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const loanAmount = parseFloat(document.getElementById('loanAmount').value);
-    const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
-    const loanTerm = parseInt(document.getElementById('loanTerm').value) * 12;
-    const x = Math.pow(1 + interestRate, loanTerm);
-    const monthlyPayment = (loanAmount * x * interestRate) / (x - 1);
-    document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2);
-    document.getElementById('loanResult').style.display = 'block';
-  });
-
-  // Supabase Authentication
-  const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  // Handle login
-  document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const { user, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      alert(error.message);
-    } else {
-      alert('Login successful');
-      // Update UI based on user session
+    // Navbar links update
+    async function updateNavLinks() {
+      const loginLink = document.getElementById('navLoginLink');
+      const footerLoginLink = document.getElementById('footerLoginLink');
+      const { data: { user } } = await supabase.auth.getUser();
+      if(user){
+        loginLink.style.display='none';
+        footerLoginLink.style.display='none';
+      } else {
+        loginLink.style.display='inline';
+        footerLoginLink.style.display='inline';
+      }
     }
-  });
 
-  // Handle password reset
-  document.getElementById('resetPasswordForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('resetEmail').value;
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) {
-      alert(error.message);
-    } else {
-      alert('Password reset link sent');
-      // Close modal
-      var myModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-      myModal.hide();
-    }
-  });
-
-  // Dark Mode Toggle
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  darkModeToggle.addEventListener('change', function() {
-    document.body.classList.toggle('dark-mode', darkModeToggle.checked);
-  });
-</script>
+    updateNavLinks();
+  </script>
 </body>
 </html>
+  
