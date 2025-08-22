@@ -17,92 +17,84 @@
 </head>
 <body>
 
-  <h2>Open a New Account</h2>
+<h2>Open a New Account</h2>
 
-  <form id="open-account-form">
-    <input type="text" name="first_name" placeholder="First Name" required>
-    <input type="text" name="middle_name" placeholder="Middle Name (Optional)">
-    <input type="text" name="last_name" placeholder="Last Name" required>
-    <input type="date" name="dob" placeholder="Date of Birth" required>
-    <input type="text" name="phone" placeholder="Phone Number" required>
-    <input type="email" name="email" placeholder="Email Address" required>
-    <input type="text" name="address" placeholder="Street Address" required>
-    <input type="text" name="city" placeholder="City" required>
-    <input type="text" name="state" placeholder="State" required>
-    <input type="text" name="postal_code" placeholder="Postal Code" required>
-    <input type="text" name="ssn" placeholder="SSN" required>
-    
-    <!-- Multi-select for account types -->
-    <label>Select Account Types:</label>
-    <select name="account_types" id="account_types" multiple required>
-      <option value="Savings">Savings</option>
-      <option value="Checking">Checking</option>
-      <option value="Business">Business</option>
-    </select>
+<form id="open-account-form">
+  <input type="text" name="first_name" placeholder="First Name" required>
+  <input type="text" name="middle_name" placeholder="Middle Name (Optional)">
+  <input type="text" name="last_name" placeholder="Last Name" required>
+  <input type="date" name="dob" placeholder="Date of Birth" required>
+  <input type="text" name="phone" placeholder="Phone Number" required>
+  <input type="email" name="email" placeholder="Email Address" required>
+  <input type="text" name="address" placeholder="Street Address" required>
+  <input type="text" name="city" placeholder="City" required>
+  <input type="text" name="state" placeholder="State" required>
+  <input type="text" name="postal_code" placeholder="Postal Code" required>
+  <input type="text" name="ssn" placeholder="SSN" required>
 
-    <button type="submit">Open Account</button>
-    <div id="form-message" class="message" style="display: none;"></div>
-  </form>
+  <label>Select Account Type(s):</label>
+  <select name="account_types" multiple required>
+    <option value="Checking">Checking</option>
+    <option value="Savings">Savings</option>
+    <option value="Business">Business</option>
+  </select>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("open-account-form");
-      const messageDiv = document.getElementById("form-message");
+  <button type="submit">Open Account</button>
+  <div id="form-message" class="message" style="display: none;"></div>
+</form>
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        messageDiv.style.display = "none";
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("open-account-form");
+  const messageDiv = document.getElementById("form-message");
 
-        const formData = new FormData(form);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    messageDiv.style.display = "none";
 
-        // Collect multiple selected account types as an array
-        const accountSelect = document.getElementById("account_types");
-        const account_types = Array.from(accountSelect.selectedOptions).map(opt => opt.value);
+    const formData = new FormData(form);
+    const data = {
+      first_name: formData.get("first_name"),
+      middle_name: formData.get("middle_name"),
+      last_name: formData.get("last_name"),
+      dob: formData.get("dob"),
+      phone: formData.get("phone"),
+      email: formData.get("email"),
+      address: formData.get("address"),
+      city: formData.get("city"),
+      state: formData.get("state"),
+      postal_code: formData.get("postal_code"),
+      ssn: formData.get("ssn"),
+      account_types: Array.from(formData.getAll("account_types"))
+    };
 
-        const data = {
-          first_name: formData.get("first_name"),
-          middle_name: formData.get("middle_name"),
-          last_name: formData.get("last_name"),
-          dob: formData.get("dob"),
-          phone: formData.get("phone"),
-          email: formData.get("email"),
-          address: formData.get("address"),
-          city: formData.get("city"),
-          state: formData.get("state"),
-          postal_code: formData.get("postal_code"),
-          ssn: formData.get("ssn"),
-          account_types, // <-- send as array
-        };
-
-        try {
-          const response = await fetch("https://arvuoabjhqdkxhsswybx.supabase.co/functions/v1/createAccount", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            // Show all created account numbers
-            const accountNumbers = result.accounts.map(acc => acc.account_number).join(", ");
-            messageDiv.textContent = `Account(s) created successfully! Your Account Number(s): ${accountNumbers}`;
-            messageDiv.className = "message success";
-            messageDiv.style.display = "block";
-            form.reset();
-          } else {
-            messageDiv.textContent = `Error: ${result.error}`;
-            messageDiv.className = "message error";
-            messageDiv.style.display = "block";
-          }
-        } catch (err) {
-          messageDiv.textContent = `Error: ${err.message}`;
-          messageDiv.className = "message error";
-          messageDiv.style.display = "block";
-        }
+    try {
+      const response = await fetch("https://arvuoabjhqdkxhsswybx.supabase.co/functions/v1/createAccount", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       });
-    });
-  </script>
+
+      const result = await response.json();
+
+      if (response.ok) {
+        messageDiv.textContent = `Account(s) created! Account Number(s): ${result.accounts.map(a => a.account_number).join(", ")}`;
+        messageDiv.className = "message success";
+        messageDiv.style.display = "block";
+        form.reset();
+      } else {
+        messageDiv.textContent = `Error: ${result.error}`;
+        messageDiv.className = "message error";
+        messageDiv.style.display = "block";
+      }
+    } catch (err) {
+      messageDiv.textContent = `Error: ${err.message}`;
+      messageDiv.className = "message error";
+      messageDiv.style.display = "block";
+    }
+  });
+});
+</script>
 
 </body>
 </html>
