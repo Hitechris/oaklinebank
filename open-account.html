@@ -13,8 +13,6 @@
     .btn-primary { background-color: #004080; border: none; }
     .btn-primary:hover { background-color: #0066cc; }
     .account-types label { margin-right: 15px; }
-    .account-confirmation { margin-top: 30px; }
-    .account-card { padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; background: #f9f9f9; }
   </style>
 </head>
 <body>
@@ -49,46 +47,21 @@
       <button type="submit" class="btn btn-primary w-100">Open Account</button>
       <a href="enroll.html" class="btn btn-outline-primary w-100 mt-2">Go to Online Banking Enrollment</a>
     </form>
-
-    <div class="account-confirmation" id="accountConfirmation" style="display:none;">
-      <h3 style="text-align:center; color:#004080;">Your Accounts Have Been Created</h3>
-      <div id="accountList"></div>
-      <a href="enroll.html" class="btn btn-primary w-100 mt-3">Proceed to Online Banking Enrollment</a>
-    </div>
   </div>
 
   <script>
+    // Initialize Supabase
     const supabaseUrl = 'https://arvuoabjhqdkxhsswybx.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8';
     const supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
 
     const form = document.getElementById('openAccountForm');
-    const confirmationDiv = document.getElementById('accountConfirmation');
-    const accountListDiv = document.getElementById('accountList');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
 
-      const email = formData.get('email');
-      const ssn = formData.get('ssn');
-
-      // Check if email or SSN already exists
-      const { data: existing, error: checkError } = await supabase.from('accounts')
-        .select('id, account_type')
-        .or(`email.eq.${email},ssn.eq.${ssn}`);
-
-      if (checkError) {
-        alert('Error checking existing accounts: ' + checkError.message);
-        return;
-      }
-
-      if (existing.length > 0) {
-        alert('An account with this Email or SSN already exists.');
-        return;
-      }
-
-      // Collect selected account types
+      // Collect multiple account types
       const accountTypes = [];
       form.querySelectorAll('input[name="accountType"]:checked').forEach(cb => accountTypes.push(cb.value));
       if(accountTypes.length === 0){
@@ -96,52 +69,33 @@
         return;
       }
 
-      const createdAccounts = [];
+      // Generate unique 10-digit account number
+      const accountNumber = 'OB-' + Math.floor(1000000000 + Math.random() * 9000000000);
 
-      for(const type of accountTypes){
-        const accountNumber = 'OB-' + Math.floor(1000000000 + Math.random() * 9000000000);
-
-        const { data, error } = await supabase.from('accounts').insert([
-          {
-            first_name: formData.get('firstName'),
-            middle_name: formData.get('middleName'),
-            last_name: formData.get('lastName'),
-            dob: formData.get('dob'),
-            phone: formData.get('phone'),
-            email: email,
-            address: formData.get('address'),
-            city: formData.get('city'),
-            state: formData.get('state'),
-            postal_code: formData.get('postalCode'),
-            ssn: ssn,
-            account_type: type,
-            account_number: accountNumber,
-            routing_number: '075915826'
-          }
-        ]);
-
-        if(error){
-          alert('Error creating ' + type + ' account: ' + error.message);
-        } else {
-          createdAccounts.push(data[0]);
+      const { data, error } = await supabase.from('accounts').insert([
+        {
+          first_name: formData.get('firstName'),
+          middle_name: formData.get('middleName'),
+          last_name: formData.get('lastName'),
+          dob: formData.get('dob'),
+          phone: formData.get('phone'),
+          email: formData.get('email'),
+          address: formData.get('address'),
+          city: formData.get('city'),
+          state: formData.get('state'),
+          postal_code: formData.get('postalCode'),
+          ssn: formData.get('ssn'),
+          account_type: accountTypes.join(', '),
+          account_number: accountNumber,
+          routing_number: '075915826'
         }
-      }
+      ]);
 
-      if(createdAccounts.length > 0){
-        form.style.display = 'none';
-        confirmationDiv.style.display = 'block';
-        accountListDiv.innerHTML = '';
-
-        createdAccounts.forEach(acc => {
-          const card = document.createElement('div');
-          card.className = 'account-card';
-          card.innerHTML = `
-            <p><strong>Account Type:</strong> ${acc.account_type}</p>
-            <p><strong>Account Number:</strong> ${acc.account_number}</p>
-            <p><strong>Routing Number:</strong> ${acc.routing_number}</p>
-          `;
-          accountListDiv.appendChild(card);
-        });
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        alert('Account created successfully! Your account number is: ' + accountNumber + '. You can now proceed to enroll in online banking.');
+        form.reset();
       }
     });
   </script>
