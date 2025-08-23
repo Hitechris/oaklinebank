@@ -79,9 +79,12 @@
 </div>
 
 <script>
-document.getElementById('testBtn').addEventListener('click', async () => {
-  const output = document.getElementById('responseOutput');
-  const alertBox = document.getElementById('alertBox');
+const testBtn = document.getElementById('testBtn');
+const output = document.getElementById('responseOutput');
+const alertBox = document.getElementById('alertBox');
+
+testBtn.addEventListener('click', async () => {
+  testBtn.disabled = true;
   output.textContent = 'Sending request...';
   alertBox.innerHTML = '';
 
@@ -105,8 +108,15 @@ document.getElementById('testBtn').addEventListener('click', async () => {
     account_types: accountTypes
   };
 
+  if (!body.first_name || !body.last_name || !body.email) {
+    alertBox.innerHTML = '<div class="alert alert-warning">⚠️ First name, last name, and email are required.</div>';
+    output.textContent = '';
+    testBtn.disabled = false;
+    return;
+  }
+
   try {
-    const PROXY_URL = "https://oakline-bank-proxy.oakline-bank.deno.net";
+    const PROXY_URL = "https://oakline-bank-proxy.oakline-bank.deno.net; // Change to your Deno deployment URL when live
 
     const response = await fetch(PROXY_URL, {
       method: "POST",
@@ -123,8 +133,10 @@ document.getElementById('testBtn').addEventListener('click', async () => {
       alertBox.innerHTML = `<div class="alert alert-danger">❌ Error: ${data.error || 'Unknown error'}</div>`;
     }
   } catch (err) {
-    output.textContent = 'Error: ' + err;
+    output.textContent = 'Network Error: ' + err;
     alertBox.innerHTML = `<div class="alert alert-danger">❌ Network error: ${err.message}</div>`;
+  } finally {
+    testBtn.disabled = false;
   }
 });
 </script>
