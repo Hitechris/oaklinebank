@@ -9,7 +9,7 @@
 <body class="bg-light">
 <div class="container py-4">
   <h1 class="mb-4 text-center">Oakline Bank – Create Account Test</h1>
-  
+
   <form id="accountForm" class="card p-4 shadow-sm">
     <div class="row g-3">
       <div class="col-md-4">
@@ -116,7 +116,8 @@ testBtn.addEventListener('click', async () => {
   }
 
   try {
-    const PROXY_URL = "https://oakline-bank-proxy.oakline-bank.deno.net; // Change to your Deno deployment URL when live
+    // Use your Deno deployment URL here (safe for client-side)
+    const PROXY_URL = "https://oakline-bank-proxy.oakline-bank.deno.net";
 
     const response = await fetch(PROXY_URL, {
       method: "POST",
