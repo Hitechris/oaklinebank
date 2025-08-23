@@ -87,7 +87,8 @@ document.getElementById('testBtn').addEventListener('click', async () => {
 
   const accountTypes = document.getElementById('account_types').value
     .split(',')
-    .map(a => a.trim());
+    .map(a => a.trim())
+    .filter(a => a.length);
 
   const body = {
     first_name: document.getElementById('first_name').value,
@@ -117,13 +118,13 @@ document.getElementById('testBtn').addEventListener('click', async () => {
     output.textContent = JSON.stringify(data, null, 2);
 
     if (response.ok) {
-      alertBox.innerHTML = `<div class="alert alert-success">Account(s) created successfully!</div>`;
+      alertBox.innerHTML = `<div class="alert alert-success">✅ Account(s) created successfully!</div>`;
     } else {
-      alertBox.innerHTML = `<div class="alert alert-danger">Error: ${data.error || 'Unknown error'}</div>`;
+      alertBox.innerHTML = `<div class="alert alert-danger">❌ Error: ${data.error || 'Unknown error'}</div>`;
     }
   } catch (err) {
     output.textContent = 'Error: ' + err;
-    alertBox.innerHTML = `<div class="alert alert-danger">Network error: ${err.message}</div>`;
+    alertBox.innerHTML = `<div class="alert alert-danger">❌ Network error: ${err.message}</div>`;
   }
 });
 </script>
