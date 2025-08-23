@@ -2,17 +2,23 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+// Replace these with your actual environment variables in Supabase
 const SUPABASE_URL = Deno.env.get("PROJECT_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_KEY")!;
+
+// Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+// Allowed origin (your GoDaddy domain)
+const ALLOWED_ORIGINS = ["https://www.theoaklinebank.com"];
+
 serve(async (req) => {
-  // Handle CORS preflight
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
@@ -23,7 +29,10 @@ serve(async (req) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
+        },
       });
     }
 
@@ -33,16 +42,21 @@ serve(async (req) => {
       city, state, postal_code, ssn, account_types
     } = body;
 
+    // Validate required fields
     if (!first_name || !last_name || !dob || !phone || !email || !address || !city || !state || !postal_code || !ssn || !account_types?.length) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
+        },
       });
     }
 
     const results = [];
     for (const account_type of account_types) {
       const account_number = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+
       const { data, error } = await supabase
         .from("accounts")
         .insert([{
@@ -54,21 +68,31 @@ serve(async (req) => {
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), {
           status: 400,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
+          },
         });
       }
+
       results.push(data[0]);
     }
 
     return new Response(JSON.stringify({ accounts: results }), {
       status: 200,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
+      },
     });
 
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": ALLOWED_ORIGINS.join(","),
+      },
     });
   }
 });
