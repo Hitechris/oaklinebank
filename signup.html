@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oakline Bank - Sign Up</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 2rem auto; }
+    input, button { display: block; width: 100%; margin: 0.5rem 0; padding: 0.5rem; }
+    button { cursor: pointer; }
+    #message { margin-top: 1rem; color: red; }
+  </style>
 </head>
 <body>
   <h1>Sign Up</h1>
@@ -16,8 +21,53 @@
     <input type="password" id="password" placeholder="Password" required />
     <button type="submit">Sign Up</button>
   </form>
-  <div id="message" style="color:red;margin-top:1rem;"></div>
+  <div id="message"></div>
 
-  <script src="app.js"></script>
+  <script>
+    const signupForm = document.getElementById("signupForm");
+    const messageDiv = document.getElementById("message");
+
+    // Replace with your Supabase Edge Function URL
+    const EDGE_FUNCTION_URL = "https://arvuoabjhqdkxhsswybx.supabase.co/functions/v1/createAccount";
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const first_name = document.getElementById("firstName").value.trim();
+      const middle_name = document.getElementById("middleName").value.trim();
+      const last_name = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      messageDiv.style.color = "red";
+      messageDiv.textContent = "Signing up...";
+
+      try {
+        console.log("Sending signup request for:", email);
+
+        const response = await fetch(EDGE_FUNCTION_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ first_name, middle_name, last_name, email, password })
+        });
+
+        const data = await response.json();
+        console.log("Edge Function Response:", data);
+
+        if (!response.ok) {
+          messageDiv.textContent = "Signup Error: " + (data.error || "Unknown error");
+          return;
+        }
+
+        messageDiv.style.color = "green";
+        messageDiv.textContent = "Signup successful! Check your email to confirm your account.";
+        signupForm.reset();
+
+      } catch (err) {
+        console.error("Unexpected Error:", err);
+        messageDiv.textContent = "Unexpected Error: " + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
