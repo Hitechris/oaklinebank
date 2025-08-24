@@ -1,10 +1,8 @@
-// Initialize Supabase from environment variables
-const PROJECT_URL = process.env.SUPABASE_URL;
-const SERVICE_KEY = process.env.SUPABASE_ANON_KEY;
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const signupForm = document.getElementById("signupForm");
 const messageDiv = document.getElementById("message");
+
+// Supabase Edge Function URL
+const EDGE_FUNCTION_URL = "https://arvuoabjhqdkxhsswybx.supabase.co/functions/v1/createAccount";
 
 signupForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -16,36 +14,29 @@ signupForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("password").value;
 
   try {
-    // 1️⃣ Sign up the user with Supabase Auth
-    const { data, error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: "https://your-domain.com/confirm" // redirect after confirmation
-      }
+    console.log("Starting signup for:", email);
+
+    const response = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ first_name, middle_name, last_name, email, password })
     });
 
-    if (signupError) throw signupError;
+    const data = await response.json();
 
-    // 2️⃣ Create profile in 'profiles' table
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert([
-        {
-          id: data.user.id,
-          first_name,
-          middle_name,
-          last_name,
-          email
-        }
-      ]);
+    if (!response.ok) {
+      console.error("Signup Error:", data);
+      messageDiv.textContent = "Signup Error: " + (data.error || "Unknown error");
+      return;
+    }
 
-    if (profileError) throw profileError;
-
+    console.log("Signup successful:", data);
+    messageDiv.style.color = "green";
     messageDiv.textContent = "Signup successful! Check your email to confirm your account.";
-    signupForm.reset();
 
+    signupForm.reset();
   } catch (err) {
-    messageDiv.textContent = `Error: ${err.message}`;
+    console.error("Unexpected Error:", err);
+    messageDiv.textContent = "Unexpected Error: " + err.message;
   }
 });
