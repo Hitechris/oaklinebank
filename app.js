@@ -1,9 +1,7 @@
-// Your Supabase project credentials
-const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // keep safe, use anon key only on frontend
-
-// Initialize client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Initialize Supabase from environment variables
+const PROJECT_URL = process.env.SUPABASE_URL;
+const SERVICE_KEY = process.env.SUPABASE_ANON_KEY;
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const signupForm = document.getElementById("signupForm");
 const messageDiv = document.getElementById("message");
@@ -17,27 +15,24 @@ signupForm.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  // Step 1: Sign up user in Auth
-  const { data, error: signupError } = await supabase.auth.signUp({
-    email,
-    password
-  });
+  try {
+    // 1️⃣ Sign up the user with Supabase Auth
+    const { data, error: signupError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "https://your-domain.com/confirm" // redirect after confirmation
+      }
+    });
 
-  if (signupError) {
-    console.error("Signup Error:", signupError);
-    messageDiv.textContent = `Signup failed: ${signupError.message}`;
-    return;
-  }
+    if (signupError) throw signupError;
 
-  const user = data.user;
-
-  // Step 2: Insert into profiles table
-  if (user) {
-    const { error: insertError } = await supabase
+    // 2️⃣ Create profile in 'profiles' table
+    const { error: profileError } = await supabase
       .from("profiles")
       .insert([
         {
-          id: user.id, // link to auth.users
+          id: data.user.id,
           first_name,
           middle_name,
           last_name,
@@ -45,15 +40,12 @@ signupForm.addEventListener("submit", async (e) => {
         }
       ]);
 
-    if (insertError) {
-      console.error("Insert Error:", insertError);
-      messageDiv.textContent = `Error saving profile: ${insertError.message}`;
-      return;
-    }
-  }
+    if (profileError) throw profileError;
 
-  // Step 3: Success message
-  messageDiv.textContent =
-    "Signup successful! Please check your email to confirm your account.";
-  signupForm.reset();
+    messageDiv.textContent = "Signup successful! Check your email to confirm your account.";
+    signupForm.reset();
+
+  } catch (err) {
+    messageDiv.textContent = `Error: ${err.message}`;
+  }
 });
