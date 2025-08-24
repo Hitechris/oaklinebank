@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oakline Bank - Sign Up</title>
+  <title>Oakline Bank - Sign Up (Debug)</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,9 +16,77 @@
     <input type="password" id="password" placeholder="Password" required />
     <button type="submit">Sign Up</button>
   </form>
-  <div id="message"></div>
+  <div id="message" style="color:red;margin-top:1rem;"></div>
 
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
-  <script src="app.js"></script>
+
+  <!-- Debug signup script -->
+  <script>
+    // Replace with your actual Supabase values
+    const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // keep safe in Vercel env for production
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const signupForm = document.getElementById("signupForm");
+    const messageDiv = document.getElementById("message");
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const first_name = document.getElementById("firstName").value.trim();
+      const middle_name = document.getElementById("middleName").value.trim();
+      const last_name = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        console.log("Starting signup for:", email);
+
+        const { data, error: signupError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: "https://your-domain.com/confirm"
+          }
+        });
+
+        if (signupError) {
+          console.error("Signup Error:", signupError);
+          messageDiv.textContent = "Signup Error: " + signupError.message;
+          return;
+        }
+
+        console.log("Signup successful, user ID:", data.user.id);
+
+        // Insert profile
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert([
+            {
+              id: data.user.id,
+              first_name,
+              middle_name,
+              last_name,
+              email
+            }
+          ]);
+
+        if (profileError) {
+          console.error("Profile Insert Error:", profileError);
+          messageDiv.textContent = "Profile Insert Error: " + profileError.message;
+          return;
+        }
+
+        console.log("Profile created successfully for user:", data.user.id);
+        messageDiv.textContent = "Signup successful! Check your email to confirm your account.";
+
+      } catch (err) {
+        console.error("Unexpected Error:", err);
+        messageDiv.textContent = "Unexpected Error: " + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
