@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Sign Up</h1>
+  <h1>Oakline Bank Sign Up</h1>
   <form id="signupForm">
     <input type="text" id="firstName" placeholder="First Name" required />
     <input type="text" id="middleName" placeholder="Middle Name" />
@@ -21,13 +21,13 @@
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 
-  <!-- Debug signup script -->
   <script>
-    // Replace with your actual Supabase values
+    // Your Supabase project info (keep secret in production)
     const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // keep safe in Vercel env for production
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // Replace with your actual anon key
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Initialize Supabase
+    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const signupForm = document.getElementById("signupForm");
     const messageDiv = document.getElementById("message");
@@ -48,7 +48,7 @@
           email,
           password,
           options: {
-            emailRedirectTo: "https://your-domain.com/confirm"
+            emailRedirectTo: "https://oakline-bank.vercel.app/login.html" // Change to your login page
           }
         });
 
@@ -60,7 +60,7 @@
 
         console.log("Signup successful, user ID:", data.user.id);
 
-        // Insert profile
+        // Insert into profiles table
         const { error: profileError } = await supabase
           .from("profiles")
           .insert([
