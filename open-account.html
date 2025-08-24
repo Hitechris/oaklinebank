@@ -7,26 +7,61 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Open a New Bank Account</h1>
-  <form id="openAccountForm">
-    <input type="text" id="ssnOrId" placeholder="SSN or ID" required />
-    <input type="text" id="phone" placeholder="Phone Number" />
-    <input type="text" id="street" placeholder="Street Address" required />
-    <input type="text" id="city" placeholder="City" required />
-    <input type="text" id="state" placeholder="State" required />
-    <input type="text" id="zip" placeholder="ZIP / Postal Code" required />
-    <input type="text" id="country" placeholder="Country" required />
-
-    <h3>Account Types</h3>
-    <label><input type="checkbox" class="accountType" value="Checking"> Checking</label>
-    <label><input type="checkbox" class="accountType" value="Saving"> Saving</label>
-    <label><input type="checkbox" class="accountType" value="Business"> Business</label>
-
-    <button type="submit">Create Account</button>
+  <h1>Open Bank Account</h1>
+  <form id="accountForm">
+    <label><input type="checkbox" value="Checking" class="accountType"> Checking</label>
+    <label><input type="checkbox" value="Saving" class="accountType"> Saving</label>
+    <label><input type="checkbox" value="Business" class="accountType"> Business</label>
+    <button type="submit">Open Selected Accounts</button>
   </form>
   <div id="message"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
-  <script src="app.js"></script>
+  <script>
+    const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // hide in Vercel env
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const accountForm = document.getElementById("accountForm");
+    const messageDiv = document.getElementById("message");
+
+    accountForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const accountTypes = Array.from(document.querySelectorAll(".accountType:checked")).map(cb => cb.value);
+      if (accountTypes.length === 0) {
+        messageDiv.textContent = "Please select at least one account type.";
+        return;
+      }
+
+      const user_id = localStorage.getItem("user_id");
+      if (!user_id) {
+        messageDiv.textContent = "User not logged in.";
+        return;
+      }
+
+      function generateAccountNumber() {
+        return "ACCT" + Math.floor(100000000 + Math.random() * 900000000);
+      }
+
+      for (const account_type of accountTypes) {
+        const { error } = await supabase.from("accounts").insert([{
+          user_id,
+          account_type,
+          account_number: generateAccountNumber(),
+          balance: 0,
+          routing_number: "075915826"
+        }]);
+
+        if (error) {
+          messageDiv.textContent = `Error creating ${account_type}: ${error.message}`;
+          return;
+        }
+      }
+
+      messageDiv.style.color = "green";
+      messageDiv.textContent = "Accounts opened successfully!";
+    });
+  </script>
 </body>
 </html>
