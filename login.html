@@ -13,9 +13,35 @@
     <input type="password" id="password" placeholder="Password" required />
     <button type="submit">Login</button>
   </form>
-  <div id="message"></div>
+  <div id="message" style="color:red;margin-top:1rem;"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
-  <script src="app.js"></script>
+  <script>
+    const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // hide in Vercel env for production
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginForm = document.getElementById("loginForm");
+    const messageDiv = document.getElementById("message");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        messageDiv.textContent = "Login Error: " + error.message;
+        return;
+      }
+
+      messageDiv.style.color = "green";
+      messageDiv.textContent = "Login successful! Redirecting to dashboard...";
+      localStorage.setItem("user_id", data.user.id);
+
+      window.location.href = "dashboard.html";
+    });
+  </script>
 </body>
 </html>
