@@ -1,131 +1,59 @@
-// Supabase credentials
-const PROJECT_URL = "https://arvuoabjhqdkxhsswybx.supabase.co";
-const SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Your Supabase project credentials
+const SUPABASE_URL = "https://arvuoabjhqdkxhsswybx.supabase.co
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFydnVvYWJqaHFka3hoc3N3eWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ5MzksImV4cCI6MjA3MTIzMDkzOX0.Gt1waZAhZJKS4_VGqgNQCcroGehjnxKyDUfiCRLSWB8"; // keep safe, use anon key only on frontend
 
-// -------- SIGNUP --------
+// Initialize client
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const signupForm = document.getElementById("signupForm");
-if (signupForm) {
-  signupForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const first_name = document.getElementById("firstName").value.trim();
-    const middle_name = document.getElementById("middleName").value.trim();
-    const last_name = document.getElementById("lastName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+const messageDiv = document.getElementById("message");
 
-    const { user, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { first_name, middle_name, last_name } }
-    });
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const msgDiv = document.getElementById("message");
-    if (error) {
-      msgDiv.textContent = `Signup Error: ${error.message}`;
-    } else {
-      msgDiv.textContent = "Signup successful! Check your email to confirm.";
-      signupForm.reset();
-    }
-  });
-}
+  const first_name = document.getElementById("firstName").value.trim();
+  const middle_name = document.getElementById("middleName").value.trim();
+  const last_name = document.getElementById("lastName").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-// -------- LOGIN --------
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    const { user, error } = await supabase.auth.signInWithPassword({ email, password });
-    const msgDiv = document.getElementById("message");
-    if (error) {
-      msgDiv.textContent = `Login Error: ${error.message}`;
-    } else {
-      localStorage.setItem("userId", user.id);
-      window.location.href = "dashboard.html";
-    }
-  });
-}
-
-// -------- DASHBOARD --------
-const userNameSpan = document.getElementById("userName");
-if (userNameSpan) {
-  const userId = localStorage.getItem("userId");
-  supabase.auth.getUser().then(({ data }) => {
-    if (data.user) {
-      const user = data.user;
-      userNameSpan.textContent = `${user.user_metadata.first_name} ${user.user_metadata.last_name}`;
-    }
+  // Step 1: Sign up user in Auth
+  const { data, error: signupError } = await supabase.auth.signUp({
+    email,
+    password
   });
 
-  const openBtn = document.getElementById("openAccountBtn");
-  openBtn.addEventListener("click", () => {
-    window.location.href = "open-account.html";
-  });
+  if (signupError) {
+    console.error("Signup Error:", signupError);
+    messageDiv.textContent = `Signup failed: ${signupError.message}`;
+    return;
+  }
 
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    localStorage.removeItem("userId");
-    window.location.href = "login.html";
-  });
-}
+  const user = data.user;
 
-// -------- OPEN ACCOUNT --------
-const openAccountForm = document.getElementById("openAccountForm");
-if (openAccountForm) {
-  openAccountForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const user = (await supabase.auth.getUser()).data.user;
-    const ssn_or_id = document.getElementById("ssnOrId").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const street_address = document.getElementById("street").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const state = document.getElementById("state").value.trim();
-    const zip_code = document.getElementById("zip").value.trim();
-    const country = document.getElementById("country").value.trim();
-
-    const accountTypes = Array.from(document.querySelectorAll(".accountType:checked")).map(cb => cb.value);
-    const msgDiv = document.getElementById("message");
-    if (accountTypes.length === 0) {
-      msgDiv.textContent = "Select at least one account type.";
-      return;
-    }
-
-    function generateAccountNumber() {
-      return "ACCT" + Math.floor(100000000 + Math.random() * 900000000);
-    }
-
-    for (const account_type of accountTypes) {
-      const { data, error } = await supabase.from("accounts").insert([
+  // Step 2: Insert into profiles table
+  if (user) {
+    const { error: insertError } = await supabase
+      .from("profiles")
+      .insert([
         {
-          user_id: user.id,
-          first_name: user.user_metadata.first_name,
-          middle_name: user.user_metadata.middle_name,
-          last_name: user.user_metadata.last_name,
-          ssn_or_id,
-          phone,
-          street_address,
-          city,
-          state,
-          zip_code,
-          country,
-          account_type,
-          account_number: generateAccountNumber(),
-          routing_number: "075915826"
+          id: user.id, // link to auth.users
+          first_name,
+          middle_name,
+          last_name,
+          email
         }
       ]);
 
-      if (error) {
-        msgDiv.textContent = `Error creating ${account_type} account: ${error.message}`;
-        return;
-      }
+    if (insertError) {
+      console.error("Insert Error:", insertError);
+      messageDiv.textContent = `Error saving profile: ${insertError.message}`;
+      return;
     }
+  }
 
-    msgDiv.textContent = "Account(s) created successfully!";
-    openAccountForm.reset();
-  });
-}
+  // Step 3: Success message
+  messageDiv.textContent =
+    "Signup successful! Please check your email to confirm your account.";
+  signupForm.reset();
+});
